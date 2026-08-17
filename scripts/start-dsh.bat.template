@@ -1,31 +1,62 @@
 @echo off
 :: ============================================================
-:: DSH Ultra Config - 启动器模板
+:: Living Dream DSH - Launcher Template
 :: ============================================================
-:: 自动检测 CNB 代理并启动 DSH 桌面版
-:: 复制到 D:\ToolsDeepSeek-Harness-Desktop\start-dsh.bat
+:: Auto-detect CNB Proxy and start DSH Desktop
+:: Copy to your DSH directory and customize paths
 :: ============================================================
 
 setlocal enabledelayedexpansion
 
-:: 配置
-set DSH_EXE=D:\ToolsDeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe
-set CNB_PROXY=G:\vision-files\cnb_proxy.py
-set CNB_PORT=8800
+:: ============================================================
+:: Configuration - Customize these paths
+:: ============================================================
 
-:: 检查 CNB 代理是否已运行
-echo [DSH] 检查 CNB 代理...
-netstat -an | findstr ":%CNB_PORT% " | findstr "LISTENING" >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [DSH] CNB 代理未运行，正在启动...
-    start /b python "%CNB_PROXY%" --port %CNB_PORT%
-    timeout /t 2 /nobreak >nul
-) else (
-    echo [DSH] CNB 代理已运行
+:: DSH Desktop executable path
+:: Option 1: Default installation path
+:: set "DSH_EXE=%ProgramFiles%\DeepSeek Harness\DeepSeek Harness 桌面版.exe"
+:: Option 2: Custom installation path (uncomment and modify)
+set "DSH_EXE=D:\ToolsDeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
+
+:: CNB Proxy script path
+set "CNB_PROXY=%~dp0cnb_proxy.py"
+set "CNB_PORT=8800"
+
+:: ============================================================
+:: Auto-detect and start
+:: ============================================================
+
+:: Check if DSH Desktop exists
+if not exist "%DSH_EXE%" (
+    echo [ERROR] DSH Desktop not found: %DSH_EXE%
+    echo [INFO] Please modify DSH_EXE path in this script
+    pause
+    exit /b 1
 )
 
-:: 启动 DSH 桌面版
-echo [DSH] 启动 DeepSeek Harness 桌面版...
+:: Check if CNB Proxy is running
+echo [DSH] Checking CNB Proxy on port %CNB_PORT%...
+netstat -an | findstr ":%CNB_PORT% " | findstr "LISTENING" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [DSH] CNB Proxy not running, starting...
+    if exist "%CNB_PROXY%" (
+        start /b python "%CNB_PROXY%" --port %CNB_PORT%
+        timeout /t 2 /nobreak >nul
+        echo [DSH] CNB Proxy started
+    ) else (
+        echo [WARN] CNB Proxy script not found: %CNB_PROXY%
+        echo [INFO] Free model access will not be available
+    )
+) else (
+    echo [DSH] CNB Proxy already running
+)
+
+:: Start DSH Desktop
+echo [DSH] Starting DeepSeek Harness Desktop...
 start "" "%DSH_EXE%"
 
-echo [DSH] 启动完成
+echo [DSH] Done!
+echo.
+echo [INFO] Access DSH at: http://127.0.0.1:3080
+echo [INFO] Press any key to exit this window...
+pause >nul

@@ -212,8 +212,10 @@ Make DSH Desktop auto-call GLM-4V-Flash for image recognition:
 
 ```powershell
 # 1. Backup original file
-Copy-Item "D:\ToolsDeepSeek-Harness-Desktop\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" `
-          "G:\vision-files\dsh-host-apiproxy-index.js.bak"
+$dshPath = (Get-Process "DeepSeek Harness" -ErrorAction SilentlyContinue).Path
+if (-not $dshPath) { $dshPath = "D:\ToolsDeepSeek-Harness-Desktop" }
+Copy-Item "$dshPath\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" `
+          "$env:USERPROFILE\dsh-host-apiproxy-index.js.bak"
 
 # 2. Apply patch (manually modify describeImagesLocally function around line 911)
 # See docs/vision-patch.md

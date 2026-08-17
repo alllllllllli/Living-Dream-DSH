@@ -79,7 +79,7 @@ dsh plugin --profile web list | Select-String "billion"
 
 ```powershell
 # 1. 检查 MCP 服务器是否能独立运行
-python G:\vision-files\memory-mcp\server.py
+python %USERPROFILE%\dsh-workspace\memory-mcp\server.py
 
 # 2. 检查 Python 环境
 python --version
@@ -152,13 +152,13 @@ Get-Content "D:\workspace\dsh-phone\proxy.log" -Tail 50
 
 ```powershell
 # 1. 检查补丁是否生效
-Get-Content "D:\ToolsDeepSeek-Harness-Desktop\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" | Select-String "describeImagesLocally"
+Get-Content "%DSH_DESKTOP_PATH%\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" | Select-String "describeImagesLocally"
 
 # 2. 检查视觉配置
-Get-Content "G:\vision-files\dsh_vision_config.json"
+Get-Content "%USERPROFILE%\dsh-workspace\dsh_vision_config.json"
 
 # 3. 测试 API 连通性
-python G:\vision-files\test_vision_zhipu.py
+python %USERPROFILE%\dsh-workspace\test_vision_zhipu.py
 ```
 
 **解决方案**：

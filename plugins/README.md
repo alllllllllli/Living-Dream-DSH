@@ -11,7 +11,7 @@
 | `dsh-ffmpeg` | 0.1.0 | 视频处理 |
 | `@xiaweiliang060035/dsh-opencode-go-usage` | ^0.3.0 | OpenCode Go 用量悬浮球 |
 | `@anionex/dsh-vision-toolkit` | ^0.1.8 | 视觉工具包 |
-| `@dsh-community/dsh-paste-input` | file:... | 文件拖拽上传（自研） |
+| `@dsh-community/dsh-paste-input` | ^0.1.0 | 文件拖拽上传（自研） |
 | `dsh-model-router` | github:tianji-qingtian/dsh-model-router#v0.8.1 | 模型路由（不在 npm） |
 
 ## 安装方法

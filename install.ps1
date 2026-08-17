@@ -53,7 +53,10 @@ if (-not $pnpmVer) {
 Write-OK "pnpm v$(pnpm --version)"
 
 # DSH 桌面版
-$dshExe = "D:\ToolsDeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
+$dshExe = "$env:ProgramFiles\DeepSeek Harness\DeepSeek Harness 桌面版.exe"
+if (-not (Test-Path $dshExe)) {
+    $dshExe = "D:\ToolsDeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
+}
 if (Test-Path $dshExe) {
     Write-OK "DSH 桌面版已安装"
 } else {

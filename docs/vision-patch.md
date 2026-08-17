@@ -11,8 +11,8 @@ DSH 桌面版的 `dsh-host-apiproxy` 模块负责处理图片附件。通过修�
 ### 1. 备份原文件
 
 ```powershell
-$originalFile = "D:\ToolsDeepSeek-Harness-Desktop\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js"
-$backupFile = "G:\vision-files\dsh-host-apiproxy-index.js.bak"
+$originalFile = "%DSH_DESKTOP_PATH%\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js"
+$backupFile = "%USERPROFILE%\dsh-workspace\dsh-host-apiproxy-index.js.bak"
 
 Copy-Item $originalFile $backupFile
 Write-Host "已备份到 $backupFile"
@@ -20,7 +20,7 @@ Write-Host "已备份到 $backupFile"
 
 ### 2. 准备视觉 API 配置
 
-创建 `G:\vision-files\dsh_vision_config.json`：
+创建 `%USERPROFILE%\dsh-workspace\dsh_vision_config.json`：
 
 ```json
 {
@@ -123,7 +123,7 @@ const MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50MB
 Get-Process -Name "DeepSeek Harness*" | Stop-Process -Force
 
 # 重新启动
-Start-Process "D:\ToolsDeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
+Start-Process "%DSH_DESKTOP_PATH%\DeepSeek Harness 桌面版.exe"
 ```
 
 ## 使用效果
@@ -138,13 +138,13 @@ Start-Process "D:\ToolsDeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
 - ⚠️ DSH 升级会覆盖此补丁，需重打
 - 仅桌面版生效，Dev 版（3080 端口）无此逻辑
 - GLM-4V-Flash 免费额度有限，大量使用需付费
-- 备份文件在 `G:\vision-files\dsh-host-apiproxy-index.js.bak`
+- 备份文件在 `%USERPROFILE%\dsh-workspace\dsh-host-apiproxy-index.js.bak`
 
 ## 回滚
 
 ```powershell
-$backupFile = "G:\vision-files\dsh-host-apiproxy-index.js.bak"
-$targetFile = "D:\ToolsDeepSeek-Harness-Desktop\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js"
+$backupFile = "%USERPROFILE%\dsh-workspace\dsh-host-apiproxy-index.js.bak"
+$targetFile = "%DSH_DESKTOP_PATH%\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js"
 
 Copy-Item $backupFile $targetFile
 Write-Host "已回滚到原版"

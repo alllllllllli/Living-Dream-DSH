@@ -212,8 +212,10 @@ tailscale serve --https=443 --bg http://127.0.0.1:3080
 
 ```powershell
 # 1. 备份原文件
-Copy-Item "D:\ToolsDeepSeek-Harness-Desktop\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" `
-          "G:\vision-files\dsh-host-apiproxy-index.js.bak"
+$dshPath = (Get-Process "DeepSeek Harness" -ErrorAction SilentlyContinue).Path
+if (-not $dshPath) { $dshPath = "D:\ToolsDeepSeek-Harness-Desktop" }
+Copy-Item "$dshPath\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" `
+          "$env:USERPROFILE\dsh-host-apiproxy-index.js.bak"
 
 # 2. 应用补丁（需手动修改 911 行附近的 describeImagesLocally 函数）
 # 详见 docs/vision-patch.md
