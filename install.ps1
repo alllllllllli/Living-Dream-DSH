@@ -1,12 +1,13 @@
 # ============================================================
-# Living Dream DSH - 一键安装程序
-# 双击运行或在 PowerShell 中执行：.\install.ps1
+# Living Dream DSH - One-Click Installer
+# ============================================================
+# Double-click install.bat to run this script
 # ============================================================
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Stop"
 
-# 颜色输出
+# Color output
 function Write-Step($msg) { Write-Host "`n[*] $msg" -ForegroundColor Cyan }
 function Write-OK($msg) { Write-Host "[+] $msg" -ForegroundColor Green }
 function Write-Warn($msg) { Write-Host "[!] $msg" -ForegroundColor Yellow }
@@ -16,80 +17,115 @@ function Write-Err($msg) { Write-Host "[-] $msg" -ForegroundColor Red }
 Write-Host @"
 
  ============================================================
-   Living Dream DSH - 一键安装程序
+   Living Dream DSH - One-Click Installer
    https://github.com/alllllllllli/Living-Dream-DSH
  ============================================================
 "@ -ForegroundColor Cyan
 
 # ============================================================
-# 1. 环境检查
+# 1. Check & Install Dependencies
 # ============================================================
-Write-Step "检查系统环境..."
+Write-Step "Checking dependencies..."
+
+# Function to check if command exists
+function Test-Command($cmd) {
+    try { Get-Command $cmd -ErrorAction Stop; return $true }
+    catch { return $false }
+}
 
 # Node.js
-$nodeVer = node --version 2>$null
-if (-not $nodeVer) {
-    Write-Err "未找到 Node.js，请先安装：https://nodejs.org/"
-    Read-Host "按回车退出"
-    exit 1
+if (Test-Command "node") {
+    $nodeVer = node --version
+    Write-OK "Node.js $nodeVer"
+} else {
+    Write-Warn "Node.js not found, installing..."
+    winget install OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements
+    if ($LASTEXITCODE -ne 0) {
+        Write-Err "Failed to install Node.js"
+        Write-Host "Please install manually: https://nodejs.org/"
+        Read-Host "Press Enter to exit"
+        exit 1
+    }
+    # Refresh PATH
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    Write-OK "Node.js installed"
 }
-Write-OK "Node.js $nodeVer"
 
 # Python
-$pyVer = python --version 2>$null
-if (-not $pyVer) {
-    Write-Err "未找到 Python，请先安装：https://python.org/"
-    Read-Host "按回车退出"
-    exit 1
+if (Test-Command "python") {
+    $pyVer = python --version
+    Write-OK "$pyVer"
+} else {
+    Write-Warn "Python not found, installing..."
+    winget install Python.Python.3.13 --accept-package-agreements --accept-source-agreements
+    if ($LASTEXITCODE -ne 0) {
+        Write-Err "Failed to install Python"
+        Write-Host "Please install manually: https://python.org/"
+        Read-Host "Press Enter to exit"
+        exit 1
+    }
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    Write-OK "Python installed"
 }
-Write-OK "$pyVer"
 
 # pnpm
-$pnpmVer = pnpm --version 2>$null
-if (-not $pnpmVer) {
-    Write-Warn "未找到 pnpm，正在安装..."
-    npm install -g pnpm
-}
-Write-OK "pnpm v$(pnpm --version)"
-
-# DSH 桌面版
-$dshExe = "$env:ProgramFiles\DeepSeek Harness\DeepSeek Harness 桌面版.exe"
-if (-not (Test-Path $dshExe)) {
-    $dshExe = "D:\ToolsDeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
-}
-if (Test-Path $dshExe) {
-    Write-OK "DSH 桌面版已安装"
+if (Test-Command "pnpm") {
+    $pnpmVer = pnpm --version
+    Write-OK "pnpm v$pnpmVer"
 } else {
-    Write-Warn "未检测到 DSH 桌面版（$dshExe）"
-    Write-Warn "请确保已安装 DSH 桌面版，配置文件将复制到 ~/.dsh"
+    Write-Warn "pnpm not found, installing..."
+    npm install -g pnpm
+    if ($LASTEXITCODE -ne 0) {
+        Write-Err "Failed to install pnpm"
+        Read-Host "Press Enter to exit"
+        exit 1
+    }
+    Write-OK "pnpm installed"
+}
+
+# Git
+if (Test-Command "git") {
+    $gitVer = git --version
+    Write-OK "$gitVer"
+} else {
+    Write-Warn "Git not found, installing..."
+    winget install Git.Git --accept-package-agreements --accept-source-agreements
+    if ($LASTEXITCODE -ne 0) {
+        Write-Err "Failed to install Git"
+        Write-Host "Please install manually: https://git-scm.com/"
+        Read-Host "Press Enter to exit"
+        exit 1
+    }
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    Write-OK "Git installed"
 }
 
 # ============================================================
-# 2. 克隆仓库
+# 2. Clone Repository
 # ============================================================
-Write-Step "获取配置文件..."
+Write-Step "Getting config files..."
 
 $repoDir = "$env:USERPROFILE\Living-Dream-DSH"
 if (Test-Path "$repoDir\.git") {
-    Write-OK "仓库已存在，更新中..."
+    Write-OK "Repository exists, updating..."
     Push-Location $repoDir
     git pull --quiet
     Pop-Location
 } else {
-    Write-Host "    克隆仓库到 $repoDir ..."
+    Write-Host "    Cloning repository to $repoDir ..."
     git clone --quiet https://github.com/alllllllllli/Living-Dream-DSH.git $repoDir
     if ($LASTEXITCODE -ne 0) {
-        Write-Err "克隆失败，请检查网络连接"
-        Read-Host "按回车退出"
+        Write-Err "Clone failed, check network connection"
+        Read-Host "Press Enter to exit"
         exit 1
     }
-    Write-OK "克隆完成"
+    Write-OK "Clone complete"
 }
 
 # ============================================================
-# 3. 创建 DSH 目录结构
+# 3. Create DSH Directory Structure
 # ============================================================
-Write-Step "创建 DSH 目录结构..."
+Write-Step "Creating DSH directory structure..."
 
 $dshHome = "$env:USERPROFILE\.dsh"
 $profileDir = "$dshHome\profiles\web"
@@ -97,14 +133,14 @@ $profileDir = "$dshHome\profiles\web"
 @($dshHome, $profileDir, "$dshHome\uploads") | ForEach-Object {
     if (-not (Test-Path $_)) {
         New-Item -ItemType Directory -Path $_ -Force | Out-Null
-        Write-OK "创建 $_"
+        Write-OK "Created $_"
     }
 }
 
 # ============================================================
-# 4. 复制配置文件
+# 4. Copy Config Files
 # ============================================================
-Write-Step "复制配置文件..."
+Write-Step "Copying config files..."
 
 $copyMap = @(
     @{src="configs\cordis.patch.yml.template"; dst="$profileDir\cordis.patch.yml"},
@@ -117,94 +153,94 @@ foreach ($item in $copyMap) {
     $src = Join-Path $repoDir $item.src
     $dst = $item.dst
     if (Test-Path $dst) {
-        Write-Warn "跳过 $($item.dst)（已存在）"
+        Write-Warn "Skip $($item.dst) (already exists)"
     } else {
         Copy-Item $src $dst -Force
-        Write-OK "复制 -> $dst"
+        Write-OK "Copied -> $dst"
     }
 }
 
-# credentials.yaml（不覆盖）
+# credentials.yaml (don't overwrite)
 $credSrc = Join-Path $repoDir "configs\.credentials.yaml.template"
 $credDst = "$dshHome\.credentials.yaml"
 if (-not (Test-Path $credDst)) {
     Copy-Item $credSrc $credDst
-    Write-OK "创建 $credDst（需填入 API Key）"
+    Write-OK "Created $credDst (needs API Keys)"
 } else {
-    Write-Warn "跳过 .credentials.yaml（已存在）"
+    Write-Warn "Skip .credentials.yaml (already exists)"
 }
 
-# package.json（合并而非覆盖）
+# package.json (merge instead of overwrite)
 $pkgSrc = Join-Path $repoDir "configs\package.json.template"
 $pkgDst = "$profileDir\package.json"
 if (-not (Test-Path $pkgDst)) {
     Copy-Item $pkgSrc $pkgDst
-    Write-OK "创建 $pkgDst"
+    Write-OK "Created $pkgDst"
 } else {
-    Write-Warn "跳过 package.json（已存在，如需更新请手动合并）"
+    Write-Warn "Skip package.json (already exists, manual merge needed)"
 }
 
 # ============================================================
-# 5. 配置 API Key
+# 5. Configure API Keys
 # ============================================================
-Write-Step "配置 API Key..."
+Write-Step "Configuring API Keys..."
 
 $credFile = "$dshHome\.credentials.yaml"
 $credContent = Get-Content $credFile -Raw
 
 Write-Host @"
 
-    请填入你的 API Key（留空跳过，稍后手动编辑）：
+    Please fill in your API Keys (leave empty to skip):
     
-    1. DeepSeek API Key（必填）
-       获取：https://platform.deepseek.com/
+    1. DeepSeek API Key (Required)
+       Get: https://platform.deepseek.com/
     
-    2. CNB API Key（免费模型）
-       获取：https://cnb.cool/
+    2. CNB API Key (Free models)
+       Get: https://cnb.cool/
     
-    3. 智谱 API Key（发图识别）
-       获取：https://open.bigmodel.cn/
+    3. Zhipu API Key (Image recognition)
+       Get: https://open.bigmodel.cn/
 
 "@ -ForegroundColor Gray
 
-$dsKey = Read-Host "DeepSeek API Key（留空跳过）"
+$dsKey = Read-Host "DeepSeek API Key (leave empty to skip)"
 if ($dsKey) {
     $credContent = $credContent -replace "your-deepseek-api-key", $dsKey
-    Write-OK "已设置 DeepSeek API Key"
+    Write-OK "DeepSeek API Key set"
 }
 
-$cnbKey = Read-Host "CNB API Key（留空跳过）"
+$cnbKey = Read-Host "CNB API Key (leave empty to skip)"
 if ($cnbKey) {
     $credContent = $credContent -replace "your-cnb-api-key", $cnbKey
-    Write-OK "已设置 CNB API Key"
+    Write-OK "CNB API Key set"
 }
 
-$zhipuKey = Read-Host "智谱 API Key（留空跳过）"
+$zhipuKey = Read-Host "Zhipu API Key (leave empty to skip)"
 if ($zhipuKey) {
     $credContent = $credContent -replace "your-zhipu-api-key", $zhipuKey
-    Write-OK "已设置智谱 API Key"
+    Write-OK "Zhipu API Key set"
 }
 
 Set-Content $credFile $credContent -Encoding UTF8
 
 # ============================================================
-# 6. 安装插件依赖
+# 6. Install Plugin Dependencies
 # ============================================================
-Write-Step "安装插件依赖..."
+Write-Step "Installing plugin dependencies..."
 
 Push-Location $profileDir
 if (Test-Path "package.json") {
     pnpm install --no-frozen-lockfile 2>&1 | Out-Null
-    Write-OK "插件依赖安装完成"
+    Write-OK "Plugin dependencies installed"
 } else {
-    Write-Warn "未找到 package.json，跳过"
+    Write-Warn "package.json not found, skipped"
 }
 Pop-Location
 
 # ============================================================
-# 7. 创建桌面快捷方式
+# 7. Create Desktop Shortcut
 # ============================================================
-Write-Step "创建桌面快捷方式..."
+Write-Step "Creating desktop shortcut..."
 
 $startScript = Join-Path $repoDir "scripts\start-dsh.bat"
 $startTemplate = Join-Path $repoDir "scripts\start-dsh.bat.template"
@@ -213,43 +249,42 @@ if (-not (Test-Path $startScript)) {
     Copy-Item $startTemplate $startScript
 }
 
-$shortcutPath = "$env:USERPROFILE\Desktop\DSH Ultra.lnk"
+$shortcutPath = "$env:USERPROFILE\Desktop\Living Dream DSH.lnk"
 $shell = New-Object -ComObject WScript.Shell
 $shortcut = $shell.CreateShortcut($shortcutPath)
 $shortcut.TargetPath = "cmd.exe"
 $shortcut.Arguments = "/c `"$startScript`""
 $shortcut.WorkingDirectory = $repoDir
-$shortcut.IconLocation = "$dshExe,0"
-$shortcut.Description = "Living Dream DSH 启动器"
+$shortcut.Description = "Living Dream DSH Launcher"
 $shortcut.Save()
-Write-OK "桌面快捷方式已创建"
+Write-OK "Desktop shortcut created"
 
 # ============================================================
-# 8. 完成
+# 8. Done
 # ============================================================
 Write-Host @"
 
  ============================================================
-   安装完成！
+   Installation Complete!
  ============================================================
 
-   配置文件位置：
+   Config files:
      DSH Home:    $dshHome
      Profile:     $profileDir
-     仓库:        $repoDir
+     Repository:  $repoDir
 
-   下一步：
-     1. 双击桌面 "DSH Ultra" 快捷方式启动
-     2. 或手动启动 DSH 桌面版
+   Next steps:
+     1. Double-click "Living Dream DSH" shortcut on desktop
+     2. Or start DSH Desktop manually
 
-   如需修改配置：
+   To edit config:
      notepad $credFile
      notepad $profileDir\cordis.patch.yml
 
-   文档：
+   Documentation:
      $repoDir\README.md
 
  ============================================================
 "@ -ForegroundColor Green
 
-Read-Host "按回车退出"
+Read-Host "Press Enter to exit"
