@@ -84,6 +84,16 @@ Living-Dream-DSH/
 
 ## 🚀 快速开始
 
+### 前置条件（必须先安装）
+
+| 软件 | 版本 | 下载地址 | 必装？ |
+|------|------|----------|--------|
+| **DeepSeek Harness 桌面版** | v1.1.0+ | [GitHub Releases](https://github.com/deepseek-ai/deepseek-harness/releases) | ✅ 必装 |
+| **Node.js** | v22+（推荐 v24 LTS） | [nodejs.org](https://nodejs.org/) | ✅ 必装 |
+| **Python** | 3.13+ | [python.org](https://python.org/) | ✅ 必装 |
+| **pnpm** | 最新版 | `npm install -g pnpm` | ✅ 必装 |
+| **Git** | 任意版本 | [git-scm.com](https://git-scm.com/) | 克隆用 |
+
 ### 方式一：一键安装（推荐）
 
 ```powershell
@@ -107,34 +117,32 @@ cd Living-Dream-DSH
 <details>
 <summary>点击展开手动安装步骤</summary>
 
-#### 环境要求
-
-- Windows 10/11
-- Node.js v22+ (推荐 v24 LTS)
-- Python 3.13+ (用于 MCP 服务器)
-- DeepSeek Harness 桌面版 v1.1.0+
-
-#### 安装步骤
+#### 详细步骤
 
 ```powershell
-# 克隆仓库
+# 1. 安装前置软件（如果未安装）
+winget install OpenJS.NodeJS.LTS        # Node.js
+winget install Python.Python.3.13       # Python
+npm install -g pnpm                      # pnpm
+
+# 2. 克隆仓库
 git clone https://github.com/alllllllllli/Living-Dream-DSH.git
 cd Living-Dream-DSH
 
-# 复制配置文件到 DSH 目录
+# 3. 复制配置文件到 DSH 目录
 Copy-Item configs\cordis.patch.yml.template $env:USERPROFILE\.dsh\profiles\web\cordis.patch.yml
 Copy-Item configs\package.json.template $env:USERPROFILE\.dsh\profiles\web\package.json
 Copy-Item configs\settings.yaml.template $env:USERPROFILE\.dsh\settings.yaml
 Copy-Item configs\AGENTS.md $env:USERPROFILE\.dsh\AGENTS.md
 
-# 编辑配置文件（填入你的 API Key）
+# 4. 编辑配置文件（填入你的 API Key）
 notepad $env:USERPROFILE\.dsh\.credentials.yaml
 
-# 安装插件
+# 5. 安装插件
 cd $env:USERPROFILE\.dsh\profiles\web
 pnpm install
 
-# 重启 DSH 桌面版
+# 6. 重启 DSH 桌面版
 ```
 
 </details>

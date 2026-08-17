@@ -84,6 +84,16 @@ Living-Dream-DSH/
 
 ## 🚀 Quick Start
 
+### Prerequisites (Must Install First)
+
+| Software | Version | Download | Required |
+|----------|---------|----------|----------|
+| **DeepSeek Harness Desktop** | v1.1.0+ | [GitHub Releases](https://github.com/deepseek-ai/deepseek-harness/releases) | ✅ Yes |
+| **Node.js** | v22+ (Recommended v24 LTS) | [nodejs.org](https://nodejs.org/) | ✅ Yes |
+| **Python** | 3.13+ | [python.org](https://python.org/) | ✅ Yes |
+| **pnpm** | Latest | `npm install -g pnpm` | ✅ Yes |
+| **Git** | Any | [git-scm.com](https://git-scm.com/) | For clone |
+
 ### Option 1: One-Click Install (Recommended)
 
 ```powershell
@@ -107,34 +117,32 @@ The installer will automatically:
 <details>
 <summary>Click to expand manual installation steps</summary>
 
-#### Requirements
-
-- Windows 10/11
-- Node.js v22+ (Recommended v24 LTS)
-- Python 3.13+ (For MCP servers)
-- DeepSeek Harness Desktop v1.1.0+
-
-#### Installation Steps
+#### Step-by-Step
 
 ```powershell
-# Clone repository
+# 1. Install prerequisites (if not installed)
+winget install OpenJS.NodeJS.LTS        # Node.js
+winget install Python.Python.3.13       # Python
+npm install -g pnpm                      # pnpm
+
+# 2. Clone repository
 git clone https://github.com/alllllllllli/Living-Dream-DSH.git
 cd Living-Dream-DSH
 
-# Copy config files to DSH directory
+# 3. Copy config files to DSH directory
 Copy-Item configs\cordis.patch.yml.template $env:USERPROFILE\.dsh\profiles\web\cordis.patch.yml
 Copy-Item configs\package.json.template $env:USERPROFILE\.dsh\profiles\web\package.json
 Copy-Item configs\settings.yaml.template $env:USERPROFILE\.dsh\settings.yaml
 Copy-Item configs\AGENTS.md $env:USERPROFILE\.dsh\AGENTS.md
 
-# Edit config files (fill in your API Keys)
+# 4. Edit config files (fill in your API Keys)
 notepad $env:USERPROFILE\.dsh\.credentials.yaml
 
-# Install plugins
+# 5. Install plugins
 cd $env:USERPROFILE\.dsh\profiles\web
 pnpm install
 
-# Restart DSH Desktop
+# 6. Restart DSH Desktop
 ```
 
 </details>
