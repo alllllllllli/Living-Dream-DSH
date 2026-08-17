@@ -9,7 +9,7 @@ CNB CodeBuddy NPC -> OpenAI-compatible proxy
   python cnb_proxy.py [port]     # 默认 8800
 配置:
   CNB_API_KEY  环境变量或 --token 参数(CNB 访问令牌)
-  仓库路径     通过 --repo 指定, 默认 my-org/ai-sandbox
+  仓库路径     通过 --repo 指定, 默认 CNB_REPO 环境变量或 your-org/your-repo
 """
 import argparse
 import json
@@ -26,7 +26,7 @@ MODEL_MAP = {
     "deepseek-v4-flash": "@npc/CodeBuddy",
     "deepseek-v4-pro": "@npc/CodeBuddy(deepseek-v4-pro)",
 }
-DEFAULT_REPO = "my-org/ai-sandbox"
+DEFAULT_REPO = os.environ.get("CNB_REPO", "your-org/your-repo")
 POLL_INTERVAL = 5
 MAX_WAIT = 180  # 秒
 

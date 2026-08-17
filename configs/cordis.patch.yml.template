@@ -37,19 +37,36 @@
         toolCallTimeoutMs: 240000
         failOnStartupError: false
 
-# 3. 屏幕操作: computer-use (截屏/点击/键鼠)
+# 3. 屏幕操作: computer-use (截屏/点击/键鼠) — 开源替代
 - insert:
     - id: mcp-dsh-computer
       name: '@deepseek-ai/dsh-mcp-client'
       config:
         transport: stdio
         serverName: dsh-computer
-        command: D:/path/to/computer-use-mcp/computer-use.exe  # 修改为你的实际路径
+        command: npx
         args:
-          - mcp
+          - "--yes"
+          - "--prefer-offline"
+          - "@zavora-ai/computer-use-mcp"
         env: {}
         cwd: ''
         toolCallTimeoutMs: 120000
+        failOnStartupError: false
+
+# 3.5 代码执行: OS-Copilot (Python/Shell/文件操作)
+- insert:
+    - id: mcp-os-copilot
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        transport: stdio
+        serverName: os-copilot
+        command: python  # 或完整路径如 C:/Users/<你的用户名>/AppData/Local/Python/pythoncore-3.14-64/python.exe
+        args:
+          - D:/path/to/OS-Copilot/os-copilot-mcp/server.py  # 修改为你的实际路径
+        env: {}
+        cwd: ''
+        toolCallTimeoutMs: 60000
         failOnStartupError: false
 
 # 4. 浏览器: Playwright MCP (--extension 模式: 连接正在运行的 Edge, 真实 profile/登录态)

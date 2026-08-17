@@ -47,7 +47,7 @@ pnpm add <包名>  # 这会清掉未列出的 bundle！
 
 ```powershell
 # 1. 克隆插件源码
-git clone https://github.com/l541402398/dsh-file-uploads.git D:\Tools\dsh-plugins\dsh-file-uploads
+git clone https://github.com/l541402398/dsh-file-uploads.git <YOUR_PLUGIN_DIR>\dsh-file-uploads
 
 # 2. 创建 Junction（可选，用于开发）
 New-Item -ItemType Junction -Path "D:/Tools/dsh-plugins/dsh-file-uploads" -Target "D:\workspace\dsh-file-uploads"

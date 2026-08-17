@@ -15,7 +15,7 @@
 
 | 功能 | 说明 |
 |------|------|
-| 🔌 **7+ MCP 服务器** | 历史/视觉/桌面操作/浏览器/记忆/文档转换/OCR |
+| 🔌 **8+ MCP 服务器** | 历史/视觉/桌面操作/代码执行/浏览器/记忆/文档转换/OCR |
 | 🤖 **免费模型渠道** | CNB 代理（DeepSeek V4 免费）+ AMD Radeon Cloud |
 | 📱 **手机远程访问** | Tailscale + 改写代理，手机浏览器操作 DSH |
 | 🖼️ **发图自动识别** | GLM-4V-Flash 免费视觉描述（仅桌面版） |
@@ -42,7 +42,9 @@ dsh-ultra-config/
 ├── scripts/
 │   ├── cnb_proxy.py                # CNB 代理（OpenAI 兼容）
 │   ├── secrets.ps1                 # DPAPI 密钥解密
-│   └── start-dsh.bat.template      # 启动器模板
+│   ├── start-dsh.bat.template      # 启动器模板
+│   ├── os-copilot-mcp-server.py    # OS-Copilot MCP 服务器
+│   └── os-copilot-mcp-README.md    # OS-Copilot MCP 说明
 ├── plugins/
 │   └── README.md                   # 插件安装说明
 └── docs/
@@ -97,7 +99,8 @@ pnpm install
 |-----|------|------|
 | `dsh-history` | 历史会话查询/搜索 | Python + server.py |
 | `dsh-vision` | 图片分析（Ollama qwen2.5vl） | Python + Ollama |
-| `dsh-computer` | 桌面操作（截图/点击/键鼠） | computer-use.exe |
+| `dsh-computer` | 桌面操作（截图/点击/键鼠） | @zavora-ai/computer-use-mcp (MIT) |
+| `os-copilot` | 代码执行（Python/Shell/文件操作） | Python + server.py |
 | `dsh-browser` | 浏览器自动化（Playwright） | Node.js + Edge 扩展 |
 | `dsh-memory` | 长期记忆（语义检索） | Python + server.py |
 | `dsh-markitdown` | 文档转 Markdown | Python + MarkItDown |
