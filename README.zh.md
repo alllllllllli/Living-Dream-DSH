@@ -88,27 +88,45 @@ Living-Dream-DSH/
 ├── README.zh.md                 # 中文说明
 ├── LICENSE                      # MIT 许可证
 ├── .gitignore
+├── install.ps1                  # 一键安装脚本
+├── install.bat                  # 安装包装器
 ├── configs/
 │   ├── cordis.patch.yml.template   # MCP 配置模板
 │   ├── package.json.template       # 插件清单模板
 │   ├── settings.yaml.template      # 全局设置模板
 │   ├── AGENTS.md                   # AI 指令文件
-│   └── .credentials.yaml.template  # API Key 模板
+│   ├── .credentials.yaml.template  # API Key 模板
+│   └── README.md                   # 配置文件说明
 ├── scripts/
-│   ├── start-dsh.bat.template       # DSH 启动器
-│   ├── proxy.js                     # 手机远程代理（跨域改写）
-│   ├── secrets.ps1                  # DPAPI 密钥解密（读取 secrets.json）
-│   ├── mcp/                         # MCP 服务端脚本（6 个全部内置）
-│   │   ├── dsh-history-server.py
-│   │   ├── dsh-vision-server.py
-│   │   ├── dsh-memory-server.py
-│   │   ├── dsh-markitdown-server.py
-│   │   ├── dsh-ocr-server.py
-│   │   └── os-copilot-server.py
-│   └── os-copilot-mcp-README.md     # OS-Copilot MCP 说明
+│   ├── start-dsh.bat.template      # DSH 启动器
+│   ├── proxy.js                    # 手机远程代理（跨域改写）
+│   ├── secrets.ps1                 # DPAPI 密钥解密（读取 secrets.json）
+│   ├── os-copilot-mcp-server.py    # OS-Copilot MCP（旧位置）
+│   ├── os-copilot-mcp-README.md    # OS-Copilot MCP 说明
+│   ├── os-copilot-mcp-LICENSE      # OS-Copilot MIT 许可证
+│   └── mcp/                        # MCP 服务端脚本（6 个全部内置）
+│       ├── dsh-history-server.py
+│       ├── dsh-vision-server.py
+│       ├── dsh-memory-server.py
+│       ├── dsh-markitdown-server.py
+│       ├── dsh-ocr-server.py
+│       └── os-copilot-server.py
 ├── plugins/
-│   └── README.md                   # 插件安装说明
+│   ├── README.md                   # 插件安装说明
+│   └── dsh-paste-input/            # 自研文件拖拽上传插件
+│       ├── package.json
+│       ├── lib/
+│       │   ├── index.js
+│       │   └── client.js
+│       ├── cordis.patch.yml
+│       ├── README.md
+│       └── LICENSE
 └── docs/
+    ├── comparison.md               # 英文对比表（7 框架）
+    ├── comparison.zh.md            # 中文对比表
+    ├── phone-remote.md             # 手机远程访问教程
+    ├── vision-patch.md             # 发图自动识别补丁
+    └── troubleshooting.md          # 防坑指南
     ├── phone-remote.md             # 手机远程访问教程
     ├── vision-patch.md             # 发图改造教程
     └── troubleshooting.md          # 故障排查手册
@@ -149,10 +167,10 @@ Living-Dream-DSH/
    - 创建桌面快捷方式
 
 ```
-Living-Dream-DSH-Offline.exe
+Living-Dream-DSH-Offline.exe（SFX 内容，不在仓库中）
 ├── deps/                      # Node.js 22.16.0 MSI, Python 3.13.0, Git 2.47.0
 ├── Living-Dream-DSH/          # 完整仓库快照
-└── install-offline.ps1        # 离线安装脚本
+└── install-offline.ps1        # 离线安装脚本（打包在内，不在仓库中）
 ```
 
 ### 方式二：在线一键安装

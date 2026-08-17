@@ -88,27 +88,42 @@ Living-Dream-DSH/
 ├── README.zh.md                 # Chinese
 ├── LICENSE                      # MIT License
 ├── .gitignore
+├── install.ps1                  # One-click installer
+├── install.bat                  # Installer wrapper
 ├── configs/
 │   ├── cordis.patch.yml.template   # MCP config template
 │   ├── package.json.template       # Plugin list template
 │   ├── settings.yaml.template      # Global settings template
 │   ├── AGENTS.md                   # AI instructions
-│   └── .credentials.yaml.template  # API Key template
+│   ├── .credentials.yaml.template  # API Key template
+│   └── README.md                   # Config file guide
 ├── scripts/
-│   ├── start-dsh.bat.template       # DSH launcher
-│   ├── proxy.js                     # Phone remote proxy (CORS rewrite)
-│   ├── secrets.ps1                  # DPAPI key decryption (reads secrets.json)
-│   ├── mcp/                         # MCP server scripts (all 6 bundled)
-│   │   ├── dsh-history-server.py
-│   │   ├── dsh-vision-server.py
-│   │   ├── dsh-memory-server.py
-│   │   ├── dsh-markitdown-server.py
-│   │   ├── dsh-ocr-server.py
-│   │   └── os-copilot-server.py
-│   └── os-copilot-mcp-README.md     # OS-Copilot MCP docs
+│   ├── start-dsh.bat.template      # DSH launcher
+│   ├── proxy.js                    # Phone remote proxy (CORS rewrite)
+│   ├── secrets.ps1                 # DPAPI key decryption (reads secrets.json)
+│   ├── os-copilot-mcp-server.py    # OS-Copilot MCP (legacy location)
+│   ├── os-copilot-mcp-README.md    # OS-Copilot MCP docs
+│   ├── os-copilot-mcp-LICENSE      # OS-Copilot MIT license
+│   └── mcp/                        # MCP server scripts (all 6 bundled)
+│       ├── dsh-history-server.py
+│       ├── dsh-vision-server.py
+│       ├── dsh-memory-server.py
+│       ├── dsh-markitdown-server.py
+│       ├── dsh-ocr-server.py
+│       └── os-copilot-server.py
 ├── plugins/
-│   └── README.md                   # Plugin installation guide
+│   ├── README.md                   # Plugin installation guide
+│   └── dsh-paste-input/            # Custom file drag & paste plugin
+│       ├── package.json
+│       ├── lib/
+│       │   ├── index.js
+│       │   └── client.js
+│       ├── cordis.patch.yml
+│       ├── README.md
+│       └── LICENSE
 └── docs/
+    ├── comparison.md               # EN comparison table (7 frameworks)
+    ├── comparison.zh.md            # ZH comparison table
     ├── phone-remote.md             # Mobile remote access tutorial
     ├── vision-patch.md             # Image recognition patch
     └── troubleshooting.md          # Troubleshooting manual
@@ -149,10 +164,10 @@ Living-Dream-DSH/
    - Creates desktop shortcut
 
 ```
-Living-Dream-DSH-Offline.exe
+Living-Dream-DSH-Offline.exe (SFX contents, not in repo)
 ├── deps/                      # Node.js 22.16.0 MSI, Python 3.13.0, Git 2.47.0
 ├── Living-Dream-DSH/          # Full repo snapshot
-└── install-offline.ps1        # Offline installer script
+└── install-offline.ps1        # Offline installer script (bundled, not in repo)
 ```
 
 ### Option 2: Online One-Click Install
