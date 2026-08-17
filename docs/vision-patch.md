@@ -11,8 +11,8 @@ DSH 桌面版的 `dsh-host-apiproxy` 模块负责处理图片附件。通过修�
 ### 1. 备份原文件
 
 ```powershell
-$originalFile = "%DSH_DESKTOP_PATH%\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js"
-$backupFile = "%USERPROFILE%\dsh-workspace\dsh-host-apiproxy-index.js.bak"
+$originalFile = "$env:DSH_DESKTOP_PATH\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js"
+$backupFile = "$env:USERPROFILE\dsh-workspace\dsh-host-apiproxy-index.js.bak"
 
 Copy-Item $originalFile $backupFile
 Write-Host "已备份到 $backupFile"
@@ -38,12 +38,14 @@ Write-Host "已备份到 $backupFile"
 
 ```javascript
 async function describeImagesLocally(imagePaths) {
-  const configPath = 'G:\\vision-files\\dsh_vision_config.json';
+  const fs = require('fs');
+  const path = require('path');
+  const os = require('os');
+  // 与第 2 步一致: %USERPROFILE%\dsh-workspace\dsh_vision_config.json
+  const configPath = path.join(os.homedir(), 'dsh-workspace', 'dsh_vision_config.json');
   const outputDir = '.dsh-image-desc';
   
   // 确保输出目录存在
-  const fs = require('fs');
-  const path = require('path');
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
@@ -123,7 +125,7 @@ const MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50MB
 Get-Process -Name "DeepSeek Harness*" | Stop-Process -Force
 
 # 重新启动
-Start-Process "%DSH_DESKTOP_PATH%\DeepSeek Harness 桌面版.exe"
+Start-Process "$env:DSH_DESKTOP_PATH\DeepSeek Harness 桌面版.exe"
 ```
 
 ## 使用效果
@@ -143,8 +145,8 @@ Start-Process "%DSH_DESKTOP_PATH%\DeepSeek Harness 桌面版.exe"
 ## 回滚
 
 ```powershell
-$backupFile = "%USERPROFILE%\dsh-workspace\dsh-host-apiproxy-index.js.bak"
-$targetFile = "%DSH_DESKTOP_PATH%\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js"
+$backupFile = "$env:USERPROFILE\dsh-workspace\dsh-host-apiproxy-index.js.bak"
+$targetFile = "$env:DSH_DESKTOP_PATH\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js"
 
 Copy-Item $backupFile $targetFile
 Write-Host "已回滚到原版"

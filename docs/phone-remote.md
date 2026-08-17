@@ -123,7 +123,7 @@ Register-ScheduledTask -TaskName "DSH Phone Proxy" -Action $action -Trigger $tri
 ```powershell
 # 添加到注册表 Run 项
 # 请根据实际安装路径修改
-$dshExe = "D:\ToolsDeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
+$dshExe = "D:\Tools\DeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" `
   -Name "DeepSeekHarness" `
   -Value $dshExe

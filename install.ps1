@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 # Living Dream DSH - One-Click Installer
 # ============================================================
 # Double-click install.bat to run this script
@@ -173,8 +173,10 @@ if (-not (Test-Path $credDst)) {
 # package.json (merge instead of overwrite)
 $pkgSrc = Join-Path $repoDir "configs\package.json.template"
 $pkgDst = "$profileDir\package.json"
+$pkgCreated = $false
 if (-not (Test-Path $pkgDst)) {
     Copy-Item $pkgSrc $pkgDst
+    $pkgCreated = $true
     Write-OK "Created $pkgDst"
 } else {
     Write-Warn "Skip package.json (already exists, manual merge needed)"
@@ -198,26 +200,45 @@ Write-Host @"
     2. CNB API Key (Free models)
        Get: https://cnb.cool/
     
-    3. Zhipu API Key (Image recognition)
+    3. CNB Repository (Free models proxy, e.g. your-org/your-repo)
+       Must be a PRIVATE repo - the proxy creates/closes Issues in it
+    
+    4. Zhipu API Key (Image recognition)
        Get: https://open.bigmodel.cn/
 
 "@ -ForegroundColor Gray
 
-$dsKey = Read-Host "DeepSeek API Key (leave empty to skip)"
+# 掩码输入, 不回显明文; Read-Host -AsSecureString 在 PS5.1 下可用
+function Read-Secret($prompt) {
+    Write-Host $prompt -NoNewline -ForegroundColor Gray
+    $sec = Read-Host -AsSecureString
+    if (-not $sec) { return "" }
+    $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec)
+    try { return [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr) }
+    finally { [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr) }
+}
+
+$dsKey = Read-Secret "DeepSeek API Key (leave empty to skip): "
 if ($dsKey) {
-    $credContent = $credContent -replace "your-deepseek-api-key", $dsKey
+    $credContent = $credContent.Replace("your-deepseek-api-key", $dsKey)
     Write-OK "DeepSeek API Key set"
 }
 
-$cnbKey = Read-Host "CNB API Key (leave empty to skip)"
+$cnbKey = Read-Secret "CNB API Key (leave empty to skip): "
 if ($cnbKey) {
-    $credContent = $credContent -replace "your-cnb-api-key", $cnbKey
+    $credContent = $credContent.Replace("your-cnb-api-key", $cnbKey)
     Write-OK "CNB API Key set"
 }
 
-$zhipuKey = Read-Host "Zhipu API Key (leave empty to skip)"
+$cnbRepo = Read-Host "CNB Repository, e.g. your-org/your-repo (leave empty to skip)"
+if ($cnbRepo) {
+    $credContent = $credContent.Replace("your-org/your-repo", $cnbRepo)
+    Write-OK "CNB Repository set"
+}
+
+$zhipuKey = Read-Secret "Zhipu API Key (leave empty to skip): "
 if ($zhipuKey) {
-    $credContent = $credContent -replace "your-zhipu-api-key", $zhipuKey
+    $credContent = $credContent.Replace("your-zhipu-api-key", $zhipuKey)
     Write-OK "Zhipu API Key set"
 }
 
@@ -228,14 +249,31 @@ Set-Content $credFile $credContent -Encoding UTF8
 # ============================================================
 Write-Step "Installing plugin dependencies..."
 
-Push-Location $profileDir
-if (Test-Path "package.json") {
-    pnpm install --no-frozen-lockfile 2>&1 | Out-Null
-    Write-OK "Plugin dependencies installed"
+# 只有我们新建了 package.json 才跑 pnpm install:
+# 老用户已有的 package.json 没把 bundle 列入 dependencies, 跑 install 会清空 bundle
+if ($pkgCreated) {
+    # dsh-paste-input 是 file: 依赖 (未发布 npm), 先克隆源码到 ~/.dsh/plugins/
+    $pluginDir = "$dshHome\plugins\dsh-paste-input"
+    if (-not (Test-Path $pluginDir)) {
+        Write-Host "    Cloning dsh-paste-input plugin source..."
+        git clone --quiet https://github.com/l541402398/dsh-file-uploads.git $pluginDir
+        if ($LASTEXITCODE -ne 0) {
+            Write-Err "Failed to clone dsh-paste-input plugin - pnpm install will fail"
+        } else {
+            Write-OK "Plugin source ready"
+        }
+    }
+    Push-Location $profileDir
+    pnpm install --no-frozen-lockfile
+    if ($LASTEXITCODE -ne 0) {
+        Write-Err "pnpm install failed (exit code $LASTEXITCODE). DSH may fail to start - check the error above."
+    } else {
+        Write-OK "Plugin dependencies installed"
+    }
+    Pop-Location
 } else {
-    Write-Warn "package.json not found, skipped"
+    Write-Warn "package.json already existed, skipped pnpm install to avoid clearing your bundles"
 }
-Pop-Location
 
 # ============================================================
 # 7. Create Desktop Shortcut

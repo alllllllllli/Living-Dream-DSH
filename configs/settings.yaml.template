@@ -63,8 +63,10 @@ llm-pi-ai:
           maxTokens: 384000
 
 # 权限配置
+# 公开模板默认 standard（安全）。自用且想让 os-copilot 任意执行代码时,
+# 再改成 danger-full-access — 注意那等于给模型开了一个可执行任意命令的后门。
 permission:
-  defaultPreset: danger-full-access  # 或 standard, read-only
+  defaultPreset: standard  # 或 danger-full-access, read-only
 
 # Agent 预设
 agent-presets:

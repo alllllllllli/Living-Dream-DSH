@@ -17,15 +17,15 @@
 |------|------------------|-------------|
 | **模型** | DeepSeek V4 (免费) | Claude (付费) |
 | **免费额度** | ✅ CNB 代理免费、AMD Radeon 免费 | ❌ 需付费 |
-| **MCP 服务器** | ✅ 8+ 个（桌面操作/浏览器/OCR/记忆等） | ❌ 无 |
-| **桌面自动化** | ✅ 截图/点击/键鼠控制 | ❌ 无 |
-| **浏览器控制** | ✅ Playwright 自动化 | ❌ 无 |
+| **MCP 服务器** | ✅ 8+ 个开箱即用（桌面操作/浏览器/OCR/记忆等） | ✅ 原生支持（自行配置） |
+| **桌面自动化** | ✅ 截图/点击/键鼠控制 | ⚠️ computer use（Beta） |
+| **浏览器控制** | ✅ Playwright 自动化 | ⚠️ computer use（Beta） |
 | **手机远程访问** | ✅ Tailscale 方案 | ❌ 无 |
-| **图片识别** | ✅ GLM-4V-Flash 免费 | ❌ 需额外付费 |
+| **图片识别** | ✅ GLM-4V-Flash 免费 | ✅ 原生支持 |
 | **文件拖拽上传** | ✅ 自研插件 | ❌ 无 |
-| **长期记忆** | ✅ 语义检索 | ❌ 无 |
+| **长期记忆** | ✅ 语义检索 | ✅ CLAUDE.md/记忆文件 |
 | **文档转换** | ✅ MarkItDown | ❌ 无 |
-| **屏幕 OCR** | ✅ Windows OCR | ❌ 无 |
+| **屏幕 OCR** | ✅ Windows OCR | ⚠️ computer use |
 | **开源** | ✅ MIT 许可证 | ❌ 闭源 |
 | **价格** | 🆓 免费 | 💰 $20/月起 |
 
@@ -47,7 +47,7 @@
 | 📱 **手机远程访问** | Tailscale + 改写代理，手机浏览器操作 DSH |
 | 🖼️ **发图自动识别** | GLM-4V-Flash 免费视觉描述（仅桌面版） |
 | 📁 **文件拖拽上传** | 自研 dsh-file-uploads 插件 |
-| 🔐 **密钥安全存储** | DPAPI 加密 + secrets.ps1 解密 |
+| 🔐 **密钥存储** | 本地 `~/.dsh/.credentials.yaml`（安装时掩码输入）|
 | 🛡️ **防坑指南** | 踩过的坑和解决方案全记录 |
 
 ---
@@ -134,11 +134,13 @@ Copy-Item configs\cordis.patch.yml.template $env:USERPROFILE\.dsh\profiles\web\c
 Copy-Item configs\package.json.template $env:USERPROFILE\.dsh\profiles\web\package.json
 Copy-Item configs\settings.yaml.template $env:USERPROFILE\.dsh\settings.yaml
 Copy-Item configs\AGENTS.md $env:USERPROFILE\.dsh\AGENTS.md
+Copy-Item configs\.credentials.yaml.template $env:USERPROFILE\.dsh\.credentials.yaml
 
 # 4. 编辑配置文件（填入你的 API Key）
 notepad $env:USERPROFILE\.dsh\.credentials.yaml
 
-# 5. 安装插件
+# 5. 安装插件（dsh-paste-input 是 file: 依赖, 先克隆源码）
+git clone https://github.com/l541402398/dsh-file-uploads.git $env:USERPROFILE\.dsh\plugins\dsh-paste-input
 cd $env:USERPROFILE\.dsh\profiles\web
 pnpm install
 
@@ -172,6 +174,8 @@ pnpm install
 
 ### CNB 代理（推荐）
 
+> ⚠️ **硬前提**：代理需要一个你自己的 CNB **私有仓库**（在仓库里创建 Issue 让 NPC 回复，接口的 invisible 参数实际不生效，靠仓库私有兜底）。配置方法：在 `~/.dsh/.credentials.yaml` 写一行 `CNB_REPO: 你的组织/你的仓库`，或设置环境变量 `CNB_REPO`，或启动时 `--repo` 指定。一键安装脚本会在安装时询问。
+
 ```powershell
 # 启动 CNB 代理
 python scripts\cnb_proxy.py --port 8800
@@ -203,8 +207,12 @@ winget install tailscale.tailscale
 # 2. 登录同一账号
 tailscale up
 
-# 3. 配置 serve
-tailscale serve --https=443 --bg http://127.0.0.1:3080
+# 3. 启动改写代理（必须先过 8090，DSH Web UI 有跨域检查，直连 3080 会报 CORS）
+# 见 docs/phone-remote.md 里的 proxy.js 改写代理
+node proxy.js   # 监听 127.0.0.1:8090
+
+# 4. 配置 serve（指向 8090 代理，不是 3080）
+tailscale serve --https=443 --bg http://127.0.0.1:8090
 
 # 4. 手机浏览器访问
 # https://<你的设备名>.<你的域名>.ts.net
@@ -221,7 +229,7 @@ tailscale serve --https=443 --bg http://127.0.0.1:3080
 ```powershell
 # 1. 备份原文件
 $dshPath = (Get-Process "DeepSeek Harness" -ErrorAction SilentlyContinue).Path
-if (-not $dshPath) { $dshPath = "D:\ToolsDeepSeek-Harness-Desktop" }
+if (-not $dshPath) { $dshPath = "D:\Tools\DeepSeek-Harness-Desktop" }
 Copy-Item "$dshPath\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" `
           "$env:USERPROFILE\dsh-host-apiproxy-index.js.bak"
 
@@ -330,7 +338,7 @@ MY_API_KEY: sk-xxxxxxxxxxxx
 
 - [DeepSeek Harness 官方仓库](https://github.com/deepseek-ai/deepseek-harness)
 - [DSH Handbook](https://github.com/Electricitysheep/dsh-handbook)
-- [Playwright MCP](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo)
+- [Playwright MCP](https://github.com/microsoft/playwright-mcp)
 - [MarkItDown](https://github.com/microsoft/markitdown)
 
 ---

@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@anionex/dsh-vision-toolkit": "^0.1.8",
-    "@dsh-community/dsh-paste-input": "^0.1.0",
+    "@dsh-community/dsh-paste-input": "file:../plugins/dsh-paste-input",
     "@xiaweiliang060035/dsh-opencode-go-usage": "^0.3.0",
     "billion-context-dsh": "0.2.1",
     "dsh-calendar": "0.3.2",

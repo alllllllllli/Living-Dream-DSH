@@ -16,7 +16,7 @@ setlocal enabledelayedexpansion
 :: Option 1: Default installation path
 :: set "DSH_EXE=%ProgramFiles%\DeepSeek Harness\DeepSeek Harness 桌面版.exe"
 :: Option 2: Custom installation path (uncomment and modify)
-set "DSH_EXE=D:\ToolsDeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
+set "DSH_EXE=D:\Tools\DeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
 
 :: CNB Proxy script path
 set "CNB_PROXY=%~dp0cnb_proxy.py"

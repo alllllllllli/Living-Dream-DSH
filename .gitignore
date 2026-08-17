@@ -7,6 +7,8 @@ node_modules/
 *.key
 .env
 .env.local
+.credentials.yaml
+credentials.yaml
 
 # IDE
 .vscode/
@@ -32,3 +34,7 @@ logs/
 .uploads/
 *.jsonl
 *.jsonl.zst
+
+# Python bytecode
+__pycache__/
+*.pyc

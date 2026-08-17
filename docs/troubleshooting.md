@@ -78,8 +78,8 @@ dsh plugin --profile web list | Select-String "billion"
 **排查步骤**：
 
 ```powershell
-# 1. 检查 MCP 服务器是否能独立运行
-python %USERPROFILE%\dsh-workspace\memory-mcp\server.py
+# 1. 检查 MCP 服务器是否能独立运行（以本仓库自带的 OS-Copilot MCP 为例）
+python "$env:USERPROFILE\Living-Dream-DSH\scripts\os-copilot-mcp-server.py"
 
 # 2. 检查 Python 环境
 python --version
@@ -112,8 +112,8 @@ curl http://127.0.0.1:8800/v1/models
 # 3. 检查 API Key
 Get-Content "$env:USERPROFILE\.dsh\.credentials.yaml" | Select-String "CNB_API_KEY"
 
-# 4. 查看代理日志
-Get-Content "cnb_proxy.log" -Tail 50
+# 4. 前台跑代理看错误输出（代理不写日志文件，错误直接打印到控制台）
+python cnb_proxy.py --port 8800
 ```
 
 **解决方案**：
@@ -132,14 +132,14 @@ Get-Content "cnb_proxy.log" -Tail 50
 **解决**：
 
 ```powershell
-# 1. 杀掉旧代理进程
-Get-Process -Name "node" | Where-Object {$_.CommandLine -like "*proxy.js*"} | Stop-Process -Force
+# 1. 杀掉旧代理进程（PS5.1 的进程对象没有 CommandLine 属性，用 CIM 查）
+Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object {$_.CommandLine -like "*proxy.js*"} | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
 
 # 2. 重启计划任务
 Start-ScheduledTask -TaskName "DSH Phone Proxy"
 
-# 3. 检查代理日志
-Get-Content "D:\workspace\dsh-phone\proxy.log" -Tail 50
+# 3. 检查代理日志（写到 proxy.js 所在目录的 proxy.log）
+Get-Content "<proxy.js 所在目录>\proxy.log" -Tail 50
 ```
 
 ---
@@ -152,13 +152,14 @@ Get-Content "D:\workspace\dsh-phone\proxy.log" -Tail 50
 
 ```powershell
 # 1. 检查补丁是否生效
-Get-Content "%DSH_DESKTOP_PATH%\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" | Select-String "describeImagesLocally"
+Get-Content "$env:DSH_DESKTOP_PATH\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" | Select-String "describeImagesLocally"
 
 # 2. 检查视觉配置
-Get-Content "%USERPROFILE%\dsh-workspace\dsh_vision_config.json"
+Get-Content "$env:USERPROFILE\dsh-workspace\dsh_vision_config.json"
 
-# 3. 测试 API 连通性
-python %USERPROFILE%\dsh-workspace\test_vision_zhipu.py
+# 3. 测试 API 连通性（Key 从 .credentials.yaml 的 VISION_API_KEY 读）
+$visionKey = (Get-Content "$env:USERPROFILE\.dsh\.credentials.yaml" | Select-String "VISION_API_KEY").Line.Split(":")[1].Trim()
+curl.exe -s https://open.bigmodel.cn/api/paas/v4/chat/completions -H "Authorization: Bearer $visionKey" -H "Content-Type: application/json" -d '{\"model\":\"glm-4v-flash\",\"messages\":[{\"role\":\"user\",\"content\":\"hi\"}]}'
 ```
 
 **解决方案**：

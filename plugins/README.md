@@ -12,7 +12,8 @@
 | `@xiaweiliang060035/dsh-opencode-go-usage` | ^0.3.0 | OpenCode Go 用量悬浮球 |
 | `@anionex/dsh-vision-toolkit` | ^0.1.8 | 视觉工具包 |
 | `@dsh-community/dsh-paste-input` | ^0.1.0 | 文件拖拽上传（自研） |
-| `dsh-model-router` | github:tianji-qingtian/dsh-model-router#v0.8.1 | 模型路由（不在 npm） |
+
+> ⚠️ `dsh-model-router` 已废弃移除（弹窗干扰问题），请勿安装。
 
 ## 安装方法
 
@@ -30,7 +31,6 @@ dsh plugin --profile web add dsh-email@0.6.2
 dsh plugin --profile web add dsh-ffmpeg@0.1.0
 dsh plugin --profile web add @xiaweiliang060035/dsh-opencode-go-usage@0.3.0
 dsh plugin --profile web add @anionex/dsh-vision-toolkit@0.1.8
-dsh plugin --profile web add github:tianji-qingtian/dsh-model-router#v0.8.1
 ```
 
 ### 错误方式 ❌
@@ -50,10 +50,10 @@ pnpm add <包名>  # 这会清掉未列出的 bundle！
 git clone https://github.com/l541402398/dsh-file-uploads.git <YOUR_PLUGIN_DIR>\dsh-file-uploads
 
 # 2. 创建 Junction（可选，用于开发）
-New-Item -ItemType Junction -Path "D:/Tools/dsh-plugins/dsh-file-uploads" -Target "D:\workspace\dsh-file-uploads"
+New-Item -ItemType Junction -Path "<YOUR_PLUGIN_DIR>\dsh-file-uploads" -Target "<CLONE_DIR>\dsh-file-uploads"
 
 # 3. 在 package.json 中添加依赖
-# "@dsh-community/dsh-paste-input": "file:D:/Tools/dsh-plugins/dsh-paste-input"
+# "@dsh-community/dsh-paste-input": "file:<YOUR_PLUGIN_DIR>/dsh-paste-input"
 
 # 4. 安装
 cd $env:USERPROFILE\.dsh\profiles\web

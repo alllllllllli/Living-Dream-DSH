@@ -17,15 +17,15 @@ A battle-tested DSH configuration framework with 8+ MCP servers, custom plugins,
 |---------|------------------|-------------|
 | **Model** | DeepSeek V4 (Free) | Claude (Paid) |
 | **Free Tier** | ✅ CNB Proxy, AMD Radeon Cloud | ❌ Paid only |
-| **MCP Servers** | ✅ 8+ (Desktop/Browser/OCR/Memory) | ❌ None |
-| **Desktop Automation** | ✅ Screenshot/Click/Keyboard | ❌ None |
-| **Browser Control** | ✅ Playwright automation | ❌ None |
+| **MCP Servers** | ✅ 8+ out of the box (Desktop/Browser/OCR/Memory) | ✅ Native support (self-configured) |
+| **Desktop Automation** | ✅ Screenshot/Click/Keyboard | ⚠️ computer use (Beta) |
+| **Browser Control** | ✅ Playwright automation | ⚠️ computer use (Beta) |
 | **Mobile Access** | ✅ Tailscale solution | ❌ None |
-| **Image Recognition** | ✅ GLM-4V-Flash (Free) | ❌ Extra cost |
+| **Image Recognition** | ✅ GLM-4V-Flash (Free) | ✅ Native support |
 | **File Drag & Drop** | ✅ Custom plugin | ❌ None |
-| **Long-term Memory** | ✅ Semantic search | ❌ None |
+| **Long-term Memory** | ✅ Semantic search | ✅ CLAUDE.md/memory files |
 | **Document Conversion** | ✅ MarkItDown | ❌ None |
-| **Screen OCR** | ✅ Windows OCR | ❌ None |
+| **Screen OCR** | ✅ Windows OCR | ⚠️ computer use |
 | **Open Source** | ✅ MIT License | ❌ Closed source |
 | **Pricing** | 🆓 Free | 💰 $20/month+ |
 
@@ -134,11 +134,13 @@ Copy-Item configs\cordis.patch.yml.template $env:USERPROFILE\.dsh\profiles\web\c
 Copy-Item configs\package.json.template $env:USERPROFILE\.dsh\profiles\web\package.json
 Copy-Item configs\settings.yaml.template $env:USERPROFILE\.dsh\settings.yaml
 Copy-Item configs\AGENTS.md $env:USERPROFILE\.dsh\AGENTS.md
+Copy-Item configs\.credentials.yaml.template $env:USERPROFILE\.dsh\.credentials.yaml
 
 # 4. Edit config files (fill in your API Keys)
 notepad $env:USERPROFILE\.dsh\.credentials.yaml
 
-# 5. Install plugins
+# 5. Install plugins (dsh-paste-input is a file: dependency - clone source first)
+git clone https://github.com/l541402398/dsh-file-uploads.git $env:USERPROFILE\.dsh\plugins\dsh-paste-input
 cd $env:USERPROFILE\.dsh\profiles\web
 pnpm install
 
@@ -172,6 +174,8 @@ See [configs/README.md](configs/README.md)
 
 ### CNB Proxy (Recommended)
 
+> ⚠️ **Hard prerequisite**: the proxy needs your own CNB **private repo** (it creates Issues there for the NPC to reply; the API's `invisible` flag is silently ignored, so repo privacy is the only protection). Configure it by adding `CNB_REPO: your-org/your-repo` to `~/.dsh/.credentials.yaml`, or set the `CNB_REPO` environment variable, or pass `--repo` when starting. The one-click installer asks for it during installation.
+
 ```powershell
 # Start CNB Proxy
 python scripts\cnb_proxy.py --port 8800
@@ -203,10 +207,14 @@ winget install tailscale.tailscale
 # 2. Login to same account
 tailscale up
 
-# 3. Configure serve
-tailscale serve --https=443 --bg http://127.0.0.1:3080
+# 3. Start the rewrite proxy (must go through 8090 - DSH Web UI has CORS
+#    checks, connecting directly to 3080 fails). See docs/phone-remote.md
+node proxy.js   # listens on 127.0.0.1:8090
 
-# 4. Access from phone browser
+# 4. Configure serve (point to the 8090 proxy, NOT 3080)
+tailscale serve --https=443 --bg http://127.0.0.1:8090
+
+# 5. Access from phone browser
 # https://<your-device-name>.<your-domain>.ts.net
 ```
 
@@ -221,7 +229,7 @@ Make DSH Desktop auto-call GLM-4V-Flash for image recognition:
 ```powershell
 # 1. Backup original file
 $dshPath = (Get-Process "DeepSeek Harness" -ErrorAction SilentlyContinue).Path
-if (-not $dshPath) { $dshPath = "D:\ToolsDeepSeek-Harness-Desktop" }
+if (-not $dshPath) { $dshPath = "D:\Tools\DeepSeek-Harness-Desktop" }
 Copy-Item "$dshPath\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" `
           "$env:USERPROFILE\dsh-host-apiproxy-index.js.bak"
 
@@ -330,7 +338,7 @@ Reference [dsh-file-uploads](https://github.com/l541402398/dsh-file-uploads) plu
 
 - [DeepSeek Harness Official](https://github.com/deepseek-ai/deepseek-harness)
 - [DSH Handbook](https://github.com/Electricitysheep/dsh-handbook)
-- [Playwright MCP](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo)
+- [Playwright MCP](https://github.com/microsoft/playwright-mcp)
 - [MarkItDown](https://github.com/microsoft/markitdown)
 
 ---

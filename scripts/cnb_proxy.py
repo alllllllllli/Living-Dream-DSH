@@ -8,8 +8,9 @@ CNB CodeBuddy NPC -> OpenAI-compatible proxy
 用法:
   python cnb_proxy.py [port]     # 默认 8800
 配置:
-  CNB_API_KEY  环境变量或 --token 参数(CNB 访问令牌)
-  仓库路径     通过 --repo 指定, 默认 CNB_REPO 环境变量或 your-org/your-repo
+  CNB_API_KEY  环境变量、--token 参数或 ~/.dsh/.credentials.yaml
+  仓库路径     --repo 参数 > CNB_REPO 环境变量 > ~/.dsh/.credentials.yaml(CNB_REPO 行)
+              仓库必须是私有仓库(接口的 invisible 参数实际不生效, 靠私有兜底)
 """
 import argparse
 import json
@@ -26,9 +27,11 @@ MODEL_MAP = {
     "deepseek-v4-flash": "@npc/CodeBuddy",
     "deepseek-v4-pro": "@npc/CodeBuddy(deepseek-v4-pro)",
 }
-DEFAULT_REPO = os.environ.get("CNB_REPO", "your-org/your-repo")
+PLACEHOLDER_REPO = "your-org/your-repo"
 POLL_INTERVAL = 5
 MAX_WAIT = 180  # 秒
+STABLE_POLLS = 2  # 连续 N 次轮询评论无变化, 视为 NPC 写完
+MENTION_RE = re.compile(r"^@[\w./\-()（）]+(\([^)]*\))?[\s:：]*")
 
 ARGS = None
 
@@ -73,6 +76,32 @@ def build_issue_body(model, messages):
     return "\n".join(lines)
 
 
+def fetch_all_comments(repo, number, token):
+    """拉取 Issue 全部评论 (分页, 每页 100 条)."""
+    comments, page = [], 1
+    while page <= 10:  # ponytail: 上限 10 页, 正常对话远达不到
+        st, batch = http_call(
+            "GET",
+            f"{CNB_HOST}/{repo}/-/issues/{number}/comments?page={page}&per_page=100",
+            token=token,
+        )
+        if not isinstance(batch, list) or not batch:
+            break
+        comments.extend(batch)
+        if len(batch) < 100:
+            break
+        page += 1
+    return comments
+
+
+def close_issue(repo, number, token):
+    """回复拿到后尽力关闭 Issue, 避免仓库堆积垃圾; 失败静默."""
+    try:
+        http_call("PUT", f"{CNB_HOST}/{repo}/-/issues/{number}", {"state": "closed"}, token)
+    except Exception:
+        pass
+
+
 def call_npc(model, messages, token, repo):
     title = "dsh-" + str(int(time.time()))
     st, r = http_call(
@@ -88,25 +117,31 @@ def call_npc(model, messages, token, repo):
         return None, "Issue 创建响应缺少 number"
 
     deadline = time.time() + MAX_WAIT
-    last_len = 0
+    seen_sig = None      # 最后一条 NPC 评论的 (id, 正文长度) 签名
+    stable = 0
+    reply_body = ""
     while time.time() < deadline:
         time.sleep(POLL_INTERVAL)
-        st, comments = http_call(
-            "GET", f"{CNB_HOST}/{repo}/-/issues/{number}/comments", token=token
-        )
-        if not isinstance(comments, list):
-            continue
-        # 找 is_npc 的新回复 (去重, 只看新增的)
+        comments = fetch_all_comments(repo, number, token)
         npc_replies = [c for c in comments if c.get("author", {}).get("is_npc")]
-        if len(npc_replies) > last_len:
-            last_len = len(npc_replies)
+        if npc_replies:
             latest = npc_replies[-1]
-            body = latest.get("body", "") or ""
-            # 去掉开头的 @提及
-            body = re.sub(r"^@[\w.\-()（）]+\([^)]*\)\s*", "", body).strip()
+            body = MENTION_RE.sub("", latest.get("body", "") or "").strip()
+            sig = (latest.get("id"), len(body))
             if body:
-                return body, None
-        # 检查 NPC 是否明确结束 (statuses 或 issue 状态)
+                reply_body = body
+            # ponytail: CNB 没有"回复完成"标志, 用稳定性启发式 —
+            # 评论 id+长度连续 STABLE_POLLS 次(10s)不变视为写完.
+            # 边写边改超过 10s 停顿的极长回复会被提前截断, 可调大 STABLE_POLLS.
+            stable = stable + 1 if sig == seen_sig and sig is not None else 0
+            seen_sig = sig
+            if stable >= STABLE_POLLS and reply_body:
+                close_issue(repo, number, token)
+                return reply_body, None
+    if reply_body:
+        close_issue(repo, number, token)
+        return reply_body, None
+    close_issue(repo, number, token)
     return None, f"等待 NPC 回复超时({MAX_WAIT}s)"
 
 
@@ -171,10 +206,17 @@ class Handler(BaseHTTPRequestHandler):
 
         created = int(time.time())
         if stream:
-            delta = {"role": "assistant", "content": reply}
+            # 上游是整段回复, 切成小块真流式发送 (每块 16 字符, 20ms 间隔)
+            pieces = [reply[i:i + 16] for i in range(0, len(reply), 16)] or [""]
+            for i, piece in enumerate(pieces):
+                delta = {"role": "assistant"} if i == 0 else {}
+                delta["content"] = piece
+                self._send_sse([
+                    {"id": "chatcmpl-cnb", "object": "chat.completion.chunk", "created": created, "model": model,
+                     "choices": [{"index": 0, "delta": delta, "finish_reason": None}]},
+                ])
+                time.sleep(0.02)
             self._send_sse([
-                {"id": "chatcmpl-cnb", "object": "chat.completion.chunk", "created": created, "model": model,
-                 "choices": [{"index": 0, "delta": delta, "finish_reason": None}]},
                 {"id": "chatcmpl-cnb", "object": "chat.completion.chunk", "created": created, "model": model,
                  "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}]},
             ])
@@ -193,30 +235,46 @@ class Handler(BaseHTTPRequestHandler):
             })
 
 
-def load_cnb_token():
-    """优先从 ~/.dsh/.credentials.yaml 读取 CNB_API_KEY, 其次环境变量."""
+def read_cred(key):
+    """从 ~/.dsh/.credentials.yaml 读取指定 Key 行的值, 缺省返回空串."""
     try:
-        import os
-        home = os.path.expanduser("~")
-        path = os.path.join(home, ".dsh", ".credentials.yaml")
+        path = os.path.join(os.path.expanduser("~"), ".dsh", ".credentials.yaml")
         if os.path.exists(path):
             with open(path, "r", encoding="utf-8") as f:
                 for line in f:
                     line = line.strip()
-                    if line.startswith("CNB_API_KEY:"):
+                    if line.startswith(key + ":"):
                         return line.split(":", 1)[1].strip().strip('"').strip("'")
     except Exception:
         pass
-    return os.environ.get("CNB_API_KEY", "")
+    return ""
+
+
+def load_cnb_token():
+    """优先从 ~/.dsh/.credentials.yaml 读取 CNB_API_KEY, 其次环境变量."""
+    return read_cred("CNB_API_KEY") or os.environ.get("CNB_API_KEY", "")
+
+
+def load_cnb_repo():
+    """优先从 ~/.dsh/.credentials.yaml 读取 CNB_REPO, 其次环境变量."""
+    return read_cred("CNB_REPO") or os.environ.get("CNB_REPO", "")
 
 
 def main():
     global ARGS
     ap = argparse.ArgumentParser(description="CNB NPC OpenAI proxy")
     ap.add_argument("--port", type=int, default=8800)
-    ap.add_argument("--repo", default=DEFAULT_REPO)
+    ap.add_argument("--repo", default="")
     ap.add_argument("--token", default="")
     ARGS = ap.parse_args()
+    ARGS.repo = ARGS.repo or load_cnb_repo()
+    if not ARGS.repo or ARGS.repo == PLACEHOLDER_REPO:
+        print(
+            "[cnb-proxy] 错误: 未配置 CNB 仓库. 请在 ~/.dsh/.credentials.yaml 里写一行 CNB_REPO: your-org/your-repo, "
+            "或设置环境变量 CNB_REPO, 或用 --repo 指定. 仓库必须是私有仓库!",
+            file=sys.stderr,
+        )
+        sys.exit(1)
     if not (ARGS.token or load_cnb_token()):
         print("[cnb-proxy] 警告: 未找到 CNB_API_KEY(.credentials.yaml 或环境变量), 请求将失败", file=sys.stderr)
     srv = ThreadingHTTPServer(("127.0.0.1", ARGS.port), Handler)

@@ -4,9 +4,11 @@ ponytail: Reuses OS-Copilot's SubprocessEnv for code execution, nothing else.
 No LLM planning (DSH already has that), no heavy dependencies.
 """
 
+import shlex
 import subprocess
 import sys
 import os
+import tempfile
 
 from mcp.server.fastmcp import FastMCP
 
@@ -51,7 +53,14 @@ def execute_python(code: str, timeout: int = 30) -> str:
     Returns:
         Combined stdout/stderr and exit code
     """
-    r = _run_code([sys.executable, "-u", "-c", code], "", timeout)
+    # 写临时文件执行, 绕开 Windows -c 约 32K 的命令行长度上限
+    with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False, encoding="utf-8") as f:
+        f.write(code)
+        tmp = f.name
+    try:
+        r = _run_code([sys.executable, "-u", tmp], "", timeout)
+    finally:
+        os.unlink(tmp)
     parts = []
     if r["stdout"]:
         parts.append(f"stdout:\n{r['stdout']}")
@@ -64,6 +73,9 @@ def execute_python(code: str, timeout: int = 30) -> str:
 @mcp.tool()
 def execute_command(command: str, timeout: int = 30) -> str:
     """Execute a shell command and return output.
+    
+    Windows 下经 cmd /c 执行, 复杂引号嵌套命令行为由 cmd 决定;
+    需要精确控制时优先用 execute_python_file.
     
     Args:
         command: Shell command to run
@@ -97,7 +109,8 @@ def execute_python_file(file_path: str, args: str = "", timeout: int = 60) -> st
     """
     cmd = [sys.executable, "-u", file_path]
     if args:
-        cmd.extend(args.split())
+        # shlex.split 正确处理带空格的引号参数, 替代裸 .split()
+        cmd.extend(shlex.split(args, posix=sys.platform != "win32"))
     r = _run_code(cmd, "", timeout)
     parts = []
     if r["stdout"]:
