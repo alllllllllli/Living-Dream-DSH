@@ -57,14 +57,37 @@ dsh-ultra-config/
 
 ## 🚀 快速开始
 
-### 1. 环境要求
+### 方式一：一键安装（推荐）
+
+```powershell
+# 1. 克隆仓库
+git clone https://github.com/alllllllllli/dsh-ultra-config.git
+cd dsh-ultra-config
+
+# 2. 双击运行 install.bat
+#    或在 PowerShell 中执行：.\install.ps1
+```
+
+安装程序会自动：
+- ✅ 检查环境（Node.js、Python、pnpm）
+- ✅ 复制配置文件到 `~/.dsh`
+- ✅ 交互式填入 API Key
+- ✅ 安装插件依赖
+- ✅ 创建桌面快捷方式
+
+### 方式二：手动安装
+
+<details>
+<summary>点击展开手动安装步骤</summary>
+
+#### 环境要求
 
 - Windows 10/11
 - Node.js v22+ (推荐 v24 LTS)
 - Python 3.13+ (用于 MCP 服务器)
 - DeepSeek Harness 桌面版 v1.1.0+
 
-### 2. 安装步骤
+#### 安装步骤
 
 ```powershell
 # 克隆仓库
@@ -86,6 +109,8 @@ pnpm install
 
 # 重启 DSH 桌面版
 ```
+
+</details>
 
 ### 3. 配置 MCP 服务器
 
