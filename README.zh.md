@@ -126,7 +126,27 @@ Living-Dream-DSH/
 > 首次使用前请设置：`$env:DSH_DESKTOP_PATH = "D:\Tools\DeepSeek-Harness-Desktop"`（改为你的实际路径），
 > 或添加到系统环境变量永久生效。
 
-### 方式一：一键安装（推荐）
+### 方式一：离线安装 ⭐ 推荐
+
+> **安装过程无需联网。** Node.js、Python、Git 已打包在内。
+
+1. 从 Releases 下载 [`Living-Dream-DSH-Offline.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v1.1.1/Living-Dream-DSH-Offline.exe)（约 120 MB）
+2. 双击运行 — 自动解压依赖 + 仓库 + 安装脚本到临时目录
+3. PowerShell 安装程序自动启动：
+   - 从本地文件安装 Node.js、Python、Git（不下载）
+   - 复制配置文件到 `~/.dsh`
+   - 交互式填入 API Key
+   - 安装插件依赖
+   - 创建桌面快捷方式
+
+```
+Living-Dream-DSH-Offline.exe
+├── deps/                      # Node.js 22.16.0 MSI, Python 3.13.0, Git 2.47.0
+├── Living-Dream-DSH/          # 完整仓库快照
+└── install-offline.ps1        # 离线安装脚本
+```
+
+### 方式二：在线一键安装
 
 ```powershell
 # 1. 克隆仓库
@@ -144,7 +164,7 @@ cd Living-Dream-DSH
 - ✅ 安装插件依赖
 - ✅ 创建桌面快捷方式
 
-### 方式二：手动安装
+### 方式三：手动安装
 
 <details>
 <summary>点击展开手动安装步骤</summary>
@@ -181,7 +201,7 @@ pnpm install
 
 </details>
 
-### 3. 配置 MCP 服务器
+### 4. 配置 MCP 服务器
 
 详见 [configs/README.md](configs/README.md)
 

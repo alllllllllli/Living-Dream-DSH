@@ -126,7 +126,27 @@ Living-Dream-DSH/
 > `$env:DSH_DESKTOP_PATH = "D:\Tools\DeepSeek-Harness-Desktop"` (change to your actual path),
 > or add it as a system environment variable for persistence.
 
-### Option 1: One-Click Install (Recommended)
+### Option 1: Offline Install ⭐ Recommended
+
+> **No internet required during install.** Node.js, Python, Git are bundled in the package.
+
+1. Download [`Living-Dream-DSH-Offline.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v1.1.1/Living-Dream-DSH-Offline.exe) (~120 MB) from Releases
+2. Double-click to run — it extracts deps + repo + installer to a temp directory
+3. The PowerShell installer launches automatically:
+   - Installs Node.js, Python, Git from local files (no download)
+   - Copies configs to `~/.dsh`
+   - Prompts for API Keys
+   - Installs plugin dependencies
+   - Creates desktop shortcut
+
+```
+Living-Dream-DSH-Offline.exe
+├── deps/                      # Node.js 22.16.0 MSI, Python 3.13.0, Git 2.47.0
+├── Living-Dream-DSH/          # Full repo snapshot
+└── install-offline.ps1        # Offline installer script
+```
+
+### Option 2: Online One-Click Install
 
 ```powershell
 # 1. Clone repository
@@ -144,7 +164,7 @@ The installer will automatically:
 - ✅ Install plugin dependencies
 - ✅ Create desktop shortcut
 
-### Option 2: Manual Install
+### Option 3: Manual Install
 
 <details>
 <summary>Click to expand manual installation steps</summary>
@@ -181,7 +201,7 @@ pnpm install
 
 </details>
 
-### 3. Configure MCP Servers
+### 4. Configure MCP Servers
 
 See [configs/README.md](configs/README.md)
 
