@@ -42,9 +42,11 @@ tailscale up
 
 ### 3. 配置 Serve
 
+> ⚠️ 必须先启动改写代理（见下方「改写代理」章节），直连 3080 会因 CORS 失败。
+
 ```powershell
-# 配置 HTTPS 服务（后台运行）
-tailscale serve --https=443 --bg http://127.0.0.1:3080
+# 配置 HTTPS 服务（指向 8090 代理，不是 3080）
+tailscale serve --https=443 --bg http://127.0.0.1:8090
 
 # 查看当前配置
 tailscale serve status
@@ -97,8 +99,10 @@ Register-ScheduledTask -TaskName "DSH Phone Proxy" -Action $action -Trigger $tri
 
 ```powershell
 # 添加到注册表 Run 项
-# 请根据实际安装路径修改
-$dshExe = "D:\Tools\DeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
+# 请根据实际安装路径修改（或设置 DSH_DESKTOP_PATH 环境变量）
+$dshDir = if ($env:DSH_DESKTOP_PATH) { $env:DSH_DESKTOP_PATH } else { "D:\Tools\DeepSeekHarness-Desktop" }
+$dshExe = Get-ChildItem "$dshDir\*.exe" -ErrorAction SilentlyContinue | Select-Object -First 1 | ForEach-Object { $_.FullName }
+if (-not $dshExe) { Write-Error "DSH Desktop not found in $dshDir"; exit 1 }
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" `
   -Name "DeepSeekHarness" `
   -Value $dshExe
