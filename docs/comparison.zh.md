@@ -8,7 +8,7 @@
 |---|---|---|---|---|---|---|---|
 | **定位** | DSH 开源配置整合包：一键安装 + 8+ MCP + 插件 + 免费模型渠道 | Anthropic 官方 CLI/桌面 Agent | GitHub 官方 IDE 编程助手 | 商业化 AI IDE | 开源网页版 Agent（OpenDevin 后继） | 开源 git 原生 CLI Agent | 开源 VS Code Agent 插件 |
 | **价格** | **¥0**（自带免费渠道，也可自备 Key） | Free / Pro $20/月 / Max 5x $100 / Max 20x $200 | Pro $10/月起，Business $19/席位 | Pro $20/月，Ultra $200/月 | 免费（BYOK，企业版另收费） | 免费（BYOK） | 免费（BYOK，企业版另收费） |
-| **模型灵活性** | ✅ 多渠道 BYOK：DeepSeek、CNB（免费）、AMD Radeon（免费）、OpenCode Go、智谱视觉 | ❌ 仅 Claude 系列 | ⚠️ 绑定 GitHub 生态，多模型可选 | ⚠️ 多模型可选 | ✅ 任意 OpenAI 兼容模型 | ✅ 任意模型 | ✅ 任意模型 |
+| **模型灵活性** | ✅ 多渠道 BYOK：DeepSeek、AMD Radeon（免费）、OpenCode Go、智谱视觉 | ❌ 仅 Claude 系列 | ⚠️ 绑定 GitHub 生态，多模型可选 | ⚠️ 多模型可选 | ✅ 任意 OpenAI 兼容模型 | ✅ 任意模型 | ✅ 任意模型 |
 | **开箱即用工具（MCP）** | ✅ **8+ 个开箱即用**：桌面操作/浏览器/OCR/记忆/文档转换/代码执行/视觉/历史会话 | ⚠️ 原生支持 MCP，但需自行逐个配置 | ⚠️ MCP 支持有限 | ⚠️ 支持 MCP，需自行配置 | ⚠️ 支持 MCP，需自行配置 | ⚠️ 支持 MCP，需自行配置 | ⚠️ 支持 MCP，需自行配置 |
 | **桌面自动化**（截图/点击/键鼠） | ✅ computer-use MCP | ⚠️ computer use（Beta） | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **浏览器控制** | ✅ Playwright MCP（真实登录态） | ⚠️ computer use（Beta） | ❌ | ❌ | ⚠️ 实验性 | ❌ | ⚠️ Browser Use（实验性） |
@@ -21,11 +21,11 @@
 | **开源 / 许可证** | ✅ MIT（含自研插件源码） | ❌ 闭源 | ❌ 闭源 | ❌ 闭源 | ✅ MIT | ✅ Apache-2.0 | ✅ Apache-2.0 |
 | **数据隐私 / 自部署** | ✅ 本地优先，Key 自己持有 | ❌ 依赖 Anthropic 云端 | ❌ 依赖微软云端 | ❌ 依赖云端 | ✅ 可本地部署 | ✅ 纯本地 | ✅ 纯本地 |
 | **安装成本** | ✅ 一键安装（环境检测/配置/密钥/快捷方式全自动） | ✅ 简单 | ✅ 简单 | ✅ 简单 | ⚠️ 需 Docker/环境 | ✅ 简单 | ✅ 简单 |
-| **免费额度** | ✅ CNB 500 积分/月 + AMD Radeon 免费 + DeepSeek 注册赠金 + 智谱免费视觉 | ⚠️ Free 档有限用量 | ⚠️ 试用额度 | ⚠️ 试用额度 | ❌ 无（纯 BYOK） | ❌ 无（纯 BYOK） | ❌ 无（纯 BYOK） |
+| **免费额度** | ✅ AMD Radeon 免费 + DeepSeek 注册赠金 + 智谱免费视觉 | ⚠️ Free 档有限用量 | ⚠️ 试用额度 | ⚠️ 试用额度 | ❌ 无（纯 BYOK） | ❌ 无（纯 BYOK） | ❌ 无（纯 BYOK） |
 
 ## 为什么选择 Living-Dream-DSH？
 
-1. **成本：唯一「开箱即用且全免费」的方案。** Claude Code 重度使用每月 100~200 美元，Copilot/Cursor 也要 10~20 美元起。本仓库整合了多个免费模型渠道（CNB、AMD Radeon Cloud、DeepSeek 官方赠金、智谱 GLM-4V-Flash 免费视觉），把「能用」的门槛降到 0，同时保留 BYOK 能力——想用更好的模型随时切。
+1. **成本：唯一「开箱即用且全免费」的方案。** Claude Code 重度使用每月 100~200 美元，Copilot/Cursor 也要 10~20 美元起。本仓库整合了多个免费模型渠道（AMD Radeon Cloud、DeepSeek 官方赠金、智谱 GLM-4V-Flash 免费视觉），把「能用」的门槛降到 0，同时保留 BYOK 能力——想用更好的模型随时切。
 
 2. **能力：8+ MCP 开箱即用，别人要配半天。** 桌面自动化、浏览器控制、屏幕 OCR、文档转换、语义记忆、代码执行——其他框架要么不支持，要么支持但需要你逐个安装配置。本仓库一键装完即是全家桶，且每一项都是实战验证过的（踩坑记录都在防坑指南里）。
 

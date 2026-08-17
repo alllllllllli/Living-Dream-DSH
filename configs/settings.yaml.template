@@ -10,7 +10,7 @@ ui-onboarding:
 
 # 默认模型配置
 agent-default-model:
-  provider: opencode-go  # 或 cnb, amd-radeon 等
+  provider: opencode-go  # 或 amd-radeon 等
   model: "mimo-v2.5-pro"  # 或 deepseek-v4-pro, deepseek-v4-flash 等
 
 # 模型提供商配置
@@ -46,21 +46,6 @@ llm-pi-ai:
           name: MiMo V2.5 Pro
           contextWindow: 1048576
           maxTokens: 128000
-
-    # CNB 代理（免费，需先启动 cnb_proxy.py）
-    cnb:
-      api: openai-completions
-      apiKeyEnv: CNB_API_KEY
-      baseURL: http://127.0.0.1:8800/v1
-      models:
-        - id: deepseek-v4-flash
-          name: DeepSeek V4 Flash
-          contextWindow: 1000000
-          maxTokens: 384000
-        - id: deepseek-v4-pro
-          name: DeepSeek V4 Pro
-          contextWindow: 1000000
-          maxTokens: 384000
 
 # 权限配置
 # 公开模板默认 standard（安全）。自用且想让 os-copilot 任意执行代码时,

@@ -1,4 +1,4 @@
-﻿# ============================================================
+# ============================================================
 # Living Dream DSH - One-Click Installer
 # ============================================================
 # Double-click install.bat to run this script
@@ -197,13 +197,7 @@ Write-Host @"
     1. DeepSeek API Key (Required)
        Get: https://platform.deepseek.com/
     
-    2. CNB API Key (Free models)
-       Get: https://cnb.cool/
-    
-    3. CNB Repository (Free models proxy, e.g. your-org/your-repo)
-       Must be a PRIVATE repo - the proxy creates/closes Issues in it
-    
-    4. Zhipu API Key (Image recognition)
+    2. Zhipu API Key (Image recognition)
        Get: https://open.bigmodel.cn/
 
 "@ -ForegroundColor Gray
@@ -222,18 +216,6 @@ $dsKey = Read-Secret "DeepSeek API Key (leave empty to skip): "
 if ($dsKey) {
     $credContent = $credContent.Replace("your-deepseek-api-key", $dsKey)
     Write-OK "DeepSeek API Key set"
-}
-
-$cnbKey = Read-Secret "CNB API Key (leave empty to skip): "
-if ($cnbKey) {
-    $credContent = $credContent.Replace("your-cnb-api-key", $cnbKey)
-    Write-OK "CNB API Key set"
-}
-
-$cnbRepo = Read-Host "CNB Repository, e.g. your-org/your-repo (leave empty to skip)"
-if ($cnbRepo) {
-    $credContent = $credContent.Replace("your-org/your-repo", $cnbRepo)
-    Write-OK "CNB Repository set"
 }
 
 $zhipuKey = Read-Secret "Zhipu API Key (leave empty to skip): "

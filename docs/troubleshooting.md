@@ -96,33 +96,6 @@ Get-Content "$env:USERPROFILE\.dsh\profiles\web\cordis.patch.yml" | Select-Strin
 
 ---
 
-### 5. CNB 代理无法连接
-
-**症状**：DSH 无法调用 CNB 模型
-
-**排查步骤**：
-
-```powershell
-# 1. 检查代理是否运行
-netstat -an | findstr ":8800"
-
-# 2. 测试代理
-curl http://127.0.0.1:8800/v1/models
-
-# 3. 检查 API Key
-Get-Content "$env:USERPROFILE\.dsh\.credentials.yaml" | Select-String "CNB_API_KEY"
-
-# 4. 前台跑代理看错误输出（代理不写日志文件，错误直接打印到控制台）
-python cnb_proxy.py --port 8800
-```
-
-**解决方案**：
-- 重启代理：`python cnb_proxy.py --port 8800`
-- 检查 CNB 账号是否有效
-- 检查网络连接
-
----
-
 ### 6. 手机远程访问失败
 
 **症状**：手机浏览器报 ERR_CONNECTION_ABORTED

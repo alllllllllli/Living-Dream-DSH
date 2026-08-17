@@ -21,7 +21,7 @@ A battle-tested DSH configuration framework with 8+ MCP servers, custom plugins,
 |---|---|---|---|---|---|---|---|
 | **Positioning** | DSH open-source config pack: one-click install + 8+ MCP + plugins + free model channels | Anthropic official CLI/desktop agent | GitHub official IDE assistant | Commercial AI IDE | Open-source web agent (OpenDevin successor) | Open-source git-native CLI agent | Open-source VS Code agent plugin |
 | **Price** | **$0** (built-in free channels, or BYOK) | Free / Pro $20/mo / Max 5x $100 / Max 20x $200 | Pro $10/mo+, Business $19/seat | Pro $20/mo, Ultra $200/mo | Free (BYOK, enterprise extra) | Free (BYOK) | Free (BYOK, enterprise extra) |
-| **Model flexibility** | ✅ Multi-channel BYOK: DeepSeek, CNB (free), AMD Radeon (free), OpenCode Go, Zhipu Vision | ❌ Claude only | ⚠️ GitHub ecosystem bound | ⚠️ Multiple models | ✅ Any OpenAI-compatible | ✅ Any model | ✅ Any model |
+| **Model flexibility** | ✅ Multi-channel BYOK: DeepSeek, AMD Radeon (free), OpenCode Go, Zhipu Vision | ❌ Claude only | ⚠️ GitHub ecosystem bound | ⚠️ Multiple models | ✅ Any OpenAI-compatible | ✅ Any model | ✅ Any model |
 | **MCP servers (out-of-box)** | ✅ **8+ ready to use**: desktop/browser/OCR/memory/doc conversion/code exec/vision/history | ⚠️ Native MCP, self-configure each | ⚠️ Limited MCP | ⚠️ MCP, self-configure | ⚠️ MCP, self-configure | ⚠️ MCP, self-configure | ⚠️ MCP, self-configure |
 | **Desktop automation** (screenshot/click/keyboard) | ✅ computer-use MCP | ⚠️ computer use (Beta) | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **Browser control** | ✅ Playwright MCP (real login state) | ⚠️ computer use (Beta) | ❌ | ❌ | ⚠️ Experimental | ❌ | ⚠️ Browser Use (experimental) |
@@ -34,11 +34,11 @@ A battle-tested DSH configuration framework with 8+ MCP servers, custom plugins,
 | **Open source / License** | ✅ MIT (incl. custom plugins) | ❌ Closed | ❌ Closed | ❌ Closed | ✅ MIT | ✅ Apache-2.0 | ✅ Apache-2.0 |
 | **Data privacy / self-host** | ✅ Local-first, your keys | ❌ Anthropic cloud | ❌ Microsoft cloud | ❌ Cloud | ✅ Self-hostable | ✅ Fully local | ✅ Fully local |
 | **Install effort** | ✅ One-click (env detect/config/keys/shortcut auto) | ✅ Easy | ✅ Easy | ✅ Easy | ⚠️ Docker/env needed | ✅ Easy | ✅ Easy |
-| **Free quota** | ✅ CNB 500 pts/mo + AMD Radeon free + DeepSeek signup bonus + Zhipu free vision | ⚠️ Free tier limited | ⚠️ Trial quota | ⚠️ Trial quota | ❌ BYOK only | ❌ BYOK only | ❌ BYOK only |
+| **Free quota** | ✅ AMD Radeon free + DeepSeek signup bonus + Zhipu free vision | ⚠️ Free tier limited | ⚠️ Trial quota | ⚠️ Trial quota | ❌ BYOK only | ❌ BYOK only | ❌ BYOK only |
 
 ### Why Choose Living-Dream-DSH?
 
-1. **Zero cost**: The only "out-of-box and fully free" option. Claude Code costs $100–200/mo for heavy use; Copilot/Cursor start at $10–20/mo. This repo integrates multiple free model channels (CNB, AMD Radeon Cloud, DeepSeek signup bonus, Zhipu GLM-4V-Flash free vision), lowering the barrier to $0 while keeping BYOK for upgrades.
+1. **Zero cost**: The only "out-of-box and fully free" option. Claude Code costs $100–200/mo for heavy use; Copilot/Cursor start at $10–20/mo. This repo integrates multiple free model channels (AMD Radeon Cloud, DeepSeek signup bonus, Zhipu GLM-4V-Flash free vision), lowering the barrier to $0 while keeping BYOK for upgrades.
 
 2. **Full-stack capability**: 8+ MCP servers out of the box — desktop automation, browser control, screen OCR, doc conversion, semantic memory, code execution. Others either don't support these or require manual per-server setup. One install = full toolkit, every component battle-tested (pitfalls documented in the troubleshooting guide).
 
@@ -71,7 +71,7 @@ A battle-tested DSH configuration framework with 8+ MCP servers, custom plugins,
 | Feature | Description |
 |---------|-------------|
 | 🔌 **8+ MCP Servers** | History/Vision/Desktop/Code Execution/Browser/Memory/Document/OCR |
-| 🤖 **Free Model Access** | CNB Proxy (DeepSeek V4 Free) + AMD Radeon Cloud |
+| 🤖 **Free Model Access** | AMD Radeon Cloud + DeepSeek Signup Bonus + Zhipu Free Vision |
 | 📱 **Mobile Remote Access** | Tailscale + Proxy, control DSH from phone |
 | 🖼️ **Auto Image Recognition** | GLM-4V-Flash free vision (Desktop only) |
 | 📁 **File Drag & Drop** | Custom dsh-file-uploads plugin |
@@ -95,7 +95,7 @@ Living-Dream-DSH/
 │   ├── AGENTS.md                   # AI instructions
 │   └── .credentials.yaml.template  # API Key template
 ├── scripts/
-│   ├── cnb_proxy.py                # CNB Proxy (OpenAI compatible)
+│   ├── start-dsh.bat.template   # DSH launcher
 │   ├── secrets.ps1                 # DPAPI key decryption
 │   ├── start-dsh.bat.template      # Launcher template
 │   ├── os-copilot-mcp-server.py    # OS-Copilot MCP server
@@ -223,22 +223,6 @@ See [configs/README.md](configs/README.md)
 ---
 
 ## 🤖 Free Model Access
-
-### CNB Proxy (Recommended)
-
-> ⚠️ **Hard prerequisite**: the proxy needs your own CNB **private repo** (it creates Issues there for the NPC to reply; the API's `invisible` flag is silently ignored, so repo privacy is the only protection). Configure it by adding `CNB_REPO: your-org/your-repo` to `~/.dsh/.credentials.yaml`, or set the `CNB_REPO` environment variable, or pass `--repo` when starting. The one-click installer asks for it during installation.
-
-```powershell
-# Start CNB Proxy
-python scripts\cnb_proxy.py --port 8800
-
-# Or use launcher (auto-detect and start)
-scripts\start-dsh.bat
-```
-
-**Supported Models:**
-- `deepseek-v4-flash` - Free until 2026-12-31
-- `deepseek-v4-pro` - 500 free credits per month
 
 ### AMD Radeon Cloud
 
@@ -411,7 +395,6 @@ This project is licensed under the [MIT License](LICENSE).
 
 - [DeepSeek](https://www.deepseek.com/) - DSH Framework
 - [l541402398](https://github.com/l541402398) - dsh-file-uploads plugin author
-- [CNB](https://cnb.cool/) - Free API access
 - [Zhipu AI](https://open.bigmodel.cn/) - GLM-4V-Flash vision model
 
 ---

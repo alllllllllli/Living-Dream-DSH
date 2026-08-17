@@ -122,7 +122,6 @@ permission:
 | `DEEPSEEK_API_KEY` | DeepSeek 官方 API | platform.deepseek.com |
 | `AMD_RADEON_API_KEY` | AMD Radeon Cloud | developer.amd.com.cn/radeon |
 | `OPENCODE_GO_API_KEY` | OpenCode Go | opencode.ai |
-| `CNB_API_KEY` | CNB | cnb.cool |
 | `VISION_API_KEY` | 智谱 AI | open.bigmodel.cn |
 
 ## 故障排查

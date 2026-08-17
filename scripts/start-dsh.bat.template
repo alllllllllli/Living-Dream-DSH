@@ -2,7 +2,7 @@
 :: ============================================================
 :: Living Dream DSH - Launcher Template
 :: ============================================================
-:: Auto-detect CNB Proxy and start DSH Desktop
+:: Start DSH Desktop
 :: Copy to your DSH directory and customize paths
 :: ============================================================
 
@@ -18,12 +18,8 @@ setlocal enabledelayedexpansion
 :: Option 2: Custom installation path (uncomment and modify)
 set "DSH_EXE=D:\Tools\DeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
 
-:: CNB Proxy script path
-set "CNB_PROXY=%~dp0cnb_proxy.py"
-set "CNB_PORT=8800"
-
 :: ============================================================
-:: Auto-detect and start
+:: Start DSH Desktop
 :: ============================================================
 
 :: Check if DSH Desktop exists
@@ -32,23 +28,6 @@ if not exist "%DSH_EXE%" (
     echo [INFO] Please modify DSH_EXE path in this script
     pause
     exit /b 1
-)
-
-:: Check if CNB Proxy is running
-echo [DSH] Checking CNB Proxy on port %CNB_PORT%...
-netstat -an | findstr ":%CNB_PORT% " | findstr "LISTENING" >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [DSH] CNB Proxy not running, starting...
-    if exist "%CNB_PROXY%" (
-        start /b python "%CNB_PROXY%" --port %CNB_PORT%
-        timeout /t 2 /nobreak >nul
-        echo [DSH] CNB Proxy started
-    ) else (
-        echo [WARN] CNB Proxy script not found: %CNB_PROXY%
-        echo [INFO] Free model access will not be available
-    )
-) else (
-    echo [DSH] CNB Proxy already running
 )
 
 :: Start DSH Desktop
