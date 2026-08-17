@@ -211,6 +211,6 @@ Get-ChildItem "$env:USERPROFILE\.dsh\uploads" -Recurse | Where-Object {$_.LastWr
 
 ## 获取帮助
 
-- GitHub Issues: https://github.com/alllllllllli/dsh-ultra-config/issues
+- GitHub Issues: https://github.com/alllllllllli/Living-Dream-DSH/issues
 - DSH 官方文档: https://github.com/deepseek-ai/deepseek-harness
 - DSH Handbook: https://github.com/Electricitysheep/dsh-handbook

@@ -1,11 +1,11 @@
-# DSH Ultra Config 🚀
+# Living Dream DSH 🚀
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![DeepSeek Harness](https://img.shields.io/badge/DeepSeek%20Harness-config-4f46e5)](https://github.com/deepseek-ai/deepseek-harness)
 
-**一站式 DeepSeek Harness 桌面版终极配置方案**
+**Living Dream DSH — 一站式 DeepSeek Harness 桌面版终极配置方案**
 
-一套经过实战验证的 DSH 配置框架，集成了 7+ MCP 服务器、自研插件、免费模型渠道、手机远程访问等完整方案。
+一套经过实战验证的 DSH 配置框架，集成了 8+ MCP 服务器、自研插件、免费模型渠道、手机远程访问等完整方案。
 
 > 📖 [English](README.md) | [简体中文](README.zh.md)
 
@@ -28,7 +28,7 @@
 ## 📁 目录结构
 
 ```
-dsh-ultra-config/
+Living-Dream-DSH/
 ├── README.md                    # 英文说明
 ├── README.zh.md                 # 中文说明
 ├── LICENSE                      # MIT 许可证
@@ -61,8 +61,8 @@ dsh-ultra-config/
 
 ```powershell
 # 1. 克隆仓库
-git clone https://github.com/alllllllllli/dsh-ultra-config.git
-cd dsh-ultra-config
+git clone https://github.com/alllllllllli/Living-Dream-DSH.git
+cd Living-Dream-DSH
 
 # 2. 双击运行 install.bat
 #    或在 PowerShell 中执行：.\install.ps1
@@ -91,8 +91,8 @@ cd dsh-ultra-config
 
 ```powershell
 # 克隆仓库
-git clone https://github.com/alllllllllli/dsh-ultra-config.git
-cd dsh-ultra-config
+git clone https://github.com/alllllllllli/Living-Dream-DSH.git
+cd Living-Dream-DSH
 
 # 复制配置文件到 DSH 目录
 Copy-Item configs\cordis.patch.yml.template $env:USERPROFILE\.dsh\profiles\web\cordis.patch.yml

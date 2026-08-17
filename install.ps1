@@ -1,5 +1,5 @@
-﻿# ============================================================
-# DSH Ultra Config - 一键安装程序
+# ============================================================
+# Living Dream DSH - 一键安装程序
 # 双击运行或在 PowerShell 中执行：.\install.ps1
 # ============================================================
 
@@ -16,8 +16,8 @@ function Write-Err($msg) { Write-Host "[-] $msg" -ForegroundColor Red }
 Write-Host @"
 
  ============================================================
-   DSH Ultra Config - 一键安装程序
-   https://github.com/alllllllllli/dsh-ultra-config
+   Living Dream DSH - 一键安装程序
+   https://github.com/alllllllllli/Living-Dream-DSH
  ============================================================
 "@ -ForegroundColor Cyan
 
@@ -66,7 +66,7 @@ if (Test-Path $dshExe) {
 # ============================================================
 Write-Step "获取配置文件..."
 
-$repoDir = "$env:USERPROFILE\dsh-ultra-config"
+$repoDir = "$env:USERPROFILE\Living-Dream-DSH"
 if (Test-Path "$repoDir\.git") {
     Write-OK "仓库已存在，更新中..."
     Push-Location $repoDir
@@ -74,7 +74,7 @@ if (Test-Path "$repoDir\.git") {
     Pop-Location
 } else {
     Write-Host "    克隆仓库到 $repoDir ..."
-    git clone --quiet https://github.com/alllllllllli/dsh-ultra-config.git $repoDir
+    git clone --quiet https://github.com/alllllllllli/Living-Dream-DSH.git $repoDir
     if ($LASTEXITCODE -ne 0) {
         Write-Err "克隆失败，请检查网络连接"
         Read-Host "按回车退出"
@@ -217,7 +217,7 @@ $shortcut.TargetPath = "cmd.exe"
 $shortcut.Arguments = "/c `"$startScript`""
 $shortcut.WorkingDirectory = $repoDir
 $shortcut.IconLocation = "$dshExe,0"
-$shortcut.Description = "DSH Ultra Config 启动器"
+$shortcut.Description = "Living Dream DSH 启动器"
 $shortcut.Save()
 Write-OK "桌面快捷方式已创建"
 
