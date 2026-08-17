@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 # Living Dream DSH - One-Click Installer
 # ============================================================
 # Double-click install.bat to run this script
@@ -260,7 +260,6 @@ if ($pkgCreated) {
         New-Item -ItemType Directory -Path (Split-Path $pluginDst) -Force | Out-Null
         Copy-Item $pluginSrc $pluginDst -Recurse -Force
         Write-OK "Copied dsh-paste-input plugin to $pluginDst"
-    }
     }
     Push-Location $profileDir
     pnpm install --no-frozen-lockfile
