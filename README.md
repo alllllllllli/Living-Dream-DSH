@@ -3,9 +3,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![DeepSeek Harness](https://img.shields.io/badge/DeepSeek%20Harness-config-4f46e5)](https://github.com/deepseek-ai/deepseek-harness)
 
-**Living Dream DSH — 一站式 DeepSeek Harness 桌面版终极配置方案**
+**Living Dream DSH — The Ultimate DeepSeek Harness Desktop Configuration**
 
-一套经过实战验证的 DSH 配置框架，集成了 8+ MCP 服务器、自研插件、免费模型渠道、手机远程访问等完整方案。
+A battle-tested DSH configuration framework with 8+ MCP servers, custom plugins, free model access, mobile remote control, and more.
 
 > 📖 [English](README.md) | [简体中文](README.zh.md)
 
@@ -13,251 +13,251 @@
 
 ## 🆚 Living Dream DSH vs Claude Code
 
-| 特性 | Living Dream DSH | Claude Code |
-|------|------------------|-------------|
-| **模型** | DeepSeek V4 (免费) | Claude (付费) |
-| **免费额度** | ✅ CNB 代理免费、AMD Radeon 免费 | ❌ 需付费 |
-| **MCP 服务器** | ✅ 8+ 个（桌面操作/浏览器/OCR/记忆等） | ❌ 无 |
-| **桌面自动化** | ✅ 截图/点击/键鼠控制 | ❌ 无 |
-| **浏览器控制** | ✅ Playwright 自动化 | ❌ 无 |
-| **手机远程访问** | ✅ Tailscale 方案 | ❌ 无 |
-| **图片识别** | ✅ GLM-4V-Flash 免费 | ❌ 需额外付费 |
-| **文件拖拽上传** | ✅ 自研插件 | ❌ 无 |
-| **长期记忆** | ✅ 语义检索 | ❌ 无 |
-| **文档转换** | ✅ MarkItDown | ❌ 无 |
-| **屏幕 OCR** | ✅ Windows OCR | ❌ 无 |
-| **开源** | ✅ MIT 许可证 | ❌ 闭源 |
-| **价格** | 🆓 免费 | 💰 $20/月起 |
+| Feature | Living Dream DSH | Claude Code |
+|---------|------------------|-------------|
+| **Model** | DeepSeek V4 (Free) | Claude (Paid) |
+| **Free Tier** | ✅ CNB Proxy, AMD Radeon Cloud | ❌ Paid only |
+| **MCP Servers** | ✅ 8+ (Desktop/Browser/OCR/Memory) | ❌ None |
+| **Desktop Automation** | ✅ Screenshot/Click/Keyboard | ❌ None |
+| **Browser Control** | ✅ Playwright automation | ❌ None |
+| **Mobile Access** | ✅ Tailscale solution | ❌ None |
+| **Image Recognition** | ✅ GLM-4V-Flash (Free) | ❌ Extra cost |
+| **File Drag & Drop** | ✅ Custom plugin | ❌ None |
+| **Long-term Memory** | ✅ Semantic search | ❌ None |
+| **Document Conversion** | ✅ MarkItDown | ❌ None |
+| **Screen OCR** | ✅ Windows OCR | ❌ None |
+| **Open Source** | ✅ MIT License | ❌ Closed source |
+| **Pricing** | 🆓 Free | 💰 $20/month+ |
 
-**为什么选择 Living Dream DSH？**
+**Why choose Living Dream DSH?**
 
-1. **零成本**：通过 CNB 代理和 AMD Radeon Cloud，完全免费使用 DeepSeek V4
-2. **全栈能力**：不只是写代码，还能操作桌面、控制浏览器、识别图片
-3. **移动办公**：手机浏览器随时随地访问
-4. **开源透明**：MIT 许可证，可自由修改和扩展
-
----
-
-## ✨ 特性一览
-
-| 功能 | 说明 |
-|------|------|
-| 🔌 **8+ MCP 服务器** | 历史/视觉/桌面操作/代码执行/浏览器/记忆/文档转换/OCR |
-| 🤖 **免费模型渠道** | CNB 代理（DeepSeek V4 免费）+ AMD Radeon Cloud |
-| 📱 **手机远程访问** | Tailscale + 改写代理，手机浏览器操作 DSH |
-| 🖼️ **发图自动识别** | GLM-4V-Flash 免费视觉描述（仅桌面版） |
-| 📁 **文件拖拽上传** | 自研 dsh-file-uploads 插件 |
-| 🔐 **密钥安全存储** | DPAPI 加密 + secrets.ps1 解密 |
-| 🛡️ **防坑指南** | 踩过的坑和解决方案全记录 |
+1. **Zero cost**: Use DeepSeek V4 completely free via CNB Proxy and AMD Radeon Cloud
+2. **Full-stack capability**: Not just coding — control desktop, browser, recognize images
+3. **Mobile office**: Access from phone browser anytime, anywhere
+4. **Open source**: MIT license, freely modifiable and extensible
 
 ---
 
-## 📁 目录结构
+## ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| 🔌 **8+ MCP Servers** | History/Vision/Desktop/Code Execution/Browser/Memory/Document/OCR |
+| 🤖 **Free Model Access** | CNB Proxy (DeepSeek V4 Free) + AMD Radeon Cloud |
+| 📱 **Mobile Remote Access** | Tailscale + Proxy, control DSH from phone |
+| 🖼️ **Auto Image Recognition** | GLM-4V-Flash free vision (Desktop only) |
+| 📁 **File Drag & Drop** | Custom dsh-file-uploads plugin |
+| 🔐 **Secure Key Storage** | DPAPI encryption + secrets.ps1 |
+| 🛡️ **Troubleshooting Guide** | All pitfalls and solutions documented |
+
+---
+
+## 📁 Directory Structure
 
 ```
 Living-Dream-DSH/
-├── README.md                    # 英文说明
-├── README.zh.md                 # 中文说明
-├── LICENSE                      # MIT 许可证
+├── README.md                    # English
+├── README.zh.md                 # Chinese
+├── LICENSE                      # MIT License
 ├── .gitignore
 ├── configs/
-│   ├── cordis.patch.yml.template   # MCP 配置模板
-│   ├── package.json.template       # 插件清单模板
-│   ├── settings.yaml.template      # 全局设置模板
-│   ├── AGENTS.md                   # AI 指令文件
-│   └── .credentials.yaml.template  # API Key 模板
+│   ├── cordis.patch.yml.template   # MCP config template
+│   ├── package.json.template       # Plugin list template
+│   ├── settings.yaml.template      # Global settings template
+│   ├── AGENTS.md                   # AI instructions
+│   └── .credentials.yaml.template  # API Key template
 ├── scripts/
-│   ├── cnb_proxy.py                # CNB 代理（OpenAI 兼容）
-│   ├── secrets.ps1                 # DPAPI 密钥解密
-│   ├── start-dsh.bat.template      # 启动器模板
-│   ├── os-copilot-mcp-server.py    # OS-Copilot MCP 服务器
-│   └── os-copilot-mcp-README.md    # OS-Copilot MCP 说明
+│   ├── cnb_proxy.py                # CNB Proxy (OpenAI compatible)
+│   ├── secrets.ps1                 # DPAPI key decryption
+│   ├── start-dsh.bat.template      # Launcher template
+│   ├── os-copilot-mcp-server.py    # OS-Copilot MCP server
+│   └── os-copilot-mcp-README.md    # OS-Copilot MCP docs
 ├── plugins/
-│   └── README.md                   # 插件安装说明
+│   └── README.md                   # Plugin installation guide
 └── docs/
-    ├── phone-remote.md             # 手机远程访问教程
-    ├── vision-patch.md             # 发图改造教程
-    └── troubleshooting.md          # 故障排查手册
+    ├── phone-remote.md             # Mobile remote access tutorial
+    ├── vision-patch.md             # Image recognition patch
+    └── troubleshooting.md          # Troubleshooting manual
 ```
 
 ---
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 方式一：一键安装（推荐）
+### Option 1: One-Click Install (Recommended)
 
 ```powershell
-# 1. 克隆仓库
+# 1. Clone repository
 git clone https://github.com/alllllllllli/Living-Dream-DSH.git
 cd Living-Dream-DSH
 
-# 2. 双击运行 install.bat
-#    或在 PowerShell 中执行：.\install.ps1
+# 2. Double-click install.bat
+#    Or run in PowerShell: .\install.ps1
 ```
 
-安装程序会自动：
-- ✅ 检查环境（Node.js、Python、pnpm）
-- ✅ 复制配置文件到 `~/.dsh`
-- ✅ 交互式填入 API Key
-- ✅ 安装插件依赖
-- ✅ 创建桌面快捷方式
+The installer will automatically:
+- ✅ Check environment (Node.js, Python, pnpm)
+- ✅ Copy config files to `~/.dsh`
+- ✅ Interactively fill in API Keys
+- ✅ Install plugin dependencies
+- ✅ Create desktop shortcut
 
-### 方式二：手动安装
+### Option 2: Manual Install
 
 <details>
-<summary>点击展开手动安装步骤</summary>
+<summary>Click to expand manual installation steps</summary>
 
-#### 环境要求
+#### Requirements
 
 - Windows 10/11
-- Node.js v22+ (推荐 v24 LTS)
-- Python 3.13+ (用于 MCP 服务器)
-- DeepSeek Harness 桌面版 v1.1.0+
+- Node.js v22+ (Recommended v24 LTS)
+- Python 3.13+ (For MCP servers)
+- DeepSeek Harness Desktop v1.1.0+
 
-#### 安装步骤
+#### Installation Steps
 
 ```powershell
-# 克隆仓库
+# Clone repository
 git clone https://github.com/alllllllllli/Living-Dream-DSH.git
 cd Living-Dream-DSH
 
-# 复制配置文件到 DSH 目录
+# Copy config files to DSH directory
 Copy-Item configs\cordis.patch.yml.template $env:USERPROFILE\.dsh\profiles\web\cordis.patch.yml
 Copy-Item configs\package.json.template $env:USERPROFILE\.dsh\profiles\web\package.json
 Copy-Item configs\settings.yaml.template $env:USERPROFILE\.dsh\settings.yaml
 Copy-Item configs\AGENTS.md $env:USERPROFILE\.dsh\AGENTS.md
 
-# 编辑配置文件（填入你的 API Key）
+# Edit config files (fill in your API Keys)
 notepad $env:USERPROFILE\.dsh\.credentials.yaml
 
-# 安装插件
+# Install plugins
 cd $env:USERPROFILE\.dsh\profiles\web
 pnpm install
 
-# 重启 DSH 桌面版
+# Restart DSH Desktop
 ```
 
 </details>
 
-### 3. 配置 MCP 服务器
+### 3. Configure MCP Servers
 
-详见 [configs/README.md](configs/README.md)
-
----
-
-## 🔌 MCP 服务器列表
-
-| MCP | 功能 | 依赖 |
-|-----|------|------|
-| `dsh-history` | 历史会话查询/搜索 | Python + server.py |
-| `dsh-vision` | 图片分析（Ollama qwen2.5vl） | Python + Ollama |
-| `dsh-computer` | 桌面操作（截图/点击/键鼠） | @zavora-ai/computer-use-mcp (MIT) |
-| `os-copilot` | 代码执行（Python/Shell/文件操作） | Python + server.py |
-| `dsh-browser` | 浏览器自动化（Playwright） | Node.js + Edge 扩展 |
-| `dsh-memory` | 长期记忆（语义检索） | Python + server.py |
-| `dsh-markitdown` | 文档转 Markdown | Python + MarkItDown |
-| `dsh-ocr` | 屏幕 OCR | Python + Windows OCR |
+See [configs/README.md](configs/README.md)
 
 ---
 
-## 🤖 免费模型渠道
+## 🔌 MCP Server List
 
-### CNB 代理（推荐）
+| MCP | Function | Dependencies |
+|-----|----------|--------------|
+| `dsh-history` | History session query/search | Python + server.py |
+| `dsh-vision` | Image analysis (Ollama qwen2.5vl) | Python + Ollama |
+| `dsh-computer` | Desktop automation (screenshot/click/keyboard) | @zavora-ai/computer-use-mcp (MIT) |
+| `os-copilot` | Code execution (Python/Shell/File ops) | Python + server.py |
+| `dsh-browser` | Browser automation (Playwright) | Node.js + Edge extension |
+| `dsh-memory` | Long-term memory (semantic search) | Python + server.py |
+| `dsh-markitdown` | Document to Markdown | Python + MarkItDown |
+| `dsh-ocr` | Screen OCR | Python + Windows OCR |
+
+---
+
+## 🤖 Free Model Access
+
+### CNB Proxy (Recommended)
 
 ```powershell
-# 启动 CNB 代理
+# Start CNB Proxy
 python scripts\cnb_proxy.py --port 8800
 
-# 或使用启动器（自动检测并启动）
+# Or use launcher (auto-detect and start)
 scripts\start-dsh.bat
 ```
 
-**支持模型：**
-- `deepseek-v4-flash` - 免费至 2026-12-31
-- `deepseek-v4-pro` - 每月 500 免费积分
+**Supported Models:**
+- `deepseek-v4-flash` - Free until 2026-12-31
+- `deepseek-v4-pro` - 500 free credits per month
 
 ### AMD Radeon Cloud
 
-- 端点：`https://developer.amd.com.cn/radeon/api/v1`
-- 模型：DeepSeek-V4-Flash
-- 注册：developer.amd.com.cn/radeon
+- Endpoint: `https://developer.amd.com.cn/radeon/api/v1`
+- Model: DeepSeek-V4-Flash
+- Register: developer.amd.com.cn/radeon
 
 ---
 
-## 📱 手机远程访问
+## 📱 Mobile Remote Access
 
-通过 Tailscale 实现手机浏览器访问 DSH：
+Access DSH from phone browser via Tailscale:
 
 ```powershell
-# 1. 安装 Tailscale
+# 1. Install Tailscale
 winget install tailscale.tailscale
 
-# 2. 登录同一账号
+# 2. Login to same account
 tailscale up
 
-# 3. 配置 serve
+# 3. Configure serve
 tailscale serve --https=443 --bg http://127.0.0.1:3080
 
-# 4. 手机浏览器访问
-# https://<你的设备名>.<你的域名>.ts.net
+# 4. Access from phone browser
+# https://<your-device-name>.<your-domain>.ts.net
 ```
 
-详见 [docs/phone-remote.md](docs/phone-remote.md)
+See [docs/phone-remote.md](docs/phone-remote.md)
 
 ---
 
-## 🖼️ 发图自动识别改造
+## 🖼️ Image Recognition Patch
 
-让 DSH 桌面版发图时自动调用 GLM-4V-Flash 识别：
+Make DSH Desktop auto-call GLM-4V-Flash for image recognition:
 
 ```powershell
-# 1. 备份原文件
+# 1. Backup original file
 Copy-Item "D:\ToolsDeepSeek-Harness-Desktop\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" `
           "G:\vision-files\dsh-host-apiproxy-index.js.bak"
 
-# 2. 应用补丁（需手动修改 911 行附近的 describeImagesLocally 函数）
-# 详见 docs/vision-patch.md
+# 2. Apply patch (manually modify describeImagesLocally function around line 911)
+# See docs/vision-patch.md
 ```
 
-⚠️ **注意**：DSH 升级会覆盖此补丁，需重打。
+⚠️ **Note**: DSH upgrades will overwrite this patch, re-apply after upgrade.
 
 ---
 
-## 🛡️ 防坑指南
+## 🛡️ Troubleshooting
 
-### 1. 插件安装
+### 1. Plugin Installation
 
 ```powershell
-# ✅ 正确方式
-dsh plugin --profile web add <包名>@<版本>
+# ✅ Correct way
+dsh plugin --profile web add <package>@<version>
 
-# ❌ 错误方式（会清掉未列出的 bundle）
+# ❌ Wrong way (will clear unlisted bundles)
 cd $env:USERPROFILE\.dsh\profiles\web
-pnpm add <包名>
+pnpm add <package>
 ```
 
-### 2. 桌面版与 Dev 版冲突
+### 2. Desktop vs Dev Version Conflict
 
-两者共用 `~/.dsh`，有并发写冲突。使用桌面版时请关闭 Dev 版（3080 端口）。
+Both share `~/.dsh`, causing concurrent write conflicts. Close Dev version (port 3080) when using Desktop.
 
-### 3. 发图补丁
+### 3. Image Patch
 
-DSH 升级会覆盖 `dsh-host-apiproxy` 的修改，需重打补丁。
+DSH upgrades will overwrite `dsh-host-apiproxy` modifications, re-apply patch.
 
-### 4. billion-context-dsh 版本
+### 4. billion-context-dsh Version
 
-必须锁定版本 `0.2.1`，默认会误解析为 `0.1.7`（无 dsh.bundle）。
+Must lock version `0.2.1`, default will misparse as `0.1.7` (no dsh.bundle).
 
 ---
 
-## 📝 配置文件说明
+## 📝 Configuration Files
 
 ### cordis.patch.yml
 
-MCP 服务器配置文件，位于 `~/.dsh/profiles/web/cordis.patch.yml`
+MCP server config file at `~/.dsh/profiles/web/cordis.patch.yml`
 
 ```yaml
-# 示例：添加一个 MCP 服务器
+# Example: Add an MCP server
 - insert:
     - id: mcp-dsh-example
       name: '@deepseek-ai/dsh-mcp-client'
@@ -275,10 +275,10 @@ MCP 服务器配置文件，位于 `~/.dsh/profiles/web/cordis.patch.yml`
 
 ### settings.yaml
 
-全局设置文件，位于 `~/.dsh/settings.yaml`
+Global settings file at `~/.dsh/settings.yaml`
 
 ```yaml
-# 配置模型提供商
+# Configure model providers
 llm-pi-ai:
   providers:
     my-provider:
@@ -293,7 +293,7 @@ llm-pi-ai:
 
 ### .credentials.yaml
 
-API Key 存储文件，位于 `~/.dsh/.credentials.yaml`
+API Key storage at `~/.dsh/.credentials.yaml`
 
 ```yaml
 MY_API_KEY: sk-xxxxxxxxxxxx
@@ -301,49 +301,49 @@ MY_API_KEY: sk-xxxxxxxxxxxx
 
 ---
 
-## 🔧 自定义扩展
+## 🔧 Custom Extensions
 
-### 添加新的 MCP 服务器
+### Add New MCP Server
 
-1. 创建 MCP 服务器（参考现有实现）
-2. 在 `cordis.patch.yml` 中添加配置
-3. 在 `package.json` 的 bundles 中添加插件（如果需要）
-4. 重启 DSH 桌面版
+1. Create MCP server (reference existing implementations)
+2. Add config to `cordis.patch.yml`
+3. Add plugin to `package.json` bundles (if needed)
+4. Restart DSH Desktop
 
-### 创建自定义插件
+### Create Custom Plugin
 
-参考 [dsh-file-uploads](https://github.com/l541402398/dsh-file-uploads) 插件结构。
+Reference [dsh-file-uploads](https://github.com/l541402398/dsh-file-uploads) plugin structure.
 
 ---
 
-## 📚 相关资源
+## 📚 Resources
 
-- [DeepSeek Harness 官方仓库](https://github.com/deepseek-ai/deepseek-harness)
+- [DeepSeek Harness Official](https://github.com/deepseek-ai/deepseek-harness)
 - [DSH Handbook](https://github.com/Electricitysheep/dsh-handbook)
 - [Playwright MCP](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo)
 - [MarkItDown](https://github.com/microsoft/markitdown)
 
 ---
 
-## 🤝 贡献
+## 🤝 Contributing
 
-欢迎提交 Issue 和 Pull Request！
-
----
-
-## 📄 许可证
-
-本项目采用 [MIT 许可证](LICENSE)。
+Issues and Pull Requests are welcome!
 
 ---
 
-## 🙏 致谢
+## 📄 License
 
-- [DeepSeek](https://www.deepseek.com/) - 提供 DSH 框架
-- [l541402398](https://github.com/l541402398) - dsh-file-uploads 插件原作者
-- [CNB](https://cnb.cool/) - 免费 API 渠道
-- [智谱 AI](https://open.bigmodel.cn/) - GLM-4V-Flash 视觉模型
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-**最后更新**：2026-08-17
+## 🙏 Acknowledgments
+
+- [DeepSeek](https://www.deepseek.com/) - DSH Framework
+- [l541402398](https://github.com/l541402398) - dsh-file-uploads plugin author
+- [CNB](https://cnb.cool/) - Free API access
+- [Zhipu AI](https://open.bigmodel.cn/) - GLM-4V-Flash vision model
+
+---
+
+**Last Updated**: 2026-08-17
