@@ -11,7 +11,7 @@
 | `dsh-ffmpeg` | 0.1.0 | 视频处理 |
 | `@xiaweiliang060035/dsh-opencode-go-usage` | ^0.3.0 | OpenCode Go 用量悬浮球 |
 | `@anionex/dsh-vision-toolkit` | ^0.1.8 | 视觉工具包 |
-| `@dsh-community/dsh-paste-input` | ^0.1.0 | 文件拖拽上传（自研） |
+| `@dsh-community/dsh-paste-input` | 0.1.3 (仓库内置) | 文件拖拽上传（自研） |
 
 > ⚠️ `dsh-model-router` 已废弃移除（弹窗干扰问题），请勿安装。
 
@@ -41,25 +41,25 @@ cd $env:USERPROFILE\.dsh\profiles\web
 pnpm add <包名>  # 这会清掉未列出的 bundle！
 ```
 
-## 自研插件：dsh-file-uploads
+## 自研插件：dsh-paste-input
 
 ### 安装
 
+插件源码已内置在仓库 `plugins/dsh-paste-input/`。一键安装脚本会自动复制到正确位置。
+
+手动安装：
+
 ```powershell
-# 1. 克隆插件源码
-git clone https://github.com/l541402398/dsh-file-uploads.git <YOUR_PLUGIN_DIR>\dsh-file-uploads
+# 1. 复制插件到 DSH 插件目录（注意是 profiles/plugins/，不是 ~/.dsh/plugins/）
+$pluginDst = "$env:USERPROFILE\.dsh\profiles\plugins\dsh-paste-input"
+New-Item -ItemType Directory -Path (Split-Path $pluginDst) -Force | Out-Null
+Copy-Item plugins\dsh-paste-input $pluginDst -Recurse -Force
 
-# 2. 创建 Junction（可选，用于开发）
-New-Item -ItemType Junction -Path "<YOUR_PLUGIN_DIR>\dsh-file-uploads" -Target "<CLONE_DIR>\dsh-file-uploads"
-
-# 3. 在 package.json 中添加依赖
-# "@dsh-community/dsh-paste-input": "file:<YOUR_PLUGIN_DIR>/dsh-paste-input"
-
-# 4. 安装
+# 2. 安装
 cd $env:USERPROFILE\.dsh\profiles\web
 pnpm install
 
-# 5. 重启 DSH 桌面版 + 刷新页面
+# 3. 重启 DSH 桌面版 + 刷新页面
 ```
 
 ### 功能

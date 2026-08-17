@@ -1,4 +1,4 @@
-﻿# ============================================================
+# ============================================================
 # Living Dream DSH - One-Click Installer
 # ============================================================
 # Double-click install.bat to run this script
@@ -252,16 +252,15 @@ Write-Step "Installing plugin dependencies..."
 # 只有我们新建了 package.json 才跑 pnpm install:
 # 老用户已有的 package.json 没把 bundle 列入 dependencies, 跑 install 会清空 bundle
 if ($pkgCreated) {
-    # dsh-paste-input 是 file: 依赖 (未发布 npm), 先克隆源码到 ~/.dsh/plugins/
-    $pluginDir = "$dshHome\plugins\dsh-paste-input"
-    if (-not (Test-Path $pluginDir)) {
-        Write-Host "    Cloning dsh-paste-input plugin source..."
-        git clone --quiet https://github.com/l541402398/dsh-file-uploads.git $pluginDir
-        if ($LASTEXITCODE -ne 0) {
-            Write-Err "Failed to clone dsh-paste-input plugin - pnpm install will fail"
-        } else {
-            Write-OK "Plugin source ready"
-        }
+    # dsh-paste-input 是 file: 依赖 (未发布 npm), 先确保源码就位
+    # package.json.template 的 file:../plugins/ 相对于 profiles/web/ 解析为 profiles/plugins/
+    $pluginSrc = Join-Path $repoDir "plugins\dsh-paste-input"
+    $pluginDst = "$profileDir\..\plugins\dsh-paste-input"
+    if ((Test-Path $pluginSrc) -and -not (Test-Path $pluginDst)) {
+        New-Item -ItemType Directory -Path (Split-Path $pluginDst) -Force | Out-Null
+        Copy-Item $pluginSrc $pluginDst -Recurse -Force
+        Write-OK "Copied dsh-paste-input plugin to $pluginDst"
+    }
     }
     Push-Location $profileDir
     pnpm install --no-frozen-lockfile

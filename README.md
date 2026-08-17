@@ -94,6 +94,10 @@ Living-Dream-DSH/
 | **pnpm** | Latest | `npm install -g pnpm` | ✅ Yes |
 | **Git** | Any | [git-scm.com](https://git-scm.com/) | For clone |
 
+> 💡 Some scripts reference `$env:DSH_DESKTOP_PATH` — set it to your DSH Desktop install directory:
+> `$env:DSH_DESKTOP_PATH = "D:\Tools\DeepSeek-Harness-Desktop"` (change to your actual path),
+> or add it as a system environment variable for persistence.
+
 ### Option 1: One-Click Install (Recommended)
 
 ```powershell
@@ -139,8 +143,8 @@ Copy-Item configs\.credentials.yaml.template $env:USERPROFILE\.dsh\.credentials.
 # 4. Edit config files (fill in your API Keys)
 notepad $env:USERPROFILE\.dsh\.credentials.yaml
 
-# 5. Install plugins (dsh-paste-input is a file: dependency - clone source first)
-git clone https://github.com/l541402398/dsh-file-uploads.git $env:USERPROFILE\.dsh\plugins\dsh-paste-input
+# 5. Install plugins (dsh-paste-input is a file: dependency - bundled in repo)
+Copy-Item plugins\dsh-paste-input $env:USERPROFILE\.dsh\profiles\plugins\dsh-paste-input -Recurse
 cd $env:USERPROFILE\.dsh\profiles\web
 pnpm install
 

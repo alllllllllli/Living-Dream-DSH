@@ -159,7 +159,7 @@ Get-Content "$env:USERPROFILE\dsh-workspace\dsh_vision_config.json"
 
 # 3. 测试 API 连通性（Key 从 .credentials.yaml 的 VISION_API_KEY 读）
 $visionKey = (Get-Content "$env:USERPROFILE\.dsh\.credentials.yaml" | Select-String "VISION_API_KEY").Line.Split(":")[1].Trim()
-curl.exe -s https://open.bigmodel.cn/api/paas/v4/chat/completions -H "Authorization: Bearer $visionKey" -H "Content-Type: application/json" -d '{\"model\":\"glm-4v-flash\",\"messages\":[{\"role\":\"user\",\"content\":\"hi\"}]}'
+curl.exe -s https://open.bigmodel.cn/api/paas/v4/chat/completions -H "Authorization: Bearer $visionKey" -H "Content-Type: application/json" -d '{"model":"glm-4v-flash","messages":[{"role":"user","content":"hi"}]}'
 ```
 
 **解决方案**：

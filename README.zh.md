@@ -94,6 +94,10 @@ Living-Dream-DSH/
 | **pnpm** | 最新版 | `npm install -g pnpm` | ✅ 必装 |
 | **Git** | 任意版本 | [git-scm.com](https://git-scm.com/) | 克隆用 |
 
+> 💡 文档中部分脚本引用 `$env:DSH_DESKTOP_PATH` 环境变量，指向 DSH 桌面版安装目录。
+> 首次使用前请设置：`$env:DSH_DESKTOP_PATH = "D:\Tools\DeepSeek-Harness-Desktop"`（改为你的实际路径），
+> 或添加到系统环境变量永久生效。
+
 ### 方式一：一键安装（推荐）
 
 ```powershell
@@ -139,8 +143,8 @@ Copy-Item configs\.credentials.yaml.template $env:USERPROFILE\.dsh\.credentials.
 # 4. 编辑配置文件（填入你的 API Key）
 notepad $env:USERPROFILE\.dsh\.credentials.yaml
 
-# 5. 安装插件（dsh-paste-input 是 file: 依赖, 先克隆源码）
-git clone https://github.com/l541402398/dsh-file-uploads.git $env:USERPROFILE\.dsh\plugins\dsh-paste-input
+# 5. 安装插件（dsh-paste-input 是 file: 依赖, 仓库已内置源码）
+Copy-Item plugins\dsh-paste-input $env:USERPROFILE\.dsh\profiles\plugins\dsh-paste-input -Recurse
 cd $env:USERPROFILE\.dsh\profiles\web
 pnpm install
 
@@ -214,7 +218,7 @@ node proxy.js   # 监听 127.0.0.1:8090
 # 4. 配置 serve（指向 8090 代理，不是 3080）
 tailscale serve --https=443 --bg http://127.0.0.1:8090
 
-# 4. 手机浏览器访问
+# 5. 手机浏览器访问
 # https://<你的设备名>.<你的域名>.ts.net
 ```
 
