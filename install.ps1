@@ -160,6 +160,18 @@ foreach ($item in $copyMap) {
     }
 }
 
+# Replace relative script paths in cordis.patch.yml with absolute paths
+$patchFile = "$profileDir\cordis.patch.yml"
+if (Test-Path $patchFile) {
+    $mcpDir = Join-Path $repoDir "scripts\mcp"
+    # Normalize to forward slashes for YAML
+    $mcpDirFwd = $mcpDir -replace '\\', '/'
+    $content = Get-Content $patchFile -Raw -Encoding UTF8
+    $content = $content -replace 'scripts/mcp/', "$mcpDirFwd/"
+    Set-Content $patchFile $content -Encoding UTF8
+    Write-OK "MCP paths updated in cordis.patch.yml"
+}
+
 # credentials.yaml (don't overwrite)
 $credSrc = Join-Path $repoDir "configs\.credentials.yaml.template"
 $credDst = "$dshHome\.credentials.yaml"
@@ -253,6 +265,15 @@ if ($pkgCreated) {
     Pop-Location
 } else {
     Write-Warn "package.json already existed, skipped pnpm install to avoid clearing your bundles"
+}
+
+# Install Python MCP dependencies
+Write-Step "Installing Python MCP dependencies..."
+pip install mcp markitdown 2>&1 | Out-Null
+if ($LASTEXITCODE -eq 0) {
+    Write-OK "Python MCP dependencies installed (mcp, markitdown)"
+} else {
+    Write-Warn "pip install failed - MCP servers may not start. Run manually: pip install mcp markitdown"
 }
 
 # ============================================================

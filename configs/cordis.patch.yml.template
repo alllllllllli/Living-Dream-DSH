@@ -2,7 +2,7 @@
 # DSH Ultra Config - MCP 配置模板
 # ============================================================
 # 复制到 ~/.dsh/profiles/web/cordis.patch.yml
-# 修改路径和 API Key 后重启 DSH 桌面版生效
+# 一键安装脚本会自动替换路径占位符，手动安装需自行修改
 # ============================================================
 
 # ============ dsh 全家桶 MCP ============
@@ -14,9 +14,9 @@
       config:
         transport: stdio
         serverName: dsh-history
-        command: python  # 或完整路径如 C:/Users/<你的用户名>/AppData/Local/Python/pythoncore-3.14-64/python.exe
+        command: python
         args:
-          - G:/path/to/dsh-history-mcp/server.py  # 修改为你的实际路径
+          - scripts/mcp/dsh-history-server.py  # 相对于仓库根目录，安装脚本自动替换为绝对路径
         env: {}
         cwd: ''
         toolCallTimeoutMs: 60000
@@ -31,8 +31,12 @@
         serverName: dsh-vision
         command: python
         args:
-          - G:/path/to/vision-mcp/server.py  # 修改为你的实际路径
-        env: {}
+          - scripts/mcp/dsh-vision-server.py
+        env:
+          # Ollama 端点（默认 localhost:11434，可改为远程地址）
+          OLLAMA_HOST: http://localhost:11434
+          # 视觉模型（默认 qwen2.5vl:latest，按已安装模型修改）
+          VISION_MODEL: qwen2.5vl:latest
         cwd: ''
         toolCallTimeoutMs: 240000
         failOnStartupError: false
@@ -61,9 +65,9 @@
       config:
         transport: stdio
         serverName: os-copilot
-        command: python  # 或完整路径如 C:/Users/<你的用户名>/AppData/Local/Python/pythoncore-3.14-64/python.exe
+        command: python
         args:
-          - D:/path/to/OS-Copilot/os-copilot-mcp/server.py  # 修改为你的实际路径
+          - scripts/mcp/os-copilot-server.py
         env: {}
         cwd: ''
         toolCallTimeoutMs: 60000
@@ -76,20 +80,19 @@
       config:
         transport: stdio
         serverName: dsh-browser
-        command: D:/path/to/node.exe  # 修改为你的 Node.js 路径
+        command: npx
         args:
-          - D:/path/to/node_modules/@playwright/mcp/cli.js  # 修改为你的实际路径
+          - "--yes"
+          - "@playwright/mcp"
           - --browser
           - msedge
           - --extension
-        env:
-          # 可选：跳过每次重启后的连接确认弹窗
-          # PLAYWRIGHT_MCP_EXTENSION_TOKEN: your-token-here
+        env: {}
         cwd: ''
         toolCallTimeoutMs: 120000
         failOnStartupError: false
 
-# 5. 长期记忆: remember / recall
+# 5. 长期记忆: remember / recall / forget / list_memories
 - insert:
     - id: mcp-dsh-memory
       name: '@deepseek-ai/dsh-mcp-client'
@@ -98,23 +101,23 @@
         serverName: dsh-memory
         command: python
         args:
-          - G:/path/to/memory-mcp/server.py  # 修改为你的实际路径
-        env:
-          MEMORY_AGENT: dsh
+          - scripts/mcp/dsh-memory-server.py
+        env: {}
         cwd: ''
         toolCallTimeoutMs: 120000
         failOnStartupError: false
 
-# 6. 文件转换: convert_to_markdown (MarkItDown: PDF/Word/Excel/PPT/EPUB/HTML 等转 Markdown)
+# 6. 文件转换: convert_to_markdown (PDF/Word/Excel/PPT/EPUB/HTML 等转 Markdown)
+#    依赖: pip install markitdown
 - insert:
     - id: mcp-dsh-markitdown
       name: '@deepseek-ai/dsh-mcp-client'
       config:
         transport: stdio
         serverName: dsh-markitdown
-        command: D:/path/to/venv/Scripts/python.exe  # 修改为你的 Python venv 路径
+        command: python
         args:
-          - G:/path/to/markitdown-mcp/server.py  # 修改为你的实际路径
+          - scripts/mcp/dsh-markitdown-server.py
         env: {}
         cwd: ''
         toolCallTimeoutMs: 120000
@@ -127,9 +130,9 @@
       config:
         transport: stdio
         serverName: dsh-ocr
-        command: G:/path/to/screen-ocr-mcp/venv/Scripts/python.exe  # 修改为你的 Python venv 路径
+        command: python
         args:
-          - G:/path/to/screen-ocr-mcp/server.py  # 修改为你的实际路径
+          - scripts/mcp/dsh-ocr-server.py
         env: {}
         cwd: ''
         toolCallTimeoutMs: 120000
@@ -141,7 +144,7 @@
 # - id: agent-instructions
 #   config:
 #     maxBytes: 65536
-#     dshHome: D:/path/to/your/dsh  # 修改为你的实际路径
+#     dshHome: ~/.dsh
 
 # 9. dsh-email: 邮箱配置（可选）
 # - id: tool-email

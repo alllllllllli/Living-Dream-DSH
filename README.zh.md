@@ -95,11 +95,16 @@ Living-Dream-DSH/
 │   ├── AGENTS.md                   # AI 指令文件
 │   └── .credentials.yaml.template  # API Key 模板
 ├── scripts/
-│   ├── start-dsh.bat.template   # DSH 启动器
-│   ├── secrets.ps1                 # DPAPI 密钥解密
-│   ├── start-dsh.bat.template      # 启动器模板
-│   ├── os-copilot-mcp-server.py    # OS-Copilot MCP 服务器
-│   └── os-copilot-mcp-README.md    # OS-Copilot MCP 说明
+│   ├── start-dsh.bat.template       # DSH 启动器
+│   ├── secrets.ps1                  # DPAPI 密钥解密
+│   ├── mcp/                         # MCP 服务端脚本（6 个全部内置）
+│   │   ├── dsh-history-server.py
+│   │   ├── dsh-vision-server.py
+│   │   ├── dsh-memory-server.py
+│   │   ├── dsh-markitdown-server.py
+│   │   ├── dsh-ocr-server.py
+│   │   └── os-copilot-server.py
+│   └── os-copilot-mcp-README.md     # OS-Copilot MCP 说明
 ├── plugins/
 │   └── README.md                   # 插件安装说明
 └── docs/
@@ -121,6 +126,9 @@ Living-Dream-DSH/
 | **Python** | 3.13+ | [python.org](https://python.org/) | ✅ 必装 |
 | **pnpm** | 最新版 | `npm install -g pnpm` | ✅ 必装 |
 | **Git** | 任意版本 | [git-scm.com](https://git-scm.com/) | 克隆用 |
+
+> 💡 安装 Python 后执行 `pip install mcp markitdown`，MCP 服务器才能正常启动。
+> 一键安装脚本会自动完成此步骤。
 
 > 💡 文档中部分脚本引用 `$env:DSH_DESKTOP_PATH` 环境变量，指向 DSH 桌面版安装目录。
 > 首次使用前请设置：`$env:DSH_DESKTOP_PATH = "D:\Tools\DeepSeek-Harness-Desktop"`（改为你的实际路径），
@@ -209,16 +217,18 @@ pnpm install
 
 ## 🔌 MCP 服务器列表
 
-| MCP | 功能 | 依赖 |
-|-----|------|------|
-| `dsh-history` | 历史会话查询/搜索 | Python + server.py |
-| `dsh-vision` | 图片分析（Ollama qwen2.5vl） | Python + Ollama |
-| `dsh-computer` | 桌面操作（截图/点击/键鼠） | @zavora-ai/computer-use-mcp (MIT) |
-| `os-copilot` | 代码执行（Python/Shell/文件操作） | Python + server.py |
-| `dsh-browser` | 浏览器自动化（Playwright） | Node.js + Edge 扩展 |
-| `dsh-memory` | 长期记忆（语义检索） | Python + server.py |
-| `dsh-markitdown` | 文档转 Markdown | Python + MarkItDown |
-| `dsh-ocr` | 屏幕 OCR | Python + Windows OCR |
+> 所有服务端脚本已内置在 `scripts/mcp/` 目录。一键安装自动配置路径。
+
+| MCP | 功能 | 脚本 | 额外依赖 |
+|-----|------|------|----------|
+| `dsh-history` | 历史会话搜索 | `scripts/mcp/dsh-history-server.py` | `pip install mcp` |
+| `dsh-vision` | 图片分析（Ollama） | `scripts/mcp/dsh-vision-server.py` | Ollama + qwen2.5vl 模型 |
+| `dsh-computer` | 桌面操作 | —（npx） | `@zavora-ai/computer-use-mcp`（自动安装） |
+| `os-copilot` | 代码执行 | `scripts/mcp/os-copilot-server.py` | `pip install mcp` |
+| `dsh-browser` | 浏览器自动化 | —（npx） | `@playwright/mcp`（自动安装） |
+| `dsh-memory` | 长期记忆 | `scripts/mcp/dsh-memory-server.py` | `pip install mcp` |
+| `dsh-markitdown` | 文档转 Markdown | `scripts/mcp/dsh-markitdown-server.py` | `pip install mcp markitdown` |
+| `dsh-ocr` | 屏幕 OCR（Windows） | `scripts/mcp/dsh-ocr-server.py` | `pip install mcp`，Windows 10+ |
 
 ---
 

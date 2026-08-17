@@ -95,11 +95,16 @@ Living-Dream-DSH/
 │   ├── AGENTS.md                   # AI instructions
 │   └── .credentials.yaml.template  # API Key template
 ├── scripts/
-│   ├── start-dsh.bat.template   # DSH launcher
-│   ├── secrets.ps1                 # DPAPI key decryption
-│   ├── start-dsh.bat.template      # Launcher template
-│   ├── os-copilot-mcp-server.py    # OS-Copilot MCP server
-│   └── os-copilot-mcp-README.md    # OS-Copilot MCP docs
+│   ├── start-dsh.bat.template       # DSH launcher
+│   ├── secrets.ps1                  # DPAPI key decryption
+│   ├── mcp/                         # MCP server scripts (all 6 bundled)
+│   │   ├── dsh-history-server.py
+│   │   ├── dsh-vision-server.py
+│   │   ├── dsh-memory-server.py
+│   │   ├── dsh-markitdown-server.py
+│   │   ├── dsh-ocr-server.py
+│   │   └── os-copilot-server.py
+│   └── os-copilot-mcp-README.md     # OS-Copilot MCP docs
 ├── plugins/
 │   └── README.md                   # Plugin installation guide
 └── docs/
@@ -121,6 +126,9 @@ Living-Dream-DSH/
 | **Python** | 3.13+ | [python.org](https://python.org/) | ✅ Yes |
 | **pnpm** | Latest | `npm install -g pnpm` | ✅ Yes |
 | **Git** | Any | [git-scm.com](https://git-scm.com/) | For clone |
+
+> 💡 After installing Python, run `pip install mcp markitdown` to enable all MCP servers.
+> The one-click installer does this automatically.
 
 > 💡 Some scripts reference `$env:DSH_DESKTOP_PATH` — set it to your DSH Desktop install directory:
 > `$env:DSH_DESKTOP_PATH = "D:\Tools\DeepSeek-Harness-Desktop"` (change to your actual path),
@@ -209,16 +217,18 @@ See [configs/README.md](configs/README.md)
 
 ## 🔌 MCP Server List
 
-| MCP | Function | Dependencies |
-|-----|----------|--------------|
-| `dsh-history` | History session query/search | Python + server.py |
-| `dsh-vision` | Image analysis (Ollama qwen2.5vl) | Python + Ollama |
-| `dsh-computer` | Desktop automation (screenshot/click/keyboard) | @zavora-ai/computer-use-mcp (MIT) |
-| `os-copilot` | Code execution (Python/Shell/File ops) | Python + server.py |
-| `dsh-browser` | Browser automation (Playwright) | Node.js + Edge extension |
-| `dsh-memory` | Long-term memory (semantic search) | Python + server.py |
-| `dsh-markitdown` | Document to Markdown | Python + MarkItDown |
-| `dsh-ocr` | Screen OCR | Python + Windows OCR |
+> All server scripts are bundled in `scripts/mcp/`. One-click installer configures paths automatically.
+
+| MCP | Function | Script | Extra Dependencies |
+|-----|----------|--------|--------------------|
+| `dsh-history` | Session history search | `scripts/mcp/dsh-history-server.py` | `pip install mcp` |
+| `dsh-vision` | Image analysis (Ollama) | `scripts/mcp/dsh-vision-server.py` | Ollama + qwen2.5vl model |
+| `dsh-computer` | Desktop automation | — (npx) | `@zavora-ai/computer-use-mcp` (auto-installed) |
+| `os-copilot` | Code execution | `scripts/mcp/os-copilot-server.py` | `pip install mcp` |
+| `dsh-browser` | Browser automation | — (npx) | `@playwright/mcp` (auto-installed) |
+| `dsh-memory` | Long-term memory | `scripts/mcp/dsh-memory-server.py` | `pip install mcp` |
+| `dsh-markitdown` | Document → Markdown | `scripts/mcp/dsh-markitdown-server.py` | `pip install mcp markitdown` |
+| `dsh-ocr` | Screen OCR (Windows) | `scripts/mcp/dsh-ocr-server.py` | `pip install mcp`, Windows 10+ |
 
 ---
 
