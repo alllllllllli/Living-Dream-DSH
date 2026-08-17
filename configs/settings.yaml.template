@@ -1,0 +1,96 @@
+# ============================================================
+# DSH Ultra Config - 全局设置模板
+# ============================================================
+# 复制到 ~/.dsh/settings.yaml
+# 修改 API Key 环境变量和模型配置后重启 DSH 桌面版生效
+# ============================================================
+
+ui-onboarding:
+  welcomeNoticeVersion: 2026-08-13.1
+
+# 默认模型配置
+agent-default-model:
+  provider: opencode-go  # 或 cnb, amd-radeon 等
+  model: "mimo-v2.5-pro"  # 或 deepseek-v4-pro, deepseek-v4-flash 等
+
+# 模型提供商配置
+llm-pi-ai:
+  providers:
+    # AMD Radeon Cloud（免费）
+    amd-radeon:
+      apiKeyEnv: AMD_RADEON_API_KEY
+      api: openai-completions
+      baseURL: https://developer.amd.com.cn/radeon/api/v1
+      models:
+        - id: DeepSeek-V4-Flash
+          name: DeepSeek-V4-Flash
+          contextWindow: 1048576
+
+    # OpenCode Go（推荐）
+    opencode-go:
+      apiKeyEnv: OPENCODE_GO_API_KEY
+      models:
+        - id: deepseek-v4-flash
+          name: DeepSeek V4 Flash
+          contextWindow: 1000000
+          maxTokens: 384000
+        - id: deepseek-v4-pro
+          name: DeepSeek V4 Pro
+          contextWindow: 1000000
+          maxTokens: 384000
+        - id: mimo-v2.5
+          name: MiMo V2.5
+          contextWindow: 1000000
+          maxTokens: 128000
+        - id: mimo-v2.5-pro
+          name: MiMo V2.5 Pro
+          contextWindow: 1048576
+          maxTokens: 128000
+
+    # CNB 代理（免费，需先启动 cnb_proxy.py）
+    cnb:
+      api: openai-completions
+      apiKeyEnv: CNB_API_KEY
+      baseURL: http://127.0.0.1:8800/v1
+      models:
+        - id: deepseek-v4-flash
+          name: DeepSeek V4 Flash
+          contextWindow: 1000000
+          maxTokens: 384000
+        - id: deepseek-v4-pro
+          name: DeepSeek V4 Pro
+          contextWindow: 1000000
+          maxTokens: 384000
+
+# 权限配置
+permission:
+  defaultPreset: danger-full-access  # 或 standard, read-only
+
+# Agent 预设
+agent-presets:
+  default: standard
+
+# 主题配置
+ui-theme:
+  preference: system  # 或 light, dark
+
+# 视觉工具包配置（可选）
+vision-toolkit:
+  imageInputVariants:
+    enabled: false
+    autoSwitch: false
+  provider:
+    baseUrl: https://open.bigmodel.cn/api/paas/v4/chat/completions
+    credential: VISION_API_KEY
+    model: glm-4v-flash
+    protocol: openai
+    anthropicThinking: omit
+    userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+  language: zh
+  timeoutMs: 60000
+  maxImageBytes: 10485760
+  maxImagePixels: 40000000
+  concurrency: 4
+  runtime:
+    mode: managed
+  allowedDirs: []

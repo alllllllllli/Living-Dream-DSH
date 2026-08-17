@@ -1,0 +1,31 @@
+@echo off
+:: ============================================================
+:: DSH Ultra Config - 启动器模板
+:: ============================================================
+:: 自动检测 CNB 代理并启动 DSH 桌面版
+:: 复制到 D:\ToolsDeepSeek-Harness-Desktop\start-dsh.bat
+:: ============================================================
+
+setlocal enabledelayedexpansion
+
+:: 配置
+set DSH_EXE=D:\ToolsDeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe
+set CNB_PROXY=G:\vision-files\cnb_proxy.py
+set CNB_PORT=8800
+
+:: 检查 CNB 代理是否已运行
+echo [DSH] 检查 CNB 代理...
+netstat -an | findstr ":%CNB_PORT% " | findstr "LISTENING" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [DSH] CNB 代理未运行，正在启动...
+    start /b python "%CNB_PROXY%" --port %CNB_PORT%
+    timeout /t 2 /nobreak >nul
+) else (
+    echo [DSH] CNB 代理已运行
+)
+
+:: 启动 DSH 桌面版
+echo [DSH] 启动 DeepSeek Harness 桌面版...
+start "" "%DSH_EXE%"
+
+echo [DSH] 启动完成

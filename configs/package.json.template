@@ -1,0 +1,30 @@
+{
+  "name": "dsh-profile-web",
+  "private": true,
+  "dsh": {
+    "profile": {
+      "bundles": [
+        "@deepseek-ai/dsh-base",
+        "@deepseek-ai/dsh-web-app",
+        "@xiaweiliang060035/dsh-opencode-go-usage",
+        "billion-context-dsh",
+        "dsh-rss",
+        "dsh-calendar",
+        "dsh-email",
+        "dsh-ffmpeg",
+        "@anionex/dsh-vision-toolkit",
+        "@dsh-community/dsh-paste-input"
+      ]
+    }
+  },
+  "dependencies": {
+    "@anionex/dsh-vision-toolkit": "^0.1.8",
+    "@dsh-community/dsh-paste-input": "file:D:/Tools/dsh-plugins/dsh-paste-input",
+    "@xiaweiliang060035/dsh-opencode-go-usage": "^0.3.0",
+    "billion-context-dsh": "0.2.1",
+    "dsh-calendar": "0.3.2",
+    "dsh-email": "0.6.2",
+    "dsh-ffmpeg": "0.1.0",
+    "dsh-rss": "0.2.0"
+  }
+}

@@ -1,0 +1,142 @@
+# ============================================================
+# DSH Ultra Config - MCP 配置模板
+# ============================================================
+# 复制到 ~/.dsh/profiles/web/cordis.patch.yml
+# 修改路径和 API Key 后重启 DSH 桌面版生效
+# ============================================================
+
+# ============ dsh 全家桶 MCP ============
+
+# 1. 历史会话查询: list_sessions / get_session / search_history
+- insert:
+    - id: mcp-dsh-history
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        transport: stdio
+        serverName: dsh-history
+        command: python  # 或完整路径如 C:/Users/<你的用户名>/AppData/Local/Python/pythoncore-3.14-64/python.exe
+        args:
+          - G:/path/to/dsh-history-mcp/server.py  # 修改为你的实际路径
+        env: {}
+        cwd: ''
+        toolCallTimeoutMs: 60000
+        failOnStartupError: false
+
+# 2. 看图: describe_image (本地 Ollama qwen2.5vl)
+- insert:
+    - id: mcp-dsh-vision
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        transport: stdio
+        serverName: dsh-vision
+        command: python
+        args:
+          - G:/path/to/vision-mcp/server.py  # 修改为你的实际路径
+        env: {}
+        cwd: ''
+        toolCallTimeoutMs: 240000
+        failOnStartupError: false
+
+# 3. 屏幕操作: computer-use (截屏/点击/键鼠)
+- insert:
+    - id: mcp-dsh-computer
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        transport: stdio
+        serverName: dsh-computer
+        command: D:/path/to/computer-use-mcp/computer-use.exe  # 修改为你的实际路径
+        args:
+          - mcp
+        env: {}
+        cwd: ''
+        toolCallTimeoutMs: 120000
+        failOnStartupError: false
+
+# 4. 浏览器: Playwright MCP (--extension 模式: 连接正在运行的 Edge, 真实 profile/登录态)
+- insert:
+    - id: mcp-dsh-browser
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        transport: stdio
+        serverName: dsh-browser
+        command: D:/path/to/node.exe  # 修改为你的 Node.js 路径
+        args:
+          - D:/path/to/node_modules/@playwright/mcp/cli.js  # 修改为你的实际路径
+          - --browser
+          - msedge
+          - --extension
+        env:
+          # 可选：跳过每次重启后的连接确认弹窗
+          # PLAYWRIGHT_MCP_EXTENSION_TOKEN: your-token-here
+        cwd: ''
+        toolCallTimeoutMs: 120000
+        failOnStartupError: false
+
+# 5. 长期记忆: remember / recall
+- insert:
+    - id: mcp-dsh-memory
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        transport: stdio
+        serverName: dsh-memory
+        command: python
+        args:
+          - G:/path/to/memory-mcp/server.py  # 修改为你的实际路径
+        env:
+          MEMORY_AGENT: dsh
+        cwd: ''
+        toolCallTimeoutMs: 120000
+        failOnStartupError: false
+
+# 6. 文件转换: convert_to_markdown (MarkItDown: PDF/Word/Excel/PPT/EPUB/HTML 等转 Markdown)
+- insert:
+    - id: mcp-dsh-markitdown
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        transport: stdio
+        serverName: dsh-markitdown
+        command: D:/path/to/venv/Scripts/python.exe  # 修改为你的 Python venv 路径
+        args:
+          - G:/path/to/markitdown-mcp/server.py  # 修改为你的实际路径
+        env: {}
+        cwd: ''
+        toolCallTimeoutMs: 120000
+        failOnStartupError: false
+
+# 7. 屏幕 OCR: ocr_screen / ocr_region / ocr_screen_text (Windows.Media.Ocr 离线识别)
+- insert:
+    - id: mcp-dsh-ocr
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        transport: stdio
+        serverName: dsh-ocr
+        command: G:/path/to/screen-ocr-mcp/venv/Scripts/python.exe  # 修改为你的 Python venv 路径
+        args:
+          - G:/path/to/screen-ocr-mcp/server.py  # 修改为你的实际路径
+        env: {}
+        cwd: ''
+        toolCallTimeoutMs: 120000
+        failOnStartupError: false
+
+# ============ 可选配置 ============
+
+# 8. 用户全局指令文件（可选）
+# - id: agent-instructions
+#   config:
+#     maxBytes: 65536
+#     dshHome: D:/path/to/your/dsh  # 修改为你的实际路径
+
+# 9. dsh-email: 邮箱配置（可选）
+# - id: tool-email
+#   config:
+#     provider: '163'  # 或 gmail, outlook 等
+#     user: your-email@163.com
+#     password: your-auth-code  # 授权码，不是登录密码
+
+# 10. dsh-calendar: 日历配置（可选）
+# - id: calendar
+#   config:
+#     provider: custom
+#     caldavUrl: 'https://your-caldav-url/events/'
+#     username: your-username
+#     password: your-password
