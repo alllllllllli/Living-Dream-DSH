@@ -131,8 +131,8 @@ Living-Dream-DSH/
 > 💡 安装 Python 后执行 `pip install mcp markitdown`，MCP 服务器才能正常启动。
 > 一键安装脚本会自动完成此步骤。
 
-> 💡 文档中部分脚本引用 `$env:DSH_DESKTOP_PATH` 环境变量，指向 DSH 桌面版安装目录。
-> 首次使用前请设置：`$env:DSH_DESKTOP_PATH = "D:\Tools\DeepSeek-Harness-Desktop"`（改为你的实际路径），
+> 💡 启动器会自动探测 DSH 桌面版安装路径。如果探测失败，请设置：
+> `$env:DSH_DESKTOP_PATH = "D:\Tools\DeepSeekHarness-Desktop"`（改为你的实际路径），
 > 或添加到系统环境变量永久生效。
 
 ### 方式一：离线安装 ⭐ 推荐

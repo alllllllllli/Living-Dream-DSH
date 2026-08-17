@@ -131,8 +131,8 @@ Living-Dream-DSH/
 > 💡 After installing Python, run `pip install mcp markitdown` to enable all MCP servers.
 > The one-click installer does this automatically.
 
-> 💡 Some scripts reference `$env:DSH_DESKTOP_PATH` — set it to your DSH Desktop install directory:
-> `$env:DSH_DESKTOP_PATH = "D:\Tools\DeepSeek-Harness-Desktop"` (change to your actual path),
+> 💡 The launcher auto-detects DSH Desktop from common install paths. If it fails, set
+> `$env:DSH_DESKTOP_PATH = "D:\Tools\DeepSeekHarness-Desktop"` (your actual path),
 > or add it as a system environment variable for persistence.
 
 ### Option 1: Offline Install ⭐ Recommended

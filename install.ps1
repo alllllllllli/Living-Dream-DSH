@@ -303,11 +303,44 @@ if ($LASTEXITCODE -eq 0) {
 # ============================================================
 Write-Step "Creating desktop shortcut..."
 
+# Auto-detect DSH Desktop install path
+$dshExe = $null
+$candidates = @(
+    "$env:DSH_DESKTOP_PATH\DeepSeekHarness.exe",
+    "$env:ProgramFiles\DeepSeekHarness-Desktop\DeepSeekHarness.exe",
+    "$env:ProgramFiles\DeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe",
+    "$env:LOCALAPPDATA\DeepSeekHarness-Desktop\DeepSeekHarness.exe",
+    "D:\Tools\DeepSeekHarness-Desktop\DeepSeekHarness.exe",
+    "D:\Tools\DeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
+)
+foreach ($c in $candidates) {
+    if ($c -and (Test-Path $c)) {
+        $dshExe = $c
+        break
+    }
+}
+
 $startScript = Join-Path $repoDir "scripts\start-dsh.bat"
 $startTemplate = Join-Path $repoDir "scripts\start-dsh.bat.template"
 
 if (-not (Test-Path $startScript)) {
-    Copy-Item $startTemplate $startScript
+    if ($dshExe) {
+        # Generate bat with detected path (skip auto-detect, go straight to :found)
+        $bat = @"
+@echo off
+setlocal enabledelayedexpansion
+set "DSH_EXE=$dshExe"
+echo [DSH] Starting: !DSH_EXE!
+start "" "!DSH_EXE!"
+echo [DSH] Access DSH at: http://127.0.0.1:3080
+"@
+        Set-Content $startScript $bat -Encoding ASCII
+        Write-OK "Generated start-dsh.bat (detected: $dshExe)"
+    } else {
+        # Fall back to template (auto-detect at runtime)
+        Copy-Item $startTemplate $startScript
+        Write-Warn "DSH Desktop not detected — start-dsh.bat uses auto-detect (may need manual edit)"
+    }
 }
 
 $shortcutPath = "$env:USERPROFILE\Desktop\Living Dream DSH.lnk"

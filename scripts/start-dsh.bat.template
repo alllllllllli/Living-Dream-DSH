@@ -1,38 +1,58 @@
 @echo off
 :: ============================================================
-:: Living Dream DSH - Launcher Template
+:: Living Dream DSH - Launcher
 :: ============================================================
-:: Start DSH Desktop
-:: Copy to your DSH directory and customize paths
+:: Auto-detects DSH Desktop from:
+::   1. DSH_DESKTOP_PATH environment variable
+::   2. Common install locations
+::   3. Edit the path below if auto-detect fails
 :: ============================================================
 
 setlocal enabledelayedexpansion
 
 :: ============================================================
-:: Configuration - Customize these paths
+:: Auto-detect DSH Desktop path
 :: ============================================================
 
-:: DSH Desktop executable path
-:: Option 1: Default installation path
-:: set "DSH_EXE=%ProgramFiles%\DeepSeek Harness\DeepSeek Harness 桌面版.exe"
-:: Option 2: Custom installation path (uncomment and modify)
-set "DSH_EXE=D:\Tools\DeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
+set "DSH_EXE="
 
-:: ============================================================
-:: Start DSH Desktop
-:: ============================================================
-
-:: Check if DSH Desktop exists
-if not exist "%DSH_EXE%" (
-    echo [ERROR] DSH Desktop not found: %DSH_EXE%
-    echo [INFO] Please modify DSH_EXE path in this script
-    pause
-    exit /b 1
+:: 1. Check DSH_DESKTOP_PATH env var
+if defined DSH_DESKTOP_PATH (
+    if exist "%DSH_DESKTOP_PATH%\DeepSeekHarness.exe" (
+        set "DSH_EXE=%DSH_DESKTOP_PATH%\DeepSeekHarness.exe"
+        goto :found
+    )
+    if exist "%DSH_DESKTOP_PATH%\DeepSeek Harness 桌面版.exe" (
+        set "DSH_EXE=%DSH_DESKTOP_PATH%\DeepSeek Harness 桌面版.exe"
+        goto :found
+    )
 )
 
-:: Start DSH Desktop
-echo [DSH] Starting DeepSeek Harness Desktop...
-start "" "%DSH_EXE%"
+:: 2. Common install locations
+for %%P in (
+    "%ProgramFiles%\DeepSeekHarness-Desktop\DeepSeekHarness.exe"
+    "%ProgramFiles%\DeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
+    "%LOCALAPPDATA%\DeepSeekHarness-Desktop\DeepSeekHarness.exe"
+    "D:\Tools\DeepSeekHarness-Desktop\DeepSeekHarness.exe"
+    "D:\Tools\DeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
+    "C:\Tools\DeepSeekHarness-Desktop\DeepSeekHarness.exe"
+) do (
+    if exist %%P (
+        set "DSH_EXE=%%~P"
+        goto :found
+    )
+)
+
+:: 3. Not found — ask user to edit
+echo [ERROR] DSH Desktop not found!
+echo [INFO] Set DSH_DESKTOP_PATH env var to your install directory, or edit this script.
+echo [INFO] Example: set DSH_DESKTOP_PATH=D:\Tools\DeepSeekHarness-Desktop
+pause
+exit /b 1
+
+:found
+echo [DSH] Starting: !DSH_EXE!
+start "" "!DSH_EXE!"
 
 echo [DSH] Done!
 echo.
