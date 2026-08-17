@@ -96,6 +96,7 @@ Living-Dream-DSH/
 │   └── .credentials.yaml.template  # API Key 模板
 ├── scripts/
 │   ├── start-dsh.bat.template       # DSH 启动器
+│   ├── proxy.js                     # 手机远程代理（跨域改写）
 │   ├── secrets.ps1                  # DPAPI 密钥解密（读取 secrets.json）
 │   ├── mcp/                         # MCP 服务端脚本（6 个全部内置）
 │   │   ├── dsh-history-server.py
@@ -254,8 +255,8 @@ winget install tailscale.tailscale
 tailscale up
 
 # 3. 启动改写代理（必须先过 8090，DSH Web UI 有跨域检查，直连 3080 会报 CORS）
-# 见 docs/phone-remote.md 里的 proxy.js 改写代理
-node proxy.js   # 监听 127.0.0.1:8090
+npm install http-proxy                  # 首次需安装依赖
+node scripts/proxy.js                   # 监听 127.0.0.1:8090
 
 # 4. 配置 serve（指向 8090 代理，不是 3080）
 tailscale serve --https=443 --bg http://127.0.0.1:8090

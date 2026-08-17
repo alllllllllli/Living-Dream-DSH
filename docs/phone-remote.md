@@ -64,42 +64,17 @@ https://desktop-or1ha06.tailea2f65.ts.net
 
 ## 改写代理（解决跨域问题）
 
-DSH 的 Web UI 有跨域检查，需要改写请求头。创建 `proxy.js`：
+DSH 的 Web UI 有跨域检查，需要改写请求头。仓库已内置 `scripts/proxy.js`，直接使用：
 
-```javascript
-const http = require('http');
-const httpProxy = require('http-proxy');
-
-const proxy = httpProxy.createProxyServer({
-  target: 'http://127.0.0.1:3080',
-  ws: true
-});
-
-const server = http.createServer((req, res) => {
-  // 改写请求头
-  req.headers['host'] = '127.0.0.1:3080';
-  req.headers['origin'] = 'http://127.0.0.1:3080';
-  req.headers['sec-fetch-site'] = 'same-origin';
-  
-  proxy.web(req, res);
-});
-
-// WebSocket 支持
-server.on('upgrade', (req, socket, head) => {
-  req.headers['host'] = '127.0.0.1:3080';
-  req.headers['origin'] = 'http://127.0.0.1:3080';
-  proxy.ws(req, socket, head);
-});
-
-server.listen(8090, '127.0.0.1', () => {
-  console.log('Proxy listening on 127.0.0.1:8090');
-});
-```
-
-启动代理：
 ```powershell
-node proxy.js
+# 首次需安装依赖
+npm install http-proxy
+
+# 启动代理
+node scripts/proxy.js
 ```
+
+代理代码见 [`scripts/proxy.js`](../scripts/proxy.js)。
 
 然后修改 Tailscale serve 指向代理：
 ```powershell

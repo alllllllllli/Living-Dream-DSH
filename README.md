@@ -96,6 +96,7 @@ Living-Dream-DSH/
 │   └── .credentials.yaml.template  # API Key template
 ├── scripts/
 │   ├── start-dsh.bat.template       # DSH launcher
+│   ├── proxy.js                     # Phone remote proxy (CORS rewrite)
 │   ├── secrets.ps1                  # DPAPI key decryption (reads secrets.json)
 │   ├── mcp/                         # MCP server scripts (all 6 bundled)
 │   │   ├── dsh-history-server.py
@@ -254,8 +255,9 @@ winget install tailscale.tailscale
 tailscale up
 
 # 3. Start the rewrite proxy (must go through 8090 - DSH Web UI has CORS
-#    checks, connecting directly to 3080 fails). See docs/phone-remote.md
-node proxy.js   # listens on 127.0.0.1:8090
+#    checks, connecting directly to 3080 fails)
+npm install http-proxy                  # one-time dependency
+node scripts/proxy.js                   # listens on 127.0.0.1:8090
 
 # 4. Configure serve (point to the 8090 proxy, NOT 3080)
 tailscale serve --https=443 --bg http://127.0.0.1:8090
