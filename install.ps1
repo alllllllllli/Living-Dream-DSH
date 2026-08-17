@@ -239,6 +239,28 @@ if ($zhipuKey) {
 Set-Content $credFile $credContent -Encoding UTF8
 
 # ============================================================
+# 5b. DPAPI-encrypt keys to secrets.json
+# ============================================================
+Add-Type -AssemblyName System.Security
+$secretsObj = [ordered]@{}
+$toEncrypt = @{
+    "DEEPSEEK_API_KEY" = $dsKey
+    "VISION_API_KEY"   = $zhipuKey
+}
+foreach ($entry in $toEncrypt.GetEnumerator()) {
+    if ($entry.Value) {
+        $plain = [System.Text.Encoding]::UTF8.GetBytes($entry.Value)
+        $blob  = [Security.Cryptography.ProtectedData]::Protect($plain, $null, [Security.Cryptography.DataProtectionScope]::CurrentUser)
+        $secretsObj[$entry.Key] = [Convert]::ToBase64String($blob)
+    }
+}
+if ($secretsObj.Count -gt 0) {
+    $secretsFile = "$dshHome\secrets.json"
+    $secretsObj | ConvertTo-Json | Set-Content $secretsFile -Encoding UTF8
+    Write-OK "DPAPI-encrypted secrets saved to $secretsFile ($($secretsObj.Count) keys)"
+}
+
+# ============================================================
 # 6. Install Plugin Dependencies
 # ============================================================
 Write-Step "Installing plugin dependencies..."

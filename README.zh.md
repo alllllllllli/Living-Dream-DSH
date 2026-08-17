@@ -75,7 +75,7 @@
 | 📱 **手机远程访问** | Tailscale + 改写代理，手机浏览器操作 DSH |
 | 🖼️ **发图自动识别** | GLM-4V-Flash 免费视觉描述（仅桌面版） |
 | 📁 **文件拖拽上传** | 自研 dsh-file-uploads 插件 |
-| 🔐 **密钥存储** | 本地 `~/.dsh/.credentials.yaml`（安装时掩码输入）|
+| 🔐 **密钥存储** | 明文 `.credentials.yaml`（DSH 读取）+ DPAPI 加密备份 `secrets.json`（`secrets.ps1` 解密）|
 | 🛡️ **防坑指南** | 踩过的坑和解决方案全记录 |
 
 ---
@@ -96,7 +96,7 @@ Living-Dream-DSH/
 │   └── .credentials.yaml.template  # API Key 模板
 ├── scripts/
 │   ├── start-dsh.bat.template       # DSH 启动器
-│   ├── secrets.ps1                  # DPAPI 密钥解密
+│   ├── secrets.ps1                  # DPAPI 密钥解密（读取 secrets.json）
 │   ├── mcp/                         # MCP 服务端脚本（6 个全部内置）
 │   │   ├── dsh-history-server.py
 │   │   ├── dsh-vision-server.py

@@ -75,7 +75,7 @@ A battle-tested DSH configuration framework with 8+ MCP servers, custom plugins,
 | 📱 **Mobile Remote Access** | Tailscale + Proxy, control DSH from phone |
 | 🖼️ **Auto Image Recognition** | GLM-4V-Flash free vision (Desktop only) |
 | 📁 **File Drag & Drop** | Custom dsh-file-uploads plugin |
-| 🔐 **Secure Key Storage** | DPAPI encryption + secrets.ps1 |
+| 🔐 **Secure Key Storage** | DPAPI-encrypted backup (`secrets.json` + `secrets.ps1`) alongside plaintext `.credentials.yaml` |
 | 🛡️ **Troubleshooting Guide** | All pitfalls and solutions documented |
 
 ---
@@ -96,7 +96,7 @@ Living-Dream-DSH/
 │   └── .credentials.yaml.template  # API Key template
 ├── scripts/
 │   ├── start-dsh.bat.template       # DSH launcher
-│   ├── secrets.ps1                  # DPAPI key decryption
+│   ├── secrets.ps1                  # DPAPI key decryption (reads secrets.json)
 │   ├── mcp/                         # MCP server scripts (all 6 bundled)
 │   │   ├── dsh-history-server.py
 │   │   ├── dsh-vision-server.py
