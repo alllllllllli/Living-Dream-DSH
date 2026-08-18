@@ -25,6 +25,20 @@ $script:dshExe = $null
 $script:pkgCreated = $false
 $script:logFile = "$env:TEMP\dsh-install-$(Get-Date -Format 'yyyyMMdd-HHmmss').log"
 
+# ── Offline detection ─────────────────────────────────────
+# Check script dir first, then parent (for SFX layout where
+# install.bat is inside Living-Dream-DSH/ but deps/ is at root)
+$script:DEPS_DIR = Join-Path $PSScriptRoot "deps"
+$script:BUNDLED_REPO = Join-Path $PSScriptRoot "Living-Dream-DSH"
+if (-not ((Test-Path $script:DEPS_DIR) -and (Test-Path $script:BUNDLED_REPO))) {
+    $parent = Split-Path $PSScriptRoot -Parent
+    if ($parent) {
+        $script:DEPS_DIR = Join-Path $parent "deps"
+        $script:BUNDLED_REPO = Join-Path $parent "Living-Dream-DSH"
+    }
+}
+$script:OFFLINE = (Test-Path $script:DEPS_DIR) -and (Test-Path $script:BUNDLED_REPO)
+
 function Write-Log($msg) {
     $ts = Get-Date -Format "HH:mm:ss"
     "[$ts] $msg" | Out-File $script:logFile -Append -Encoding UTF8
@@ -70,7 +84,7 @@ $lblBannerTitle.AutoSize = $true
 $banner.Controls.Add($lblBannerTitle)
 
 $lblBannerSub = New-Object System.Windows.Forms.Label
-$lblBannerSub.Text = "DeepSeek Harness Ultimate Config Framework"
+$lblBannerSub.Text = if ($script:OFFLINE) { "Offline Installer - No Internet Required" } else { "DeepSeek Harness Ultimate Config Framework" }
 $lblBannerSub.ForeColor = [System.Drawing.Color]::FromArgb(200, 220, 255)
 $lblBannerSub.Font = $fontSmall
 $lblBannerSub.Location = New-Object System.Drawing.Point(22, 50)
@@ -129,7 +143,21 @@ $lblWelcome.AutoSize = $true
 $pageWelcome.Controls.Add($lblWelcome)
 
 $txtWelcome = New-Object System.Windows.Forms.Label
-$txtWelcome.Text = @"
+if ($script:OFFLINE) {
+    $txtWelcome.Text = @"
+This is the offline installer. All dependencies are bundled -
+no internet connection is required.
+
+What will be installed:
+  • Node.js, Python, Git (if not already present)
+  • Living Dream DSH config framework
+  • 8+ MCP servers + plugins
+  • Desktop shortcut
+
+Click Next to continue.
+"@
+} else {
+    $txtWelcome.Text = @"
 This will install Living Dream DSH - the ultimate DeepSeek Harness desktop configuration framework.
 
 Features:
@@ -140,6 +168,7 @@ Features:
 
 Click Next to continue.
 "@
+}
 $txtWelcome.Font = $fontBody
 $txtWelcome.Location = New-Object System.Drawing.Point(20, 70)
 $txtWelcome.Size = New-Object System.Drawing.Size(540, 250)
@@ -380,6 +409,15 @@ function Test-Command($cmd) {
     catch { return $false }
 }
 
+function Refresh-Path {
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+}
+
+function Find-Dep($pattern) {
+    $found = Get-ChildItem $script:DEPS_DIR -Filter $pattern -ErrorAction SilentlyContinue | Select-Object -First 1
+    return $found
+}
+
 # ── Install Logic ──────────────────────────────────────────
 function Start-Install {
     $script:installDir = $txtLocation.Text
@@ -389,19 +427,32 @@ function Start-Install {
     $step++; $progressBar.Value = [Math]::Min(100, [int]($step / $steps * 100))
     $txtProgress.Text = "Checking dependencies..."
     Append-Log "=== Living Dream DSH Installer ==="
+    Append-Log "Mode: $(if ($script:OFFLINE) { 'OFFLINE (bundled deps)' } else { 'Online' })"
     Append-Log "Install directory: $($script:installDir)"
     Append-Log ""
+
+    # ── Helper: refresh PATH after silent install ──
 
     # Node.js
     Append-Log "[1/$steps] Checking Node.js..."
     if (Test-Command "node") {
         $v = node --version 2>&1
         Append-Log "  Node.js $v ✓"
+    } elseif ($script:OFFLINE) {
+        $nodeMsi = Find-Dep "node-*.msi"
+        if ($nodeMsi) {
+            Append-Log "  Installing $($nodeMsi.Name) from deps/..."
+            & cmd /c "msiexec /i `"$($nodeMsi.FullName)`" /qn /norestart >nul 2>&1"
+            Refresh-Path
+            if (Test-Command "node") { Append-Log "  Node.js installed ✓" } else { Append-Log "  ✗ Node.js install failed (may need PATH refresh)" }
+        } else {
+            Append-Log "  ✗ No node-*.msi in deps/"; return
+        }
     } else {
-        Append-Log "  Installing Node.js..."
+        Append-Log "  Installing Node.js via winget..."
         & cmd /c "winget install OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements >nul 2>&1"
         if ($LASTEXITCODE -ne 0) { Append-Log "  ✗ Failed to install Node.js"; return }
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        Refresh-Path
         Append-Log "  Node.js installed ✓"
     }
 
@@ -410,11 +461,21 @@ function Start-Install {
     if (Test-Command "python") {
         $v = python --version 2>&1
         Append-Log "  $v ✓"
+    } elseif ($script:OFFLINE) {
+        $pyExe = Find-Dep "python-*.exe"
+        if ($pyExe) {
+            Append-Log "  Installing $($pyExe.Name) from deps/ (silent, ~1 min)..."
+            & cmd /c "`"$($pyExe.FullName)`" /quiet InstallAllUsers=0 PrependPath=1 Include_pip=1 >nul 2>&1"
+            Refresh-Path
+            if (Test-Command "python") { Append-Log "  Python installed ✓" } else { Append-Log "  ✗ Python install failed" }
+        } else {
+            Append-Log "  ✗ No python-*.exe in deps/"; return
+        }
     } else {
-        Append-Log "  Installing Python..."
+        Append-Log "  Installing Python via winget..."
         & cmd /c "winget install Python.Python.3.13 --accept-package-agreements --accept-source-agreements >nul 2>&1"
         if ($LASTEXITCODE -ne 0) { Append-Log "  ✗ Failed to install Python"; return }
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        Refresh-Path
         Append-Log "  Python installed ✓"
     }
 
@@ -435,21 +496,44 @@ function Start-Install {
     if (Test-Command "git") {
         $v = git --version 2>&1
         Append-Log "  $v ✓"
+    } elseif ($script:OFFLINE) {
+        $gitExe = Find-Dep "Git-*.exe"
+        if ($gitExe) {
+            Append-Log "  Installing $($gitExe.Name) from deps/ (silent)..."
+            & cmd /c "`"$($gitExe.FullName)`" /VERYSILENT /NORESTART /NOCANCEL /SP- /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /COMPONENTS=`"icons,ext\reg\shellhere,assoc,assoc_sh`" >nul 2>&1"
+            Refresh-Path
+            if (Test-Command "git") { Append-Log "  Git installed ✓" } else { Append-Log "  ⚠ Git install may need PATH refresh" }
+        } else {
+            Append-Log "  ✗ No Git-*.exe in deps/"; return
+        }
     } else {
-        Append-Log "  Installing Git..."
+        Append-Log "  Installing Git via winget..."
         & cmd /c "winget install Git.Git --accept-package-agreements --accept-source-agreements >nul 2>&1"
         if ($LASTEXITCODE -ne 0) { Append-Log "  ✗ Failed to install Git"; return }
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        Refresh-Path
         Append-Log "  Git installed ✓"
     }
 
     $step++; $progressBar.Value = [Math]::Min(100, [int]($step / $steps * 100))
-    $txtProgress.Text = "Cloning repository..."
+    $txtProgress.Text = if ($script:OFFLINE) { "Copying config files..." } else { "Cloning repository..." }
     Append-Log ""
-    Append-Log "[5/$steps] Cloning repository..."
+    Append-Log "[5/$steps] $(if ($script:OFFLINE) { 'Copying bundled repo...' } else { 'Cloning repository...' })"
 
     $repoDir = $script:installDir
-    if (Test-Path "$repoDir\.git") {
+    if ($script:OFFLINE) {
+        # Offline: copy bundled repo
+        if (Test-Path $script:BUNDLED_REPO) {
+            Append-Log "  Copying from bundled repo..."
+            # Create exclude list for xcopy
+            $excludeFile = Join-Path $env:TEMP "dsh-exclude.txt"
+            ".git`ndeps`nnode_modules`n__pycache__" | Out-File $excludeFile -Encoding ASCII
+            & cmd /c "xcopy `"$($script:BUNDLED_REPO)`" `"$repoDir`" /E /I /Y /Q /EXCLUDE:`"$excludeFile`" >nul 2>&1"
+            Remove-Item $excludeFile -Force -ErrorAction SilentlyContinue
+            if ($LASTEXITCODE -eq 0) { Append-Log "  Copied ✓" } else { Append-Log "  ✗ Copy failed"; return }
+        } else {
+            Append-Log "  ✗ Bundled repo not found at $($script:BUNDLED_REPO)"; return
+        }
+    } elseif (Test-Path "$repoDir\.git") {
         Append-Log "  Repository exists, updating..."
         Push-Location $repoDir
         & cmd /c "git pull --quiet >nul 2>&1"
