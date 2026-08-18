@@ -73,30 +73,33 @@ dsh plugin --profile web list | Select-String "billion"
 
 ### 4. MCP 服务器启动失败
 
-**症状**：工具调用超时或报错
+**症状**：工具调用超时、报错，或日志报 `spawn python ENOENT` / `ModuleNotFoundError`
 
 **排查步骤**：
 
 ```powershell
-# 1. 检查 MCP 服务器是否能独立运行（以本仓库自带的 OS-Copilot MCP 为例）
-python "$env:USERPROFILE\Living-Dream-DSH\scripts\os-copilot-mcp-server.py"
-
-# 2. 检查 Python 环境
+# 1. 检查 Python 是否正常
 python --version
-pip list | Select-String "mcp"
 
-# 3. 检查 cordis.patch.yml 配置
+# 2. 检查 MCP 依赖
+pip show mcp markitdown zstandard
+
+# 3. 测试单个 MCP server（以仓库自带的 history server 为例）
+cd scripts/mcp
+python dsh-history-server.py --help
+
+# 4. 检查 cordis.patch.yml 配置（路径应为绝对路径，安装脚本自动替换）
 Get-Content "$env:USERPROFILE\.dsh\profiles\web\cordis.patch.yml" | Select-String "command|args"
 ```
 
-**常见原因**：
-- Python 路径错误
-- 依赖未安装
-- 端口被占用
+**解决方案**：
+- 安装缺失的 Python 包：`pip install mcp markitdown zstandard`
+- 确认 Python 在 PATH 中
+- 检查 cordis.patch.yml 中的路径是否为绝对路径（安装脚本会自动替换 `scripts/mcp/...` 为绝对路径）
 
 ---
 
-### 6. 手机远程访问失败
+### 5. 手机远程访问失败
 
 **症状**：手机浏览器报 ERR_CONNECTION_ABORTED
 
@@ -117,32 +120,7 @@ Get-Content "<proxy.js 所在目录>\proxy.log" -Tail 50
 
 ---
 
-### 6. MCP 服务器启动失败
-
-**症状**：日志报 `spawn python ENOENT` 或 `ModuleNotFoundError`
-
-**排查步骤**：
-
-```powershell
-# 1. 检查 Python 是否正常
-python --version
-
-# 2. 检查 MCP 依赖
-pip show mcp markitdown zstandard
-
-# 3. 测试单个 MCP server
-cd scripts/mcp
-python dsh-history-server.py --help
-```
-
-**解决方案**：
-- 安装缺失的 Python 包：`pip install mcp markitdown zstandard`
-- 确认 Python 在 PATH 中
-- 检查 cordis.patch.yml 中的路径是否为绝对路径（安装脚本会自动替换）
-
----
-
-### 7. 发图不自动识别
+### 6. 发图不自动识别
 
 **症状**：发图后没有生成描述文件
 
@@ -167,7 +145,7 @@ curl.exe -s https://open.bigmodel.cn/api/paas/v4/chat/completions -H "Authorizat
 
 ---
 
-### 8. 密钥解密失败
+### 7. 密钥解密失败
 
 **症状**：secrets.ps1 报错
 

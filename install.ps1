@@ -309,7 +309,7 @@ if (Test-Path "$repoDir\node_modules\http-proxy") {
     Write-OK "http-proxy already installed"
 } else {
     Push-Location $repoDir
-    npm install 2>&1 | Out-Null
+    & cmd /c "npm install >nul 2>&1"
     $proxyExit = $LASTEXITCODE
     Pop-Location
     if ($proxyExit -eq 0) {
