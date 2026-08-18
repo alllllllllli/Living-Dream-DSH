@@ -88,12 +88,13 @@ Living-Dream-DSH/
 ├── README.zh.md                 # Chinese
 ├── LICENSE                      # MIT License
 ├── .gitignore
+├── setup.ps1                    # Headless setup script (run by installer)
+├── installer-v2.iss             # Inno Setup script (online installer)
+├── installer-v2-offline.iss     # Inno Setup script (offline installer)
 ├── install-gui.ps1              # GUI installer (MPC-HC style wizard)
 ├── install-gui-offline.ps1      # Offline GUI installer (uses bundled deps)
 ├── install.ps1                  # CLI installer (fallback)
 ├── install.bat                  # Installer launcher
-├── installer.iss                # Inno Setup script (online installer)
-├── installer-offline.iss        # Inno Setup script (offline installer)
 ├── package.json                 # repo scripts deps (http-proxy for proxy.js)
 ├── configs/
 │   ├── cordis.patch.yml.template   # MCP config template
@@ -104,6 +105,7 @@ Living-Dream-DSH/
 │   └── README.md                   # Config file guide
 ├── scripts/
 │   ├── start-dsh.bat.template      # DSH launcher
+│   ├── create-dsh-shortcut.ps1     # Desktop shortcut helper (post-install)
 │   ├── proxy.js                    # Phone remote proxy (CORS rewrite)
 │   ├── secrets.ps1                 # DPAPI key decryption (reads secrets.json)
 │   ├── os-copilot-mcp-server.py    # OS-Copilot MCP (legacy location)
@@ -160,19 +162,20 @@ Living-Dream-DSH/
 
 > **No internet required during install.** Node.js, Python, Git are bundled in the package.
 
-1. Download [`Living-Dream-DSH-v2.0.0-Offline-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.0.0/Living-Dream-DSH-v2.0.0-Offline-Setup.exe) (~122 MB) from Releases
+1. Download [`Living-Dream-DSH-v2.7.8-Offline-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.7.8/Living-Dream-DSH-v2.7.8-Offline-Setup.exe) (~122 MB) from Releases
 2. Double-click to run — professional Inno Setup wizard launches
 3. Follow the wizard: Language → License → Choose Install Location → Install
-4. After extraction, the GUI installer runs automatically:
+4. After extraction, the headless setup script runs automatically (in a visible PowerShell window):
    - Installs Node.js, Python, Git from bundled files (no download)
    - Copies configs to `~/.dsh`
    - Installs plugin dependencies
    - Creates desktop shortcut
-   - Finish page: fill in API Keys in DSH Settings
+   - Finish page: optional "Add DeepSeek Harness to desktop" checkbox
+   - After install: fill in API Keys in DSH Settings
 
-> 💡 There is also an **online installer** [`Living-Dream-DSH-v2.0.0-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.0.0/Living-Dream-DSH-v2.0.0-Setup.exe) (~2 MB) that downloads dependencies via winget.
+> 💡 There is also an **online installer** [`Living-Dream-DSH-v2.7.8-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.7.8/Living-Dream-DSH-v2.7.8-Setup.exe) (~2 MB) that downloads dependencies via winget.
 
-### Option 2: GUI Installer (Recommended)
+### Option 2: GUI Installer (Source Build)
 
 ```powershell
 # 1. Clone repository

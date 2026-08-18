@@ -88,12 +88,13 @@ Living-Dream-DSH/
 ├── README.zh.md                 # 中文说明
 ├── LICENSE                      # MIT 许可证
 ├── .gitignore
+├── setup.ps1                    # 无界面安装脚本（安装器调用）
+├── installer-v2.iss             # Inno Setup 脚本（在线安装包）
+├── installer-v2-offline.iss     # Inno Setup 脚本（离线安装包）
 ├── install-gui.ps1              # GUI 安装器（MPC-HC 风格向导）
 ├── install-gui-offline.ps1      # 离线 GUI 安装器（本地依赖）
 ├── install.ps1                  # CLI 安装器（备用）
 ├── install.bat                  # 安装启动器
-├── installer.iss                # Inno Setup 脚本（在线安装包）
-├── installer-offline.iss        # Inno Setup 脚本（离线安装包）
 ├── package.json                 # 仓库脚本依赖（proxy.js 用的 http-proxy）
 ├── configs/
 │   ├── cordis.patch.yml.template   # MCP 配置模板
@@ -104,6 +105,7 @@ Living-Dream-DSH/
 │   └── README.md                   # 配置文件说明
 ├── scripts/
 │   ├── start-dsh.bat.template      # DSH 启动器
+│   ├── create-dsh-shortcut.ps1     # 桌面快捷方式助手（安装后调用）
 │   ├── proxy.js                    # 手机远程代理（跨域改写）
 │   ├── secrets.ps1                 # DPAPI 密钥解密（读取 secrets.json）
 │   ├── os-copilot-mcp-server.py    # OS-Copilot MCP（旧位置）
@@ -160,19 +162,20 @@ Living-Dream-DSH/
 
 > **安装过程无需联网。** Node.js、Python、Git 已打包在内。
 
-1. 从 Releases 下载 [`Living-Dream-DSH-v2.0.0-Offline-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.0.0/Living-Dream-DSH-v2.0.0-Offline-Setup.exe)（约 122 MB）
+1. 从 Releases 下载 [`Living-Dream-DSH-v2.7.8-Offline-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.7.8/Living-Dream-DSH-v2.7.8-Offline-Setup.exe)（约 122 MB）
 2. 双击运行 — 专业 Inno Setup 安装向导启动
 3. 跟随向导：选择语言 → 许可协议 → 选择安装位置 → 安装
-4. 解压完成后，GUI 安装器自动运行：
+4. 解压完成后，无界面安装脚本自动运行（在可见的 PowerShell 窗口中）：
    - 从本地文件安装 Node.js、Python、Git（不下载）
    - 复制配置文件到 `~/.dsh`
    - 安装插件依赖
    - 创建桌面快捷方式
+   - 安装完成页可选「添加 DeepSeek Harness 到桌面」勾选框
    - 安装完成后提示去设置中填写 API Key
 
-> 💡 还有**在线安装包** [`Living-Dream-DSH-v2.0.0-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.0.0/Living-Dream-DSH-v2.0.0-Setup.exe)（约 2 MB），通过 winget 下载依赖。
+> 💡 还有**在线安装包** [`Living-Dream-DSH-v2.7.8-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.7.8/Living-Dream-DSH-v2.7.8-Setup.exe)（约 2 MB），通过 winget 下载依赖。
 
-### 方式二：GUI 安装器（推荐）
+### 方式二：GUI 安装器（源码构建）
 
 ```powershell
 # 1. 克隆仓库
