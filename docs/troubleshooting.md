@@ -84,9 +84,8 @@ python --version
 # 2. 检查 MCP 依赖
 pip show mcp markitdown zstandard
 
-# 3. 测试单个 MCP server（以仓库自带的 history server 为例）
-cd scripts/mcp
-python dsh-history-server.py --help
+# 3. 查看 DSH 后端日志（MCP 启动错误会记录在这里）
+Get-Content "$env:USERPROFILE\.dsh\logs\*.log" -Tail 50 | Select-String "MCP|spawn|ENOENT|ModuleNotFoundError"
 
 # 4. 检查 cordis.patch.yml 配置（路径应为绝对路径，安装脚本自动替换）
 Get-Content "$env:USERPROFILE\.dsh\profiles\web\cordis.patch.yml" | Select-String "command|args"
