@@ -92,6 +92,8 @@ Living-Dream-DSH/
 ├── install-gui-offline.ps1      # Offline GUI installer (uses bundled deps)
 ├── install.ps1                  # CLI installer (fallback)
 ├── install.bat                  # Installer launcher
+├── installer.iss                # Inno Setup script (online installer)
+├── installer-offline.iss        # Inno Setup script (offline installer)
 ├── package.json                 # repo scripts deps (http-proxy for proxy.js)
 ├── configs/
 │   ├── cordis.patch.yml.template   # MCP config template
@@ -158,22 +160,17 @@ Living-Dream-DSH/
 
 > **No internet required during install.** Node.js, Python, Git are bundled in the package.
 
-1. Download [`Living-Dream-DSH-v2.0.0-Offline.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.0.0/Living-Dream-DSH-v2.0.0-Offline.exe) (~120 MB) from Releases
-2. Double-click to run — it extracts deps + repo + installer to a temp directory
-3. The GUI wizard launches automatically:
-   - Welcome → License → Choose Install Location
-   - Installs Node.js, Python, Git from local files (no download)
+1. Download [`Living-Dream-DSH-v2.0.0-Offline-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.0.0/Living-Dream-DSH-v2.0.0-Offline-Setup.exe) (~122 MB) from Releases
+2. Double-click to run — professional Inno Setup wizard launches
+3. Follow the wizard: Language → License → Choose Install Location → Install
+4. After extraction, the GUI installer runs automatically:
+   - Installs Node.js, Python, Git from bundled files (no download)
    - Copies configs to `~/.dsh`
    - Installs plugin dependencies
    - Creates desktop shortcut
    - Finish page: fill in API Keys in DSH Settings
 
-```
-Living-Dream-DSH-v2.0.0-Offline.exe (SFX contents, not in repo)
-├── deps/                          # Node.js 22.16.0 MSI, Python 3.13.0, Git 2.47.0
-├── Living-Dream-DSH/              # Full repo snapshot
-└── install-gui-offline.ps1        # Offline GUI installer (bundled, not in repo)
-```
+> 💡 There is also an **online installer** [`Living-Dream-DSH-v2.0.0-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.0.0/Living-Dream-DSH-v2.0.0-Setup.exe) (~2 MB) that downloads dependencies via winget.
 
 ### Option 2: GUI Installer (Recommended)
 
@@ -480,8 +477,8 @@ Living Dream DSH stands on the shoulders of these amazing open-source projects a
 |---|---|
 | [Tailscale](https://tailscale.com/) | WireGuard mesh VPN for mobile remote access |
 | [http-proxy](https://github.com/http-party/node-http-proxy) | Node.js CORS proxy for phone → DSH bridge |
-| [7-Zip](https://www.7-zip.org/) | SFX packaging for offline installer |
+| [Inno Setup](https://jrsoftware.org/isinfo.php) | Professional Windows installer (replaces 7z SFX) |
 
 ---
 
-**Last Updated**: 2026-08-18
+**Last Updated**: 2026-08-18 (Inno Setup installer)
