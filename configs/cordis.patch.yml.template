@@ -113,7 +113,7 @@
           - scripts/mcp/dsh-memory-server.py
         env:
           MEMORY_AGENT: dsh
-          # MEMORY_MCP_DIR: 'G:/vision-files/memory-mcp'  # 取消注释并改成你实际路径
+          # MEMORY_MCP_DIR: '~/memory-mcp'  # 取消注释并改成你实际路径（默认自动从同目录加载）
         cwd: ''
         toolCallTimeoutMs: 120000
         failOnStartupError: false

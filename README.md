@@ -109,6 +109,7 @@ Living-Dream-DSH/
 │       ├── dsh-history-server.py
 │       ├── dsh-vision-server.py
 │       ├── dsh-memory-server.py
+│       ├── store_engine.py         # Memory engine (SQLite + vector search)
 │       ├── dsh-markitdown-server.py
 │       ├── dsh-ocr-server.py
 │       └── os-copilot-server.py
@@ -239,7 +240,7 @@ pnpm install
 | `dsh-computer` | Desktop automation | — (npx) | `@zavora-ai/computer-use-mcp` (auto-installed) |
 | `os-copilot` | Code execution | `scripts/mcp/os-copilot-server.py` | `pip install mcp` |
 | `dsh-browser` | Browser automation | — (npx) | `@playwright/mcp` (auto-installed) |
-| `dsh-memory` | Long-term memory | `scripts/mcp/dsh-memory-server.py` | memory-mcp engine + Ollama bge-m3 |
+| `dsh-memory` | Long-term memory | `scripts/mcp/dsh-memory-server.py` | Bundled store_engine + Ollama bge-m3 |
 | `dsh-markitdown` | Document → Markdown | `scripts/mcp/dsh-markitdown-server.py` | `pip install mcp markitdown` |
 | `dsh-ocr` | Screen OCR (Windows) | `scripts/mcp/dsh-ocr-server.py` | `pip install mcp`, Windows 10+ |
 

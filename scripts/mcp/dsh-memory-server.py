@@ -1,16 +1,17 @@
 """dsh-memory MCP server — long-term semantic memory backed by the shared memory-mcp engine.
 
 This is a THIN wrapper over the real memory store used by dsh agents today
-(G:/vision-files/memory-mcp/store_engine.py + store/memory.db). It does NOT keep
-its own ~/.dsh/memory/entries.json + TF-IDF index — that old design was a separate,
+(store_engine.py + store/memory.db). It does NOT keep its own
+~/.dsh/memory/entries.json + TF-IDF index — that old design was a separate,
 empty store that could not see any accumulated memory. This server reuses the exact
 same SQLite DB and retrieval (ANN + BM25 + RRF fusion + time-decay/importance ranking),
 so recall/remember land on the SAME memory the user has been building.
 
-Locating the engine:
-  - env MEMORY_MCP_DIR -> path to the memory-mcp directory (contains store_engine.py)
-  - fallback ORDER: <memory-mcp dir listed in a search path>, then ~/memory-mcp
-  - store_engine reads MEMORY_DB env to override the DB path (default <engine>/store/memory.db)
+Locating the engine (priority order):
+  1. bundled store_engine.py in the same directory as this server
+  2. env MEMORY_MCP_DIR -> path to the memory-mcp directory (contains store_engine.py)
+  3. ~/memory-mcp
+  4. store_engine reads MEMORY_DB env to override the DB path (default <engine>/store/memory.db)
 
 Tools (mirror of the real memory-mcp):
   remember / recall / forget / update_memory / list_memories / recall_facts / list_blocks
@@ -29,11 +30,12 @@ from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("dsh-memory")
 
-# 当前绑定的 agent 名（客户端 mcp_server.env 传入 MEMORY_AGENT，如 dsh / 浔）
+# 当前绑定的 agent 名（客户端 mcp_server.env 传入 MEMORY_AGENT）
 AGENT_NAME = os.environ.get("MEMORY_AGENT", "").strip() or "未知"
 
 # ---- locate the real memory engine ----------------------------------------
-_CANDIDATE_DIRS = []
+_HERE = Path(__file__).resolve().parent
+_CANDIDATE_DIRS = [_HERE]  # 1st: bundled store_engine.py (same directory)
 _env_dir = os.environ.get("MEMORY_MCP_DIR", "").strip()
 if _env_dir:
     _CANDIDATE_DIRS.append(_env_dir)
@@ -63,7 +65,8 @@ if _engine_dir:
 
 def _engine_error(action):
     if se is None:
-        hint = "未找到记忆引擎。请设置 MEMORY_MCP_DIR 指向 memory-mcp 目录（含 store_engine.py）。"
+        hint = ("未找到记忆引擎 store_engine.py。请确认它在 scripts/mcp/ 目录下，"
+                "或设置 MEMORY_MCP_DIR 指向 memory-mcp 目录。")
         return {"error": f"{action}失败：{hint}"}
     return None
 
