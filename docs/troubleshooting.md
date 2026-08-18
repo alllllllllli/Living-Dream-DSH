@@ -10,7 +10,7 @@
 
 ```powershell
 # 1. 检查进程是否已存在
-Get-Process -Name "DeepSeek Harness*"
+Get-Process -Name "DeepSeekHarness*"
 
 # 2. 检查端口占用
 Get-NetTCPConnection -State Listen | Where-Object {$_.LocalAddress -eq '127.0.0.1'}
@@ -117,6 +117,31 @@ Get-Content "<proxy.js 所在目录>\proxy.log" -Tail 50
 
 ---
 
+### 6. MCP 服务器启动失败
+
+**症状**：日志报 `spawn python ENOENT` 或 `ModuleNotFoundError`
+
+**排查步骤**：
+
+```powershell
+# 1. 检查 Python 是否正常
+python --version
+
+# 2. 检查 MCP 依赖
+pip show mcp markitdown zstandard
+
+# 3. 测试单个 MCP server
+cd scripts/mcp
+python dsh-history-server.py --help
+```
+
+**解决方案**：
+- 安装缺失的 Python 包：`pip install mcp markitdown zstandard`
+- 确认 Python 在 PATH 中
+- 检查 cordis.patch.yml 中的路径是否为绝对路径（安装脚本会自动替换）
+
+---
+
 ### 7. 发图不自动识别
 
 **症状**：发图后没有生成描述文件
@@ -152,8 +177,11 @@ curl.exe -s https://open.bigmodel.cn/api/paas/v4/chat/completions -H "Authorizat
 # 1. 检查 secrets.json 是否存在
 Test-Path "$env:USERPROFILE\.dsh\secrets.json"
 
-# 2. 检查 DPAPI 是否正常
-powershell -File "$env:USERPROFILE\.dsh\secrets.ps1" -Name "test"
+# 2. 检查 secrets.json 内容
+Get-Content "$env:USERPROFILE\.dsh\secrets.json" | ConvertFrom-Json
+
+# 3. 检查 DPAPI 是否正常（用已存在的 key 名测试）
+powershell -File "$env:USERPROFILE\.dsh\secrets.ps1" -Name "DEEPSEEK_API_KEY"
 ```
 
 **解决方案**：

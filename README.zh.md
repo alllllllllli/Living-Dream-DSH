@@ -90,6 +90,7 @@ Living-Dream-DSH/
 ├── .gitignore
 ├── install.ps1                  # 一键安装脚本
 ├── install.bat                  # 安装包装器
+├── package.json                 # 仓库脚本依赖（proxy.js 用的 http-proxy）
 ├── configs/
 │   ├── cordis.patch.yml.template   # MCP 配置模板
 │   ├── package.json.template       # 插件清单模板
@@ -127,9 +128,6 @@ Living-Dream-DSH/
     ├── phone-remote.md             # 手机远程访问教程
     ├── vision-patch.md             # 发图自动识别补丁
     └── troubleshooting.md          # 防坑指南
-    ├── phone-remote.md             # 手机远程访问教程
-    ├── vision-patch.md             # 发图改造教程
-    └── troubleshooting.md          # 故障排查手册
 ```
 
 ---
@@ -146,7 +144,7 @@ Living-Dream-DSH/
 | **pnpm** | 最新版 | `npm install -g pnpm` | ✅ 必装 |
 | **Git** | 任意版本 | [git-scm.com](https://git-scm.com/) | 克隆用 |
 
-> 💡 安装 Python 后执行 `pip install mcp markitdown`，MCP 服务器才能正常启动。
+> 💡 安装 Python 后执行 `pip install mcp markitdown zstandard`，MCP 服务器才能正常启动。
 > 一键安装脚本会自动完成此步骤。
 
 > 💡 启动器会自动探测 DSH 桌面版安装路径。如果探测失败，请设置：
@@ -228,10 +226,6 @@ pnpm install
 
 </details>
 
-### 4. 配置 MCP 服务器
-
-详见 [configs/README.md](configs/README.md)
-
 ---
 
 ## 🔌 MCP 服务器列表
@@ -240,12 +234,12 @@ pnpm install
 
 | MCP | 功能 | 脚本 | 额外依赖 |
 |-----|------|------|----------|
-| `dsh-history` | 历史会话搜索 | `scripts/mcp/dsh-history-server.py` | `pip install mcp` |
+| `dsh-history` | 历史会话搜索 | `scripts/mcp/dsh-history-server.py` | `pip install mcp zstandard` |
 | `dsh-vision` | 图片分析（Ollama） | `scripts/mcp/dsh-vision-server.py` | Ollama + qwen2.5vl 模型 |
 | `dsh-computer` | 桌面操作 | —（npx） | `@zavora-ai/computer-use-mcp`（自动安装） |
 | `os-copilot` | 代码执行 | `scripts/mcp/os-copilot-server.py` | `pip install mcp` |
 | `dsh-browser` | 浏览器自动化 | —（npx） | `@playwright/mcp`（自动安装） |
-| `dsh-memory` | 长期记忆 | `scripts/mcp/dsh-memory-server.py` | `pip install mcp` |
+| `dsh-memory` | 长期记忆 | `scripts/mcp/dsh-memory-server.py` | memory-mcp 引擎 + Ollama bge-m3 |
 | `dsh-markitdown` | 文档转 Markdown | `scripts/mcp/dsh-markitdown-server.py` | `pip install mcp markitdown` |
 | `dsh-ocr` | 屏幕 OCR（Windows） | `scripts/mcp/dsh-ocr-server.py` | `pip install mcp`，Windows 10+ |
 
@@ -293,7 +287,7 @@ tailscale serve --https=443 --bg http://127.0.0.1:8090
 
 ```powershell
 # 1. 备份原文件
-$dshPath = (Get-Process "DeepSeek Harness" -ErrorAction SilentlyContinue).Path
+$dshPath = (Get-Process DeepSeekHarness* -ErrorAction SilentlyContinue).Path
 if (-not $dshPath) { $dshPath = "D:\Tools\DeepSeek-Harness-Desktop" }
 Copy-Item "$dshPath\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" `
           "$env:USERPROFILE\dsh-host-apiproxy-index.js.bak"

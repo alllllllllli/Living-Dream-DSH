@@ -1,0 +1,9 @@
+{
+  "name": "living-dream-dsh",
+  "version": "1.1.1",
+  "private": true,
+  "description": "Dependencies for repo-level scripts (proxy.js phone-remote proxy).",
+  "dependencies": {
+    "http-proxy": "^1.18.1"
+  }
+}

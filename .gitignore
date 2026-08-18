@@ -34,6 +34,7 @@ logs/
 .uploads/
 *.jsonl
 *.jsonl.zst
+scripts/start-dsh.bat
 
 # Python bytecode
 __pycache__/

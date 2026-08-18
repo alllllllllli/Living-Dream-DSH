@@ -90,6 +90,7 @@ Living-Dream-DSH/
 ├── .gitignore
 ├── install.ps1                  # One-click installer
 ├── install.bat                  # Installer wrapper
+├── package.json                 # repo scripts deps (http-proxy for proxy.js)
 ├── configs/
 │   ├── cordis.patch.yml.template   # MCP config template
 │   ├── package.json.template       # Plugin list template
@@ -143,7 +144,7 @@ Living-Dream-DSH/
 | **pnpm** | Latest | `npm install -g pnpm` | ✅ Yes |
 | **Git** | Any | [git-scm.com](https://git-scm.com/) | For clone |
 
-> 💡 After installing Python, run `pip install mcp markitdown` to enable all MCP servers.
+> 💡 After installing Python, run `pip install mcp markitdown zstandard` to enable all MCP servers.
 > The one-click installer does this automatically.
 
 > 💡 The launcher auto-detects DSH Desktop from common install paths. If it fails, set
@@ -225,10 +226,6 @@ pnpm install
 
 </details>
 
-### 4. Configure MCP Servers
-
-See [configs/README.md](configs/README.md)
-
 ---
 
 ## 🔌 MCP Server List
@@ -237,12 +234,12 @@ See [configs/README.md](configs/README.md)
 
 | MCP | Function | Script | Extra Dependencies |
 |-----|----------|--------|--------------------|
-| `dsh-history` | Session history search | `scripts/mcp/dsh-history-server.py` | `pip install mcp` |
+| `dsh-history` | Session history search | `scripts/mcp/dsh-history-server.py` | `pip install mcp zstandard` |
 | `dsh-vision` | Image analysis (Ollama) | `scripts/mcp/dsh-vision-server.py` | Ollama + qwen2.5vl model |
 | `dsh-computer` | Desktop automation | — (npx) | `@zavora-ai/computer-use-mcp` (auto-installed) |
 | `os-copilot` | Code execution | `scripts/mcp/os-copilot-server.py` | `pip install mcp` |
 | `dsh-browser` | Browser automation | — (npx) | `@playwright/mcp` (auto-installed) |
-| `dsh-memory` | Long-term memory | `scripts/mcp/dsh-memory-server.py` | `pip install mcp` |
+| `dsh-memory` | Long-term memory | `scripts/mcp/dsh-memory-server.py` | memory-mcp engine + Ollama bge-m3 |
 | `dsh-markitdown` | Document → Markdown | `scripts/mcp/dsh-markitdown-server.py` | `pip install mcp markitdown` |
 | `dsh-ocr` | Screen OCR (Windows) | `scripts/mcp/dsh-ocr-server.py` | `pip install mcp`, Windows 10+ |
 
@@ -291,7 +288,7 @@ Make DSH Desktop auto-call GLM-4V-Flash for image recognition:
 
 ```powershell
 # 1. Backup original file
-$dshPath = (Get-Process "DeepSeek Harness" -ErrorAction SilentlyContinue).Path
+$dshPath = (Get-Process DeepSeekHarness* -ErrorAction SilentlyContinue).Path
 if (-not $dshPath) { $dshPath = "D:\Tools\DeepSeek-Harness-Desktop" }
 Copy-Item "$dshPath\resources\runtime\node_modules\@deepseek-ai\dsh-host-apiproxy\lib\index.js" `
           "$env:USERPROFILE\dsh-host-apiproxy-index.js.bak"

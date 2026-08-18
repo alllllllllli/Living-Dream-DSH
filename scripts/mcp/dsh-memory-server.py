@@ -1,170 +1,259 @@
-"""dsh-memory MCP server — long-term semantic memory for DSH agents.
+"""dsh-memory MCP server — long-term semantic memory backed by the shared memory-mcp engine.
 
-Tools:
-  remember      — store a memory entry with metadata
-  recall        — semantic search across memories
-  forget        — delete a memory by id
-  list_memories — list all stored memories
+This is a THIN wrapper over the real memory store used by dsh agents today
+(G:/vision-files/memory-mcp/store_engine.py + store/memory.db). It does NOT keep
+its own ~/.dsh/memory/entries.json + TF-IDF index — that old design was a separate,
+empty store that could not see any accumulated memory. This server reuses the exact
+same SQLite DB and retrieval (ANN + BM25 + RRF fusion + time-decay/importance ranking),
+so recall/remember land on the SAME memory the user has been building.
 
-Storage: ~/.dsh/memory/entries.json (auto-created).
-Search: TF-IDF cosine similarity (stdlib only, no external deps).
+Locating the engine:
+  - env MEMORY_MCP_DIR -> path to the memory-mcp directory (contains store_engine.py)
+  - fallback ORDER: <memory-mcp dir listed in a search path>, then ~/memory-mcp
+  - store_engine reads MEMORY_DB env to override the DB path (default <engine>/store/memory.db)
+
+Tools (mirror of the real memory-mcp):
+  remember / recall / forget / update_memory / list_memories / recall_facts / list_blocks
+
+Embedding: Ollama bge-m3 (127.0.0.1:11434). recall/remember need Ollama running;
+list_memories / list_blocks / forget(by id) / update(by id) are pure SQLite reads/writes
+and work without it. Store-side embed comes from store_engine._embed_local.
 """
 
 import json
-import math
 import os
-import re
 import sys
-from collections import Counter
-from datetime import datetime
 from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("dsh-memory")
 
-MEMORY_DIR = Path.home() / ".dsh" / "memory"
-ENTRIES_FILE = MEMORY_DIR / "entries.json"
+# 当前绑定的 agent 名（客户端 mcp_server.env 传入 MEMORY_AGENT，如 dsh / 浔）
+AGENT_NAME = os.environ.get("MEMORY_AGENT", "").strip() or "未知"
+
+# ---- locate the real memory engine ----------------------------------------
+_CANDIDATE_DIRS = []
+_env_dir = os.environ.get("MEMORY_MCP_DIR", "").strip()
+if _env_dir:
+    _CANDIDATE_DIRS.append(_env_dir)
+_CANDIDATE_DIRS.append(str(Path.home() / "memory-mcp"))
+
+se = None  # store_engine module, or None if not found
 
 
-def _ensure_dir():
-    MEMORY_DIR.mkdir(parents=True, exist_ok=True)
+def _find_engine():
+    for d in _CANDIDATE_DIRS:
+        if not d:
+            continue
+        p = Path(d)
+        if (p / "store_engine.py").exists():
+            return p
+    return None
 
 
-def _load_entries() -> list:
-    if ENTRIES_FILE.exists():
-        try:
-            return json.loads(ENTRIES_FILE.read_text(encoding="utf-8"))
-        except Exception:
-            return []
-    return []
+_engine_dir = _find_engine()
+if _engine_dir:
+    sys.path.insert(0, str(_engine_dir))
+    try:
+        import store_engine as se
+    except Exception:
+        se = None
 
 
-def _save_entries(entries: list):
-    _ensure_dir()
-    ENTRIES_FILE.write_text(json.dumps(entries, ensure_ascii=False, indent=2), encoding="utf-8")
+def _engine_error(action):
+    if se is None:
+        hint = "未找到记忆引擎。请设置 MEMORY_MCP_DIR 指向 memory-mcp 目录（含 store_engine.py）。"
+        return {"error": f"{action}失败：{hint}"}
+    return None
 
 
-def _tokenize(text: str) -> list:
-    """Simple word/char tokenizer for CJK + Latin."""
-    # Split on whitespace and punctuation, keep CJK chars as individual tokens
-    tokens = re.findall(r"[\w\u4e00-\u9fff]+", text.lower())
-    return tokens
+# bge-m3 检索指令前缀：查询侧加、存储侧不加（非对称指令检索，与 memory-mcp 一致）
+QUERY_INSTRUCTION = "Represent this sentence for searching relevant passages:"
 
 
-def _tf(tokens: list) -> dict:
-    """Term frequency."""
-    counts = Counter(tokens)
-    total = len(tokens)
-    if total == 0:
-        return {}
-    return {t: c / total for t, c in counts.items()}
+def _embed(text, as_query=False):
+    """Embed text via store_engine (Ollama bge-m3). Raises on failure."""
+    if as_query:
+        text = QUERY_INSTRUCTION + " " + text
+    return se._embed_local(text)
 
 
-def _cosine_sim(a: dict, b: dict) -> float:
-    """Cosine similarity between two sparse vectors."""
-    keys = set(a) & set(b)
-    if not keys:
-        return 0.0
-    dot = sum(a[k] * b[k] for k in keys)
-    norm_a = math.sqrt(sum(v * v for v in a.values()))
-    norm_b = math.sqrt(sum(v * v for v in b.values()))
-    if norm_a == 0 or norm_b == 0:
-        return 0.0
-    return dot / (norm_a * norm_b)
-
-
-@mcp.tool()
-def remember(content: str, tags: str = "") -> str:
-    """Store a new memory entry.
-
-    Args:
-        content: The text to remember.
-        tags: Optional comma-separated tags (e.g. "preference,code").
-
-    Returns:
-        Confirmation with the new entry's id.
-    """
-    entries = _load_entries()
-    entry_id = max((e.get("id", 0) for e in entries), default=0) + 1
-    entry = {
-        "id": entry_id,
-        "content": content,
-        "tags": [t.strip() for t in tags.split(",") if t.strip()],
-        "created": datetime.now().isoformat(timespec="seconds"),
+def _fmt_hit(h):
+    return {
+        "id": h["id"],
+        "text": h["text"],
+        "source": h.get("source", ""),
+        "ts": h.get("ts", ""),
+        "score": round(h.get("score", 0.0), 4),
+        "block": h.get("block", "general"),
+        "kind": h.get("kind", "semantic"),
+        "importance": h.get("importance", 0.5),
     }
-    entries.append(entry)
-    _save_entries(entries)
-    return json.dumps({"ok": True, "id": entry_id, "total": len(entries)})
 
 
 @mcp.tool()
-def recall(query: str, top_k: int = 5) -> str:
-    """Search memories by semantic similarity.
+def remember(content: str, block: str = "general", importance: float = 0.5,
+             kind: str = "semantic") -> str:
+    """Store a memory into the shared memory DB (Mem0-style conflict handling).
 
     Args:
-        query: Natural language query.
-        top_k: Number of top results to return (default 5).
-
-    Returns:
-        JSON array of matching memories with similarity scores.
+        content: Text to remember (1-3 sentences with key facts/preferences).
+        block: Named memory block (Letta-style namespace). Default "general".
+        importance: 0-1, higher ranks first in recall. Default 0.5.
+        kind: semantic | episodic | procedural. Default semantic.
     """
-    entries = _load_entries()
-    if not entries:
-        return json.dumps([])
-
-    query_tf = _tf(_tokenize(query))
-    scored = []
-    for e in entries:
-        entry_tf = _tf(_tokenize(e.get("content", "")))
-        sim = _cosine_sim(query_tf, entry_tf)
-        scored.append((sim, e))
-    scored.sort(key=lambda x: x[0], reverse=True)
-
-    results = []
-    for sim, e in scored[:top_k]:
-        if sim > 0:
-            results.append({
-                "id": e["id"],
-                "content": e["content"],
-                "tags": e.get("tags", []),
-                "score": round(sim, 4),
-                "created": e.get("created", ""),
-            })
-    return json.dumps(results, ensure_ascii=False, indent=2)
+    err = _engine_error("写入")
+    if err:
+        return json.dumps(err, ensure_ascii=False)
+    content = (content or "").strip()
+    if not content:
+        return json.dumps({"error": "内容为空"}, ensure_ascii=False)
+    if kind not in ("semantic", "episodic", "procedural"):
+        kind = "semantic"
+    importance = max(0.0, min(1.0, float(importance or 0.5)))
+    try:
+        vec = _embed(content)
+        r = se.add_entry(content, AGENT_NAME, vec, conflict=True, block=block,
+                         importance=importance, kind=kind, origin="manual",
+                         extract_facts=True)
+    except Exception as e:
+        return json.dumps({"error": f"写入失败: {e}"}, ensure_ascii=False)
+    return json.dumps(r, ensure_ascii=False, indent=2)
 
 
 @mcp.tool()
-def forget(entry_id: int) -> str:
-    """Delete a memory by its id.
+def recall(query: str, top_k: int = 5, scope: str = "all", block: str = "") -> str:
+    """Semantic search over the shared memory DB.
 
     Args:
-        entry_id: The id of the memory to delete.
-
-    Returns:
-        Confirmation.
+        query: Natural language question (e.g. "用户喜欢用什么播放器？").
+        top_k: Number of results (default 5).
+        scope: "all" = shared memory (default); "mine" = only current agent.
+        block: Restrict to one memory block (empty = all).
     """
-    entries = _load_entries()
-    before = len(entries)
-    entries = [e for e in entries if e.get("id") != entry_id]
-    if len(entries) == before:
-        return json.dumps({"error": f"Entry {entry_id} not found"})
-    _save_entries(entries)
-    return json.dumps({"ok": True, "deleted": entry_id, "remaining": len(entries)})
+    err = _engine_error("检索")
+    if err:
+        return json.dumps(err, ensure_ascii=False)
+    query = (query or "").strip()
+    if not query:
+        return json.dumps({"error": "检索词为空"}, ensure_ascii=False)
+    try:
+        qvec = _embed(query, as_query=True)
+        hits = se.search(qvec, query, top_k=top_k,
+                         scope=(None if scope == "all" else AGENT_NAME),
+                         block=(block or None))
+    except Exception as e:
+        return json.dumps({"error": f"检索失败（embedding 不可用，请确认 Ollama 已启动且有 bge-m3）: {e}"}, ensure_ascii=False)
+    if not hits:
+        return json.dumps([], ensure_ascii=False)
+    return json.dumps([_fmt_hit(h) for h in hits], ensure_ascii=False, indent=2)
 
 
 @mcp.tool()
-def list_memories(limit: int = 50) -> str:
-    """List all stored memories.
+def forget(entry_id: int = 0, query: str = "") -> str:
+    """Soft-delete a memory (history preserved).
 
     Args:
-        limit: Max entries to return (default 50).
-
-    Returns:
-        JSON array of memory entries.
+        entry_id: Exact entry id (from list_memories/recall).
+        query: Alternatively, delete the best semantic match (one of entry_id/query).
     """
-    entries = _load_entries()
-    return json.dumps(entries[-limit:], ensure_ascii=False, indent=2)
+    err = _engine_error("删除")
+    if err:
+        return json.dumps(err, ensure_ascii=False)
+    if entry_id:
+        r = se.soft_delete(int(entry_id), source_hint=AGENT_NAME)
+        return json.dumps(r, ensure_ascii=False, indent=2)
+    if query:
+        try:
+            qvec = _embed(query, as_query=True)
+            best = se.find_best_match(qvec, query, min_score=0.55)
+            if best:
+                r = se.soft_delete(best["id"], source_hint=AGENT_NAME)
+                if r.get("action") == "deleted":
+                    return json.dumps(r, ensure_ascii=False, indent=2)
+            return json.dumps({"error": f"没有高置信匹配「{query}」，请用 entry_id 精确删除"}, ensure_ascii=False)
+        except Exception as e:
+            return json.dumps({"error": f"删除失败: {e}"}, ensure_ascii=False)
+    return json.dumps({"error": "请提供 entry_id 或 query"}, ensure_ascii=False)
+
+
+@mcp.tool()
+def update_memory(new_content: str, entry_id: int = 0, query: str = "") -> str:
+    """Update an existing memory (re-embed, history preserved).
+
+    Args:
+        new_content: New text (required).
+        entry_id: Exact entry id (optional).
+        query: Alternatively, update the best semantic match (optional).
+    """
+    err = _engine_error("更新")
+    if err:
+        return json.dumps(err, ensure_ascii=False)
+    new_content = (new_content or "").strip()
+    if not new_content:
+        return json.dumps({"error": "new_content 为空"}, ensure_ascii=False)
+    if entry_id:
+        r = se.update_entry(int(entry_id), new_content, source_hint=AGENT_NAME)
+        return json.dumps(r, ensure_ascii=False, indent=2)
+    if query:
+        try:
+            qvec = _embed(query, as_query=True)
+            best = se.find_best_match(qvec, query, min_score=0.5)
+            if best:
+                r = se.update_entry(best["id"], new_content, source_hint=AGENT_NAME)
+                if r.get("action") == "updated":
+                    return json.dumps(r, ensure_ascii=False, indent=2)
+            return json.dumps({"error": f"没有高置信匹配「{query}」，请用 entry_id 精确更新"}, ensure_ascii=False)
+        except Exception as e:
+            return json.dumps({"error": f"更新失败: {e}"}, ensure_ascii=False)
+    return json.dumps({"error": "请提供 entry_id 或 query"}, ensure_ascii=False)
+
+
+@mcp.tool()
+def list_memories(limit: int = 20, offset: int = 0, scope: str = "all",
+                  block: str = "", keyword: str = "") -> str:
+    """List memory entries (id descending), filterable.
+
+    Args:
+        limit: Max entries (default 20).
+        offset: Skip N (default 0).
+        scope: "all" (default) or "mine".
+        block: Restrict to one block (empty = all).
+        keyword: Substring filter on text (empty = none).
+    """
+    err = _engine_error("列出")
+    if err:
+        return json.dumps(err, ensure_ascii=False)
+    rows = se.list_entries(limit=int(limit), offset=int(offset),
+                           scope=(None if scope == "all" else AGENT_NAME),
+                           block=(block or None), keyword=(keyword or None))
+    return json.dumps(rows, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def recall_facts(query: str, top_k: int = 8) -> str:
+    """Search structured facts (entity/attribute/value triples auto-extracted from memory).
+
+    Args:
+        query: Keyword/entity/attribute, e.g. "主机系统".
+        top_k: Number of facts (default 8).
+    """
+    err = _engine_error("检索事实")
+    if err:
+        return json.dumps(err, ensure_ascii=False)
+    fs = se.facts_search(query, top_k=top_k)
+    return json.dumps(fs, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
+def list_blocks() -> str:
+    """List all memory blocks and their entry counts."""
+    err = _engine_error("列出记忆块")
+    if err:
+        return json.dumps(err, ensure_ascii=False)
+    blks = se.list_blocks()
+    return json.dumps([{"block": b, "count": n} for b, n in blks], ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":

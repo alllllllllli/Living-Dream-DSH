@@ -66,7 +66,7 @@ pnpm install
 
 - 支持任意文件拖拽到 Web GUI
 - 支持 Ctrl+V 粘贴文件
-- 上传到 `~/.dsh/uploads`
+- 发送时文件复制到 `<会话工作区>/.dsh/tmp/attachments/<session>/<send>/`
 - 以『上传文件：`路径`』行注入提示词
 - 防卡死机制（3 秒定时器 + 失焦重置）
 

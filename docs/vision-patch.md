@@ -122,10 +122,11 @@ const MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50MB
 
 ```powershell
 # 关闭 DSH
-Get-Process -Name "DeepSeek Harness*" | Stop-Process -Force
+Get-Process -Name "DeepSeekHarness*" | Stop-Process -Force
 
-# 重新启动
-Start-Process "$env:DSH_DESKTOP_PATH\DeepSeek Harness 桌面版.exe"
+# 重新启动（自动检测 exe 名称）
+$exe = Get-ChildItem "$env:DSH_DESKTOP_PATH" -Filter "*.exe" | Where-Object { $_.Name -match "DeepSeek" } | Select-Object -First 1
+Start-Process $exe.FullName
 ```
 
 ## 使用效果

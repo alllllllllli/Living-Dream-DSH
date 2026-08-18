@@ -5,7 +5,17 @@ Tools:
   get_session    — read full conversation of a session
   search_history — keyword search across all sessions
 
-DSH stores sessions in ~/.dsh/sessions/ as JSON files.
+DSH stores sessions as ~/.dsh/sessions/<workspace-dir>/session-<id>/session.jsonl.zstd.
+Each file is a zstd-compressed JSONL log. The zstd stream is MULTI-FRAME and every
+frame has NO content-size header (streaming frames), so it must be decoded with
+`stream_reader(read_across_frames=True)` — calling `decompress()` raises
+"could not determine content size in frame header".
+
+The JSONL contains one event per line. Relevant events:
+  session          — { id, createdAt, cwd }
+  session/title    — { data.title }
+  user/message     — { data.content[] , data.source.kind }  (kind=="user" is real input)
+  assistant/message — { data.message.content[] }
 """
 
 import json
@@ -16,50 +26,102 @@ from datetime import datetime
 
 from mcp.server.fastmcp import FastMCP
 
+try:
+    import zstandard
+except ImportError:  # pragma: no cover - surfaced at runtime, not load time
+    zstandard = None
+
 mcp = FastMCP("dsh-history")
 
 SESSIONS_DIR = Path.home() / ".dsh" / "sessions"
 
 
-def _list_session_files():
-    """Return session JSON files sorted by mtime descending."""
+def _iter_session_files():
+    """Yield (session_id, file_path) for every session.jsonl.zstd, newest first."""
     if not SESSIONS_DIR.exists():
-        return []
-    files = list(SESSIONS_DIR.glob("*.json"))
-    files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
-    return files
+        return
+    entries = []
+    # Recursive: <workspace>/session-<id>/session.jsonl.zstd
+    for f in SESSIONS_DIR.rglob("session.jsonl.zstd"):
+        sid = f.parent.name  # "session-<uuid>"
+        try:
+            mtime = f.stat().st_mtime
+        except OSError:
+            mtime = 0
+        entries.append((sid, f, mtime))
+    entries.sort(key=lambda e: e[2], reverse=True)
+    for sid, fpath, _ in entries:
+        yield sid, fpath
 
 
-def _load_session(path: Path):
-    """Load a session JSON, return parsed dict or None."""
+def _read_jsonl(session_id: str, path: Path):
+    """Decode one session.jsonl.zstd into a list of parsed event dicts (or None)."""
+    if zstandard is None:
+        return None
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        raw = path.read_bytes()
+    except OSError:
+        return None
+    try:
+        dctx = zstandard.ZstdDecompressor()
+        out = dctx.stream_reader(raw, read_across_frames=True).read()
     except Exception:
         return None
+    lines = out.decode("utf-8", errors="replace").splitlines()
+    events = []
+    for ln in lines:
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            events.append(json.loads(ln))
+        except Exception:
+            continue
+    return events
 
 
-def _extract_title(data: dict, fallback: str) -> str:
-    """Extract a human-readable title from session data."""
-    # DSH session format: {title, messages, ...} or {name, ...}
-    for key in ("title", "name", "label"):
-        if key in data and data[key]:
-            return str(data[key])
-    # Fall back to first user message snippet
-    msgs = data.get("messages", data.get("turns", []))
-    if msgs:
-        for m in msgs:
-            content = m.get("content", "") if isinstance(m, dict) else ""
-            if content:
-                return content[:80].replace("\n", " ")
-    return fallback
+def _title_from(events: list) -> str:
+    for e in events:
+        if e.get("type") == "session/title":
+            t = e.get("data", {}).get("title")
+            if t:
+                return t
+    return ""
 
 
-def _extract_messages(data: dict) -> list:
-    """Extract message list from various DSH session formats."""
-    for key in ("messages", "turns", "conversation"):
-        if key in data and isinstance(data[key], list):
-            return data[key]
-    return []
+def _messages_from(events: list) -> list:
+    """Return a normalized list of {role, text} for user/assistant messages."""
+    msgs = []
+    for e in events:
+        t = e.get("type")
+        if t == "user/message":
+            src = e.get("data", {}).get("source", {})
+            # Only real user input; skip plugin/system snapshots.
+            if src.get("kind") != "user":
+                continue
+            content = e.get("data", {}).get("content", [])
+            text = _content_text(content)
+            if text:
+                msgs.append({"role": "user", "text": text})
+        elif t == "assistant/message":
+            content = e.get("data", {}).get("message", {}).get("content", [])
+            text = _content_text(content)
+            if text:
+                msgs.append({"role": "assistant", "text": text})
+    return msgs
+
+
+def _content_text(content) -> str:
+    """Flatten a content array into text (concat text blocks, skip reasoning)."""
+    if isinstance(content, str):
+        return content
+    if not isinstance(content, list):
+        return ""
+    parts = []
+    for block in content:
+        if isinstance(block, dict) and block.get("type") == "text":
+            parts.append(str(block.get("text", "")))
+    return "\n".join(p for p in parts if p)
 
 
 @mcp.tool()
@@ -72,20 +134,22 @@ def list_sessions(limit: int = 20) -> str:
     Returns:
         JSON array of {id, title, time, messages}.
     """
-    files = _list_session_files()[:limit]
     result = []
-    for f in files:
-        data = _load_session(f)
-        if data is None:
+    for sid, fpath in _iter_session_files():
+        events = _read_jsonl(sid, fpath)
+        if not events:
             continue
-        msgs = _extract_messages(data)
-        mtime = datetime.fromtimestamp(f.stat().st_mtime).isoformat(timespec="seconds")
+        msgs = _messages_from(events)
+        title = _title_from(events)
+        mtime = datetime.fromtimestamp(fpath.stat().st_mtime).isoformat(timespec="seconds")
         result.append({
-            "id": f.stem,
-            "title": _extract_title(data, f.stem),
+            "id": sid,
+            "title": title or sid,
             "time": mtime,
             "messages": len(msgs),
         })
+        if len(result) >= limit:
+            break
     return json.dumps(result, ensure_ascii=False, indent=2)
 
 
@@ -94,18 +158,23 @@ def get_session(session_id: str) -> str:
     """Read the full conversation of a session.
 
     Args:
-        session_id: Session ID (filename without .json).
+        session_id: Session ID ("session-<uuid>").
 
     Returns:
-        JSON of the session data.
+        JSON with {id, title, messages:[{role,text}]}.
     """
-    path = SESSIONS_DIR / f"{session_id}.json"
-    if not path.exists():
-        return json.dumps({"error": f"Session not found: {session_id}"})
-    data = _load_session(path)
-    if data is None:
-        return json.dumps({"error": f"Failed to parse session: {session_id}"})
-    return json.dumps(data, ensure_ascii=False, indent=2)
+    for sid, fpath in _iter_session_files():
+        if sid != session_id:
+            continue
+        events = _read_jsonl(sid, fpath)
+        if not events:
+            return json.dumps({"error": f"Failed to decode session: {session_id}"})
+        return json.dumps({
+            "id": sid,
+            "title": _title_from(events) or sid,
+            "messages": _messages_from(events),
+        }, ensure_ascii=False, indent=2)
+    return json.dumps({"error": f"Session not found: {session_id}"})
 
 
 @mcp.tool()
@@ -113,7 +182,7 @@ def search_history(query: str, limit: int = 10) -> str:
     """Search across all sessions by keyword.
 
     Args:
-        query: Keyword to search (case-insensitive, matched against message content).
+        query: Keyword to search (case-insensitive, matched against message text).
         limit: Max results to return (default 10).
 
     Returns:
@@ -121,22 +190,21 @@ def search_history(query: str, limit: int = 10) -> str:
     """
     query_lower = query.lower()
     results = []
-    for f in _list_session_files():
-        data = _load_session(f)
-        if data is None:
+    for sid, fpath in _iter_session_files():
+        events = _read_jsonl(sid, fpath)
+        if not events:
             continue
-        msgs = _extract_messages(data)
-        for m in msgs:
-            content = m.get("content", "") if isinstance(m, dict) else ""
-            if query_lower in content.lower():
-                # Find the match position and extract snippet
-                idx = content.lower().find(query_lower)
+        title = _title_from(events)
+        for m in _messages_from(events):
+            text = m["text"]
+            if query_lower in text.lower():
+                idx = text.lower().find(query_lower)
                 start = max(0, idx - 40)
-                end = min(len(content), idx + len(query) + 40)
-                snippet = content[start:end].replace("\n", " ")
+                end = min(len(text), idx + len(query) + 40)
+                snippet = text[start:end].replace("\n", " ")
                 results.append({
-                    "session_id": f.stem,
-                    "title": _extract_title(data, f.stem),
+                    "session_id": sid,
+                    "title": title or sid,
                     "snippet": f"...{snippet}...",
                 })
                 break  # One match per session is enough

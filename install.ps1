@@ -1,4 +1,4 @@
-﻿# ============================================================
+# ============================================================
 # Living Dream DSH - One-Click Installer
 # ============================================================
 # Double-click install.bat to run this script
@@ -172,6 +172,11 @@ if (Test-Path $patchFile) {
     Write-OK "MCP paths updated in cordis.patch.yml"
 }
 
+# memory-mcp engine location: prompt if not in the default spot
+if (-not (Test-Path "$HOME\memory-mcp\store_engine.py")) {
+    Write-Warn "dsh-memory needs the memory-mcp engine. Set MEMORY_MCP_DIR in cordis.patch.yml (dsh-memory env) to the directory containing store_engine.py, or clone memory-mcp to ~\memory-mcp."
+}
+
 # credentials.yaml (don't overwrite)
 $credSrc = Join-Path $repoDir "configs\.credentials.yaml.template"
 $credDst = "$dshHome\.credentials.yaml"
@@ -291,11 +296,32 @@ if ($pkgCreated) {
 
 # Install Python MCP dependencies
 Write-Step "Installing Python MCP dependencies..."
-pip install mcp markitdown 2>&1 | Out-Null
-if ($LASTEXITCODE -eq 0) {
-    Write-OK "Python MCP dependencies installed (mcp, markitdown)"
+& cmd /c "pip install mcp markitdown zstandard >nul 2>&1"
+if ($LASTEXITCODE -ne 0) {
+    Write-Warn "pip install failed (exit code $LASTEXITCODE), you may need to install manually"
 } else {
-    Write-Warn "pip install failed - MCP servers may not start. Run manually: pip install mcp markitdown"
+    Write-OK "Python MCP dependencies installed"
+}
+if ($LASTEXITCODE -eq 0) {
+    Write-OK "Python MCP dependencies installed (mcp, markitdown, zstandard)"
+} else {
+    Write-Warn "pip install failed - MCP servers may not start. Run manually: pip install mcp markitdown zstandard"
+}
+
+# Install proxy.js dependency (http-proxy declared in repo-root package.json, so `node scripts/proxy.js` resolves it)
+Write-Step "Installing phone-remote proxy dependency..."
+if (Test-Path "$repoDir\node_modules\http-proxy") {
+    Write-OK "http-proxy already installed"
+} else {
+    Push-Location $repoDir
+    npm install 2>&1 | Out-Null
+    $proxyExit = $LASTEXITCODE
+    Pop-Location
+    if ($proxyExit -eq 0) {
+        Write-OK "http-proxy installed"
+    } else {
+        Write-Warn "npm install failed (exit code $proxyExit). Run manually: npm install (in $repoDir)"
+    }
 }
 
 # ============================================================

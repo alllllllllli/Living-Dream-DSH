@@ -5,6 +5,13 @@
 # 一键安装脚本会自动替换路径占位符，手动安装需自行修改
 # ============================================================
 
+# ============ 插件 loader 注册 ============
+
+# dsh-paste-input 插件（文件拖拽上传）
+- insert:
+    - id: dsh-paste-input
+      name: '@dsh-community/dsh-paste-input'
+
 # ============ dsh 全家桶 MCP ============
 
 # 1. 历史会话查询: list_sessions / get_session / search_history
@@ -92,7 +99,9 @@
         toolCallTimeoutMs: 120000
         failOnStartupError: false
 
-# 5. 长期记忆: remember / recall / forget / list_memories
+# 5. 长期记忆: remember / recall / forget / update_memory / list_memories / recall_facts / list_blocks
+#    复用 memory-mcp 的共享记忆引擎（SQLite + 向量检索），读同一个记忆库。
+#    依赖: 将 MEMORY_MCP_DIR 指向 memory-mcp 目录（含 store_engine.py），默认 ~/memory-mcp。
 - insert:
     - id: mcp-dsh-memory
       name: '@deepseek-ai/dsh-mcp-client'
@@ -102,7 +111,9 @@
         command: python
         args:
           - scripts/mcp/dsh-memory-server.py
-        env: {}
+        env:
+          MEMORY_AGENT: dsh
+          # MEMORY_MCP_DIR: 'G:/vision-files/memory-mcp'  # 取消注释并改成你实际路径
         cwd: ''
         toolCallTimeoutMs: 120000
         failOnStartupError: false
