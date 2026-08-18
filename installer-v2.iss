@@ -3,7 +3,7 @@
 ; Compile: iscc.exe installer-v2.iss
 
 #define MyAppName "Living Dream DSH"
-#define MyAppVersion "2.7.8"
+#define MyAppVersion "2.7.9"
 #define MyAppPublisher "alllllllllli"
 #define MyAppURL "https://github.com/alllllllllli/Living-Dream-DSH"
 

@@ -162,7 +162,7 @@ Living-Dream-DSH/
 
 > **安装过程无需联网。** Node.js、Python、Git 已打包在内。
 
-1. 从 Releases 下载 [`Living-Dream-DSH-v2.7.8-Offline-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.7.8/Living-Dream-DSH-v2.7.8-Offline-Setup.exe)（约 122 MB）
+1. 从 Releases 下载 [`Living-Dream-DSH-v2.7.9-Offline-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.7.9/Living-Dream-DSH-v2.7.9-Offline-Setup.exe)（约 122 MB）
 2. 双击运行 — 专业 Inno Setup 安装向导启动
 3. 跟随向导：选择语言 → 许可协议 → 选择安装位置 → 安装
 4. 解压完成后，无界面安装脚本自动运行（在可见的 PowerShell 窗口中）：
@@ -173,7 +173,7 @@ Living-Dream-DSH/
    - 安装完成页可选「添加 DeepSeek Harness 到桌面」勾选框
    - 安装完成后提示去设置中填写 API Key
 
-> 💡 还有**在线安装包** [`Living-Dream-DSH-v2.7.8-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.7.8/Living-Dream-DSH-v2.7.8-Setup.exe)（约 2 MB），通过 winget 下载依赖。
+> 💡 还有**在线安装包** [`Living-Dream-DSH-v2.7.9-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.7.9/Living-Dream-DSH-v2.7.9-Setup.exe)（约 2 MB），通过 winget 下载依赖。
 
 ### 方式二：GUI 安装器（源码构建）
 
