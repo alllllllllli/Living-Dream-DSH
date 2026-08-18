@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 # Living Dream DSH - Headless Setup Script (Inno Setup helper)
 # Called by Inno Setup installer during installation.
 # ============================================================
@@ -222,16 +222,23 @@ Write-Log "  http-proxy done ✓"
 
 # ── Step 8: Detect DSH Desktop ─────────────────────────────
 Write-Log "[8/9] Detecting DSH Desktop..."
-$candidates = @(
-    "$env:DSH_DESKTOP_PATH\DeepSeekHarness.exe"
-    "$env:ProgramFiles\DeepSeekHarness-Desktop\DeepSeekHarness.exe"
-    "$env:ProgramFiles\DeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
-    "$env:LOCALAPPDATA\DeepSeekHarness-Desktop\DeepSeekHarness.exe"
-    "D:\Tools\DeepSeekHarness-Desktop\DeepSeekHarness.exe"
-    "D:\Tools\DeepSeek-Harness-Desktop\DeepSeek Harness 桌面版.exe"
-)
-foreach ($c in $candidates) {
-    if ($c -and (Test-Path $c)) { $script:dshExe = $c; break }
+$exeNames = @("DeepSeekHarness.exe", "DeepSeek Harness 桌面版.exe")
+$searchRoots = @(
+    "$env:DSH_DESKTOP_PATH",
+    "$env:ProgramFiles",
+    "$env:LOCALAPPDATA\Programs",
+    "D:\Tools",
+    "C:\Tools",
+    "$env:LOCALAPPDATA"
+) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -Unique
+
+$script:dshExe = $null
+foreach ($root in $searchRoots) {
+    foreach ($exeName in $exeNames) {
+        $hit = Get-ChildItem -Path $root -Filter $exeName -Recurse -Depth 2 -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($hit) { $script:dshExe = $hit.FullName; break }
+    }
+    if ($script:dshExe) { break }
 }
 if ($script:dshExe) {
     Write-Log "  Found: $script:dshExe"
@@ -262,9 +269,10 @@ echo [DSH] Access DSH at: http://127.0.0.1:3080
 
 # ── Step 9: Desktop shortcut ───────────────────────────────
 Write-Log "[9/9] Creating desktop shortcuts..."
+$desktopDir = [Environment]::GetFolderPath('Desktop')
 
 # Living Dream DSH shortcut (always create)
-$dshShortcutPath = "$env:USERPROFILE\Desktop\Living Dream DSH.lnk"
+$dshShortcutPath = Join-Path $desktopDir "Living Dream DSH.lnk"
 $shell = New-Object -ComObject WScript.Shell
 $shortcut = $shell.CreateShortcut($dshShortcutPath)
 $shortcut.TargetPath = "cmd.exe"
@@ -276,7 +284,7 @@ Write-Log "  Living Dream DSH desktop shortcut created ✓"
 
 # DeepSeek Harness desktop shortcut (if requested and detected)
 if ($CreateDshShortcut -and $script:dshExe) {
-    $dshDesktopShortcut = "$env:USERPROFILE\Desktop\DeepSeek Harness.lnk"
+    $dshDesktopShortcut = Join-Path $desktopDir "DeepSeek Harness.lnk"
     $shortcut2 = $shell.CreateShortcut($dshDesktopShortcut)
     $shortcut2.TargetPath = $script:dshExe
     $shortcut2.WorkingDirectory = Split-Path $script:dshExe -Parent

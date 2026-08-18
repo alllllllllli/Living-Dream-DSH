@@ -7,7 +7,8 @@ if (Test-Path $pathFile) {
     $exePath = $exePath.Trim()
     if ($exePath -and (Test-Path $exePath)) {
         $wsh = New-Object -ComObject WScript.Shell
-        $s = $wsh.CreateShortcut("$env:USERPROFILE\Desktop\DeepSeek Harness.lnk")
+        $desktop = [Environment]::GetFolderPath('Desktop')
+        $s = $wsh.CreateShortcut((Join-Path $desktop "DeepSeek Harness.lnk"))
         $s.TargetPath = $exePath
         $s.WorkingDirectory = Split-Path $exePath -Parent
         $s.Description = "DeepSeek Harness Desktop"
