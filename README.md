@@ -418,10 +418,56 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 🙏 Acknowledgments
 
-- [DeepSeek](https://www.deepseek.com/) - DSH Framework
-- [l541402398](https://github.com/l541402398) - dsh-file-uploads plugin author
-- [Zhipu AI](https://open.bigmodel.cn/) - GLM-4V-Flash vision model
+Living Dream DSH stands on the shoulders of these amazing open-source projects and services:
+
+### Core Platform
+
+| Project | What we use it for |
+|---|---|
+| [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) | The entire DSH framework this project configures |
+| [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) | Protocol standard by Anthropic that powers all our server integrations |
+| [FastMCP](https://github.com/jlowin/fastmcp) | Python framework we use to build all custom MCP servers |
+
+### MCP Servers & Engines
+
+| Project | What we use it for |
+|---|---|
+| [Playwright MCP](https://github.com/microsoft/playwright-mcp) | Browser automation with real login state |
+| [computer-use-mcp](https://github.com/zavora-ai/computer-use-mcp) | Desktop automation (screenshot/click/keyboard), MIT licensed |
+| [MarkItDown](https://github.com/microsoft/markitdown) | Document conversion (PDF/Word/Excel → Markdown) |
+| [memory-mcp](https://github.com/nicepkg/memory-mcp) | `store_engine.py` — SQLite + vector search memory engine |
+| [OS-Copilot](https://github.com/OS-Copilot/OS-Copilot) | Desktop automation framework (OSWorld benchmark winner) |
+| [Windows OCR](https://learn.microsoft.com/en-us/windows/uwp/ocr/ocr-apis) | Built-in offline screen text recognition |
+
+### AI Models & Services
+
+| Project | What we use it for |
+|---|---|
+| [Zhipu AI (GLM-4V-Flash)](https://open.bigmodel.cn/) | Free vision model for image understanding |
+| [Ollama](https://ollama.com/) | Local model inference (vision fallback + embedding) |
+| [AMD Radeon Cloud](https://developer.amd.com.cn/radeon) | Free DeepSeek model access (v4-flash / v4-pro) |
+
+### DSH Plugins
+
+| Plugin | Author / Source |
+|---|---|
+| [billion-context-dsh](https://github.com/gzdingmeng/billion-context-dsh) | Long context support (must pin v0.2.1) |
+| [dsh-rss](https://github.com/nicepkg/dsh-rss) | RSS feed reader |
+| [dsh-calendar](https://github.com/nicepkg/dsh-calendar) | Calendar management (CalDAV) |
+| [dsh-email](https://github.com/nicepkg/dsh-email) | Email client |
+| [dsh-ffmpeg](https://github.com/nicepkg/dsh-ffmpeg) | Video/audio processing |
+| [@xiaweiliang060035/dsh-opencode-go-usage](https://github.com/xiaweiliang060035/dsh-opencode-go-usage) | OpenCode Go usage widget |
+| [@anionex/dsh-vision-toolkit](https://github.com/anionex/dsh-vision-toolkit) | Vision tools for DSH |
+| [dsh-file-uploads](https://github.com/l541402398/dsh-file-uploads) | Upstream of our bundled `dsh-paste-input` plugin |
+
+### Infrastructure & Tools
+
+| Project | What we use it for |
+|---|---|
+| [Tailscale](https://tailscale.com/) | WireGuard mesh VPN for mobile remote access |
+| [http-proxy](https://github.com/http-party/node-http-proxy) | Node.js CORS proxy for phone → DSH bridge |
+| [7-Zip](https://www.7-zip.org/) | SFX packaging for offline installer |
 
 ---
 
-**Last Updated**: 2026-08-17
+**Last Updated**: 2026-08-18

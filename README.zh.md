@@ -417,10 +417,56 @@ MY_API_KEY: sk-xxxxxxxxxxxx
 
 ## 🙏 致谢
 
-- [DeepSeek](https://www.deepseek.com/) - 提供 DSH 框架
-- [l541402398](https://github.com/l541402398) - dsh-file-uploads 插件原作者
-- [智谱 AI](https://open.bigmodel.cn/) - GLM-4V-Flash 视觉模型
+Living Dream DSH 站在这些优秀的开源项目和服务的肩膀上：
+
+### 核心平台
+
+| 项目 | 我们的用途 |
+|---|---|
+| [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) | 本项目配置的整个 DSH 框架 |
+| [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) | Anthropic 制定的协议标准，驱动我们所有服务器集成 |
+| [FastMCP](https://github.com/jlowin/fastmcp) | Python 框架，用于构建所有自定义 MCP 服务器 |
+
+### MCP 服务器与引擎
+
+| 项目 | 我们的用途 |
+|---|---|
+| [Playwright MCP](https://github.com/microsoft/playwright-mcp) | 浏览器自动化（真实登录态） |
+| [computer-use-mcp](https://github.com/zavora-ai/computer-use-mcp) | 桌面自动化（截图/点击/键盘），MIT 许可证 |
+| [MarkItDown](https://github.com/microsoft/markitdown) | 文档转换（PDF/Word/Excel → Markdown） |
+| [memory-mcp](https://github.com/nicepkg/memory-mcp) | `store_engine.py` — SQLite + 向量检索记忆引擎 |
+| [OS-Copilot](https://github.com/OS-Copilot/OS-Copilot) | 桌面自动化框架（OSWorld 基准测试冠军） |
+| [Windows OCR](https://learn.microsoft.com/en-us/windows/uwp/ocr/ocr-apis) | 内置离线屏幕文字识别 |
+
+### AI 模型与服务
+
+| 项目 | 我们的用途 |
+|---|---|
+| [智谱 AI (GLM-4V-Flash)](https://open.bigmodel.cn/) | 免费视觉模型，用于图片理解 |
+| [Ollama](https://ollama.com/) | 本地模型推理（视觉兜底 + 向量嵌入） |
+| [AMD Radeon Cloud](https://developer.amd.com.cn/radeon) | 免费 DeepSeek 模型通道（v4-flash / v4-pro） |
+
+### DSH 插件
+
+| 插件 | 作者 / 来源 |
+|---|---|
+| [billion-context-dsh](https://github.com/gzdingmeng/billion-context-dsh) | 长上下文支持（必须锁定 v0.2.1） |
+| [dsh-rss](https://github.com/nicepkg/dsh-rss) | RSS 订阅阅读器 |
+| [dsh-calendar](https://github.com/nicepkg/dsh-calendar) | 日历管理（CalDAV） |
+| [dsh-email](https://github.com/nicepkg/dsh-email) | 邮件客户端 |
+| [dsh-ffmpeg](https://github.com/nicepkg/dsh-ffmpeg) | 视频/音频处理 |
+| [@xiaweiliang060035/dsh-opencode-go-usage](https://github.com/xiaweiliang060035/dsh-opencode-go-usage) | OpenCode Go 用量悬浮球 |
+| [@anionex/dsh-vision-toolkit](https://github.com/anionex/dsh-vision-toolkit) | DSH 视觉工具包 |
+| [dsh-file-uploads](https://github.com/l541402398/dsh-file-uploads) | 我们内置 `dsh-paste-input` 插件的上游 |
+
+### 基础设施与工具
+
+| 项目 | 我们的用途 |
+|---|---|
+| [Tailscale](https://tailscale.com/) | WireGuard 组网，实现手机远程访问 |
+| [http-proxy](https://github.com/http-party/node-http-proxy) | Node.js CORS 代理，手机 → DSH 桥接 |
+| [7-Zip](https://www.7-zip.org/) | SFX 打包，用于离线安装包 |
 
 ---
 
-**最后更新**：2026-08-17
+**最后更新**：2026-08-18
