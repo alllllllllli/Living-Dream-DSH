@@ -35,6 +35,7 @@ logs/
 *.jsonl
 *.jsonl.zst
 scripts/start-dsh.bat
+scripts/mcp/store/
 
 # Python bytecode
 __pycache__/
