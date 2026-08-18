@@ -416,6 +416,16 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
+## 👤 Author
+
+| | |
+|---|---|
+| **GitHub** | [@alllllllllli](https://github.com/alllllllllli) |
+| **Bilibili** | [UID 608277472](https://space.bilibili.com/608277472) |
+| **QQ** | 2896722915 |
+
+---
+
 ## 🙏 Acknowledgments
 
 Living Dream DSH stands on the shoulders of these amazing open-source projects and services:

@@ -415,6 +415,16 @@ MY_API_KEY: sk-xxxxxxxxxxxx
 
 ---
 
+## 👤 作者
+
+| | |
+|---|---|
+| **GitHub** | [@alllllllllli](https://github.com/alllllllllli) |
+| **B 站** | [UID 608277472](https://space.bilibili.com/608277472) |
+| **QQ** | 2896722915 |
+
+---
+
 ## 🙏 致谢
 
 Living Dream DSH 站在这些优秀的开源项目和服务的肩膀上：
