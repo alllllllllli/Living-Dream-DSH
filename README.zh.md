@@ -156,7 +156,7 @@ Living-Dream-DSH/
 
 > **安装过程无需联网。** Node.js、Python、Git 已打包在内。
 
-1. 从 Releases 下载 [`Living-Dream-DSH-Offline.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v1.1.1/Living-Dream-DSH-Offline.exe)（约 120 MB）
+1. 从 Releases 下载 [`Living-Dream-DSH-v1.2.0-Offline.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v1.2.0/Living-Dream-DSH-v1.2.0-Offline.exe)（约 120 MB）
 2. 双击运行 — 自动解压依赖 + 仓库 + 安装脚本到临时目录
 3. PowerShell 安装程序自动启动：
    - 从本地文件安装 Node.js、Python、Git（不下载）
@@ -166,7 +166,7 @@ Living-Dream-DSH/
    - 创建桌面快捷方式
 
 ```
-Living-Dream-DSH-Offline.exe（SFX 内容，不在仓库中）
+Living-Dream-DSH-v1.2.0-Offline.exe（SFX 内容，不在仓库中）
 ├── deps/                      # Node.js 22.16.0 MSI, Python 3.13.0, Git 2.47.0
 ├── Living-Dream-DSH/          # 完整仓库快照
 └── install-offline.ps1        # 离线安装脚本（打包在内，不在仓库中）

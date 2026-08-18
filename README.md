@@ -156,7 +156,7 @@ Living-Dream-DSH/
 
 > **No internet required during install.** Node.js, Python, Git are bundled in the package.
 
-1. Download [`Living-Dream-DSH-Offline.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v1.1.1/Living-Dream-DSH-Offline.exe) (~120 MB) from Releases
+1. Download [`Living-Dream-DSH-v1.2.0-Offline.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v1.2.0/Living-Dream-DSH-v1.2.0-Offline.exe) (~120 MB) from Releases
 2. Double-click to run — it extracts deps + repo + installer to a temp directory
 3. The PowerShell installer launches automatically:
    - Installs Node.js, Python, Git from local files (no download)
@@ -166,7 +166,7 @@ Living-Dream-DSH/
    - Creates desktop shortcut
 
 ```
-Living-Dream-DSH-Offline.exe (SFX contents, not in repo)
+Living-Dream-DSH-v1.2.0-Offline.exe (SFX contents, not in repo)
 ├── deps/                      # Node.js 22.16.0 MSI, Python 3.13.0, Git 2.47.0
 ├── Living-Dream-DSH/          # Full repo snapshot
 └── install-offline.ps1        # Offline installer script (bundled, not in repo)
