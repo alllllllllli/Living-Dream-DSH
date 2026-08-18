@@ -69,7 +69,7 @@ procedure InitializeWizard;
 begin
   InfoPage := CreateOutputMsgPage(wpFinished,
     'Offline Setup Complete',
-    'Living Dream DSH has been extracted to: ' + ExpandConstant('{app}'),
+    'Living Dream DSH has been installed successfully.',
     'This is an offline installer — no internet connection required.' + #13#10 + #13#10 +
     'The installer will now run to complete the setup.' + #13#10 +
     'All dependencies (Node.js, Python, Git) are bundled.' + #13#10 + #13#10 +

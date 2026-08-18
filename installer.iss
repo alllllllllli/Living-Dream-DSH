@@ -69,7 +69,7 @@ procedure InitializeWizard;
 begin
   InfoPage := CreateOutputMsgPage(wpFinished,
     'Setup Complete',
-    'Living Dream DSH has been extracted to: ' + ExpandConstant('{app}'),
+    'Living Dream DSH has been installed successfully.',
     'The installer will now run to complete the setup.' + #13#10 + #13#10 +
     'After installation, you need to fill in your API keys in the DSH settings.' + #13#10 +
     'Please refer to the README.md for configuration instructions.' + #13#10 + #13#10 +
