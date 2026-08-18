@@ -40,3 +40,7 @@ scripts/mcp/store/
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Inno Setup build outputs
+*.exe
+*.sfx
