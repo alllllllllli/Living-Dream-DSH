@@ -89,6 +89,7 @@ Living-Dream-DSH/
 ├── LICENSE                      # MIT License
 ├── .gitignore
 ├── install-gui.ps1              # GUI installer (MPC-HC style wizard)
+├── install-gui-offline.ps1      # Offline GUI installer (uses bundled deps)
 ├── install.ps1                  # CLI installer (fallback)
 ├── install.bat                  # Installer launcher
 ├── package.json                 # repo scripts deps (http-proxy for proxy.js)

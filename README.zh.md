@@ -89,6 +89,7 @@ Living-Dream-DSH/
 ├── LICENSE                      # MIT 许可证
 ├── .gitignore
 ├── install-gui.ps1              # GUI 安装器（MPC-HC 风格向导）
+├── install-gui-offline.ps1      # 离线 GUI 安装器（本地依赖）
 ├── install.ps1                  # CLI 安装器（备用）
 ├── install.bat                  # 安装启动器
 ├── package.json                 # 仓库脚本依赖（proxy.js 用的 http-proxy）
