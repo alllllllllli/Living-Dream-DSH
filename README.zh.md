@@ -19,7 +19,7 @@
 
 | 对比维度 | **Living-Dream-DSH**（本仓库） | Claude Code | GitHub Copilot | Cursor | OpenHands | Aider | Cline |
 |---|---|---|---|---|---|---|---|
-| **定位** | DSH 开源配置整合包：一键安装 + 8+ MCP + 插件 + 免费模型渠道 | Anthropic 官方 CLI/桌面 Agent | GitHub 官方 IDE 编程助手 | 商业化 AI IDE | 开源网页版 Agent（OpenDevin 后继） | 开源 git 原生 CLI Agent | 开源 VS Code Agent 插件 |
+| **定位** | DSH 开源配置整合包：GUI 安装器 + 8+ MCP + 插件 + 免费模型渠道 | Anthropic 官方 CLI/桌面 Agent | GitHub 官方 IDE 编程助手 | 商业化 AI IDE | 开源网页版 Agent（OpenDevin 后继） | 开源 git 原生 CLI Agent | 开源 VS Code Agent 插件 |
 | **价格** | **¥0**（自带免费渠道，也可自备 Key） | Free / Pro $20/月 / Max 5x $100 / Max 20x $200 | Pro $10/月起，Business $19/席位 | Pro $20/月，Ultra $200/月 | 免费（BYOK，企业版另收费） | 免费（BYOK） | 免费（BYOK，企业版另收费） |
 | **模型灵活性** | ✅ 多渠道 BYOK：DeepSeek、AMD Radeon（免费）、OpenCode Go、智谱视觉 | ❌ 仅 Claude 系列 | ⚠️ 绑定 GitHub 生态，多模型可选 | ⚠️ 多模型可选 | ✅ 任意 OpenAI 兼容模型 | ✅ 任意模型 | ✅ 任意模型 |
 | **开箱即用工具（MCP）** | ✅ **8+ 个开箱即用**：桌面操作/浏览器/OCR/记忆/文档转换/代码执行/视觉/历史会话 | ⚠️ 原生支持 MCP，但需自行逐个配置 | ⚠️ MCP 支持有限 | ⚠️ 支持 MCP，需自行配置 | ⚠️ 支持 MCP，需自行配置 | ⚠️ 支持 MCP，需自行配置 | ⚠️ 支持 MCP，需自行配置 |
@@ -158,20 +158,21 @@ Living-Dream-DSH/
 
 > **安装过程无需联网。** Node.js、Python、Git 已打包在内。
 
-1. 从 Releases 下载 [`Living-Dream-DSH-v1.2.0-Offline.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v1.2.0/Living-Dream-DSH-v1.2.0-Offline.exe)（约 120 MB）
+1. 从 Releases 下载 [`Living-Dream-DSH-v2.0.0-Offline.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.0.0/Living-Dream-DSH-v2.0.0-Offline.exe)（约 120 MB）
 2. 双击运行 — 自动解压依赖 + 仓库 + 安装脚本到临时目录
-3. PowerShell 安装程序自动启动：
+3. GUI 安装向导自动启动：
+   - 欢迎 → 许可协议 → 选择安装位置
    - 从本地文件安装 Node.js、Python、Git（不下载）
    - 复制配置文件到 `~/.dsh`
-   - 交互式填入 API Key
    - 安装插件依赖
    - 创建桌面快捷方式
+   - 安装完成后提示去设置中填写 API Key
 
 ```
 Living-Dream-DSH-v2.0.0-Offline.exe（SFX 内容，不在仓库中）
-├── deps/                      # Node.js 22.16.0 MSI, Python 3.13.0, Git 2.47.0
-├── Living-Dream-DSH/          # 完整仓库快照
-└── install-offline.ps1        # 离线安装脚本（打包在内，不在仓库中）
+├── deps/                          # Node.js 22.16.0 MSI, Python 3.13.0, Git 2.47.0
+├── Living-Dream-DSH/              # 完整仓库快照
+└── install-gui-offline.ps1        # 离线 GUI 安装脚本（打包在内，不在仓库中）
 ```
 
 ### 方式二：GUI 安装器（推荐）

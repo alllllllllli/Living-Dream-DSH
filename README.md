@@ -19,7 +19,7 @@ A battle-tested DSH configuration framework with 8+ MCP servers, custom plugins,
 
 | Dimension | **Living-Dream-DSH** (this repo) | Claude Code | GitHub Copilot | Cursor | OpenHands | Aider | Cline |
 |---|---|---|---|---|---|---|---|
-| **Positioning** | DSH open-source config pack: one-click install + 8+ MCP + plugins + free model channels | Anthropic official CLI/desktop agent | GitHub official IDE assistant | Commercial AI IDE | Open-source web agent (OpenDevin successor) | Open-source git-native CLI agent | Open-source VS Code agent plugin |
+| **Positioning** | DSH open-source config pack: GUI installer + 8+ MCP + plugins + free model channels | Anthropic official CLI/desktop agent | GitHub official IDE assistant | Commercial AI IDE | Open-source web agent (OpenDevin successor) | Open-source git-native CLI agent | Open-source VS Code agent plugin |
 | **Price** | **$0** (built-in free channels, or BYOK) | Free / Pro $20/mo / Max 5x $100 / Max 20x $200 | Pro $10/mo+, Business $19/seat | Pro $20/mo, Ultra $200/mo | Free (BYOK, enterprise extra) | Free (BYOK) | Free (BYOK, enterprise extra) |
 | **Model flexibility** | ✅ Multi-channel BYOK: DeepSeek, AMD Radeon (free), OpenCode Go, Zhipu Vision | ❌ Claude only | ⚠️ GitHub ecosystem bound | ⚠️ Multiple models | ✅ Any OpenAI-compatible | ✅ Any model | ✅ Any model |
 | **MCP servers (out-of-box)** | ✅ **8+ ready to use**: desktop/browser/OCR/memory/doc conversion/code exec/vision/history | ⚠️ Native MCP, self-configure each | ⚠️ Limited MCP | ⚠️ MCP, self-configure | ⚠️ MCP, self-configure | ⚠️ MCP, self-configure | ⚠️ MCP, self-configure |
@@ -33,7 +33,7 @@ A battle-tested DSH configuration framework with 8+ MCP servers, custom plugins,
 | **Chinese ecosystem** | ✅ **Full Chinese docs + troubleshooting + anti-pitfall guide** | ❌ English only | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **Open source / License** | ✅ MIT (incl. custom plugins) | ❌ Closed | ❌ Closed | ❌ Closed | ✅ MIT | ✅ Apache-2.0 | ✅ Apache-2.0 |
 | **Data privacy / self-host** | ✅ Local-first, your keys | ❌ Anthropic cloud | ❌ Microsoft cloud | ❌ Cloud | ✅ Self-hostable | ✅ Fully local | ✅ Fully local |
-| **Install effort** | ✅ One-click (env detect/config/keys/shortcut auto) | ✅ Easy | ✅ Easy | ✅ Easy | ⚠️ Docker/env needed | ✅ Easy | ✅ Easy |
+| **Install effort** | ✅ GUI installer (env detect/config/shortcut auto) | ✅ Easy | ✅ Easy | ✅ Easy | ⚠️ Docker/env needed | ✅ Easy | ✅ Easy |
 | **Free quota** | ✅ AMD Radeon free + DeepSeek signup bonus + Zhipu free vision | ⚠️ Free tier limited | ⚠️ Trial quota | ⚠️ Trial quota | ❌ BYOK only | ❌ BYOK only | ❌ BYOK only |
 
 ### Why Choose Living-Dream-DSH?
@@ -158,20 +158,21 @@ Living-Dream-DSH/
 
 > **No internet required during install.** Node.js, Python, Git are bundled in the package.
 
-1. Download [`Living-Dream-DSH-v1.2.0-Offline.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v1.2.0/Living-Dream-DSH-v1.2.0-Offline.exe) (~120 MB) from Releases
+1. Download [`Living-Dream-DSH-v2.0.0-Offline.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.0.0/Living-Dream-DSH-v2.0.0-Offline.exe) (~120 MB) from Releases
 2. Double-click to run — it extracts deps + repo + installer to a temp directory
-3. The PowerShell installer launches automatically:
+3. The GUI wizard launches automatically:
+   - Welcome → License → Choose Install Location
    - Installs Node.js, Python, Git from local files (no download)
    - Copies configs to `~/.dsh`
-   - Prompts for API Keys
    - Installs plugin dependencies
    - Creates desktop shortcut
+   - Finish page: fill in API Keys in DSH Settings
 
 ```
 Living-Dream-DSH-v2.0.0-Offline.exe (SFX contents, not in repo)
-├── deps/                      # Node.js 22.16.0 MSI, Python 3.13.0, Git 2.47.0
-├── Living-Dream-DSH/          # Full repo snapshot
-└── install-offline.ps1        # Offline installer script (bundled, not in repo)
+├── deps/                          # Node.js 22.16.0 MSI, Python 3.13.0, Git 2.47.0
+├── Living-Dream-DSH/              # Full repo snapshot
+└── install-gui-offline.ps1        # Offline GUI installer (bundled, not in repo)
 ```
 
 ### Option 2: GUI Installer (Recommended)
@@ -234,7 +235,7 @@ pnpm install
 
 ## 🔌 MCP Server List
 
-> All server scripts are bundled in `scripts/mcp/`. One-click installer configures paths automatically.
+> All server scripts are bundled in `scripts/mcp/`. GUI installer configures paths automatically.
 
 | MCP | Function | Script | Extra Dependencies |
 |-----|----------|--------|--------------------|
