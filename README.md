@@ -167,7 +167,7 @@ Living-Dream-DSH/
    - Creates desktop shortcut
 
 ```
-Living-Dream-DSH-v1.2.0-Offline.exe (SFX contents, not in repo)
+Living-Dream-DSH-v2.0.0-Offline.exe (SFX contents, not in repo)
 ├── deps/                      # Node.js 22.16.0 MSI, Python 3.13.0, Git 2.47.0
 ├── Living-Dream-DSH/          # Full repo snapshot
 └── install-offline.ps1        # Offline installer script (bundled, not in repo)
