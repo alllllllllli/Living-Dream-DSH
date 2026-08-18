@@ -33,7 +33,7 @@
 | **中文生态** | ✅ **全中文文档 + 防坑指南 + 中文排障** | ❌ 官方英文为主 | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **开源 / 许可证** | ✅ MIT（含自研插件源码） | ❌ 闭源 | ❌ 闭源 | ❌ 闭源 | ✅ MIT | ✅ Apache-2.0 | ✅ Apache-2.0 |
 | **数据隐私 / 自部署** | ✅ 本地优先，Key 自己持有 | ❌ 依赖 Anthropic 云端 | ❌ 依赖微软云端 | ❌ 依赖云端 | ✅ 可本地部署 | ✅ 纯本地 | ✅ 纯本地 |
-| **安装成本** | ✅ 一键安装（环境检测/配置/密钥/快捷方式全自动） | ✅ 简单 | ✅ 简单 | ✅ 简单 | ⚠️ 需 Docker/环境 | ✅ 简单 | ✅ 简单 |
+| **安装成本** | ✅ GUI 安装器（环境检测/配置/快捷方式全自动） | ✅ 简单 | ✅ 简单 | ✅ 简单 | ⚠️ 需 Docker/环境 | ✅ 简单 | ✅ 简单 |
 | **免费额度** | ✅ AMD Radeon 免费 + DeepSeek 注册赠金 + 智谱免费视觉 | ⚠️ Free 档有限用量 | ⚠️ 试用额度 | ⚠️ 试用额度 | ❌ 无（纯 BYOK） | ❌ 无（纯 BYOK） | ❌ 无（纯 BYOK） |
 
 ### 为什么选择 Living-Dream-DSH？
@@ -88,8 +88,9 @@ Living-Dream-DSH/
 ├── README.zh.md                 # 中文说明
 ├── LICENSE                      # MIT 许可证
 ├── .gitignore
-├── install.ps1                  # 一键安装脚本
-├── install.bat                  # 安装包装器
+├── install-gui.ps1              # GUI 安装器（MPC-HC 风格向导）
+├── install.ps1                  # CLI 安装器（备用）
+├── install.bat                  # 安装启动器
 ├── package.json                 # 仓库脚本依赖（proxy.js 用的 http-proxy）
 ├── configs/
 │   ├── cordis.patch.yml.template   # MCP 配置模板
@@ -146,7 +147,7 @@ Living-Dream-DSH/
 | **Git** | 任意版本 | [git-scm.com](https://git-scm.com/) | 克隆用 |
 
 > 💡 安装 Python 后执行 `pip install mcp markitdown zstandard`，MCP 服务器才能正常启动。
-> 一键安装脚本会自动完成此步骤。
+> GUI 安装器会自动完成此步骤。
 
 > 💡 启动器会自动探测 DSH 桌面版安装路径。如果探测失败，请设置：
 > `$env:DSH_DESKTOP_PATH = "D:\Tools\DeepSeekHarness-Desktop"`（改为你的实际路径），
@@ -172,23 +173,24 @@ Living-Dream-DSH-v1.2.0-Offline.exe（SFX 内容，不在仓库中）
 └── install-offline.ps1        # 离线安装脚本（打包在内，不在仓库中）
 ```
 
-### 方式二：在线一键安装
+### 方式二：GUI 安装器（推荐）
 
 ```powershell
 # 1. 克隆仓库
 git clone https://github.com/alllllllllli/Living-Dream-DSH.git
 cd Living-Dream-DSH
 
-# 2. 双击运行 install.bat
-#    或在 PowerShell 中执行：.\install.ps1
+# 2. 双击 install.bat（启动 GUI 向导）
+#    或在 PowerShell 中执行：.\install-gui.ps1
 ```
 
-安装程序会自动：
-- ✅ 检查环境（Node.js、Python、pnpm）
+GUI 安装向导流程：
+- ✅ 欢迎 → 许可协议 → 选择安装位置
+- ✅ 自动检查环境（Node.js、Python、pnpm、Git）
 - ✅ 复制配置文件到 `~/.dsh`
-- ✅ 交互式填入 API Key
 - ✅ 安装插件依赖
 - ✅ 创建桌面快捷方式
+- ✅ 安装完成后提示去设置中填写 API Key
 
 ### 方式三：手动安装
 
@@ -231,7 +233,7 @@ pnpm install
 
 ## 🔌 MCP 服务器列表
 
-> 所有服务端脚本已内置在 `scripts/mcp/` 目录。一键安装自动配置路径。
+> 所有服务端脚本已内置在 `scripts/mcp/` 目录。GUI 安装器自动配置路径。
 
 | MCP | 功能 | 脚本 | 额外依赖 |
 |-----|------|------|----------|

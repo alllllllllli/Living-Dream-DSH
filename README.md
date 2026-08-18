@@ -88,8 +88,9 @@ Living-Dream-DSH/
 ├── README.zh.md                 # Chinese
 ├── LICENSE                      # MIT License
 ├── .gitignore
-├── install.ps1                  # One-click installer
-├── install.bat                  # Installer wrapper
+├── install-gui.ps1              # GUI installer (MPC-HC style wizard)
+├── install.ps1                  # CLI installer (fallback)
+├── install.bat                  # Installer launcher
 ├── package.json                 # repo scripts deps (http-proxy for proxy.js)
 ├── configs/
 │   ├── cordis.patch.yml.template   # MCP config template
@@ -146,7 +147,7 @@ Living-Dream-DSH/
 | **Git** | Any | [git-scm.com](https://git-scm.com/) | For clone |
 
 > 💡 After installing Python, run `pip install mcp markitdown zstandard` to enable all MCP servers.
-> The one-click installer does this automatically.
+> The GUI installer does this automatically.
 
 > 💡 The launcher auto-detects DSH Desktop from common install paths. If it fails, set
 > `$env:DSH_DESKTOP_PATH = "D:\Tools\DeepSeekHarness-Desktop"` (your actual path),
@@ -172,23 +173,24 @@ Living-Dream-DSH-v1.2.0-Offline.exe (SFX contents, not in repo)
 └── install-offline.ps1        # Offline installer script (bundled, not in repo)
 ```
 
-### Option 2: Online One-Click Install
+### Option 2: GUI Installer (Recommended)
 
 ```powershell
 # 1. Clone repository
 git clone https://github.com/alllllllllli/Living-Dream-DSH.git
 cd Living-Dream-DSH
 
-# 2. Double-click install.bat
-#    Or run in PowerShell: .\install.ps1
+# 2. Double-click install.bat (launches GUI wizard)
+#    Or run in PowerShell: .\install-gui.ps1
 ```
 
-The installer will automatically:
-- ✅ Check environment (Node.js, Python, pnpm)
+The GUI installer walks you through:
+- ✅ Welcome → License Agreement → Choose Install Location
+- ✅ Auto-check environment (Node.js, Python, pnpm, Git)
 - ✅ Copy config files to `~/.dsh`
-- ✅ Interactively fill in API Keys
 - ✅ Install plugin dependencies
 - ✅ Create desktop shortcut
+- ✅ After install: fill in API Keys in DSH Settings
 
 ### Option 3: Manual Install
 
