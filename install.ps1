@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 # Living Dream DSH - One-Click Installer
 # ============================================================
 # Double-click install.bat to run this script
@@ -301,11 +301,6 @@ if ($LASTEXITCODE -ne 0) {
     Write-Warn "pip install failed (exit code $LASTEXITCODE), you may need to install manually"
 } else {
     Write-OK "Python MCP dependencies installed"
-}
-if ($LASTEXITCODE -eq 0) {
-    Write-OK "Python MCP dependencies installed (mcp, markitdown, zstandard)"
-} else {
-    Write-Warn "pip install failed - MCP servers may not start. Run manually: pip install mcp markitdown zstandard"
 }
 
 # Install proxy.js dependency (http-proxy declared in repo-root package.json, so `node scripts/proxy.js` resolves it)
