@@ -260,6 +260,15 @@ pnpm install
 
 ---
 
+### TokenRhythm（基元律动）
+
+- 端点：`https://tokenrhythm.studio/v1`
+- 协议：OpenAI / Claude 兼容，多模型聚合（DeepSeek-V4 Pro、GPT 5.5、Claude Opus 4.7、GLM 5.2 等）
+- 免费：注册后加入「体验官计划」获得免费 token 额度
+- 注册：https://tokenrhythm.studio/i/rf_tr_ZNVLkmDci5hWbRquWa6KP_fW
+
+---
+
 ## 📱 手机远程访问
 
 通过 Tailscale 实现手机浏览器访问 DSH：
@@ -459,6 +468,7 @@ Living Dream DSH 站在这些优秀的开源项目和服务的肩膀上：
 | [智谱 AI (GLM-4V-Flash)](https://open.bigmodel.cn/) | 免费视觉模型，用于图片理解 |
 | [Ollama](https://ollama.com/) | 本地模型推理（视觉兜底 + 向量嵌入） |
 | [AMD Radeon Cloud](https://developer.amd.com.cn/radeon) | 免费 DeepSeek 模型通道（v4-flash / v4-pro） |
+| [TokenRhythm 基元律动](https://tokenrhythm.studio) | 多模型聚合 API，注册得免费体验官额度 |
 
 ### DSH 插件
 

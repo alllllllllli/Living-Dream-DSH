@@ -21,11 +21,11 @@
 | **Open source / License** | ✅ MIT (incl. custom plugins) | ❌ Closed | ❌ Closed | ❌ Closed | ✅ MIT | ✅ Apache-2.0 | ✅ Apache-2.0 |
 | **Data privacy / self-host** | ✅ Local-first, your keys | ❌ Anthropic cloud | ❌ Microsoft cloud | ❌ Cloud | ✅ Self-hostable | ✅ Fully local | ✅ Fully local |
 | **Install effort** | ✅ One-click (env detect/config/keys/shortcut auto) | ✅ Easy | ✅ Easy | ✅ Easy | ⚠️ Docker/env needed | ✅ Easy | ✅ Easy |
-| **Free quota** | ✅ AMD Radeon free + DeepSeek signup bonus + Zhipu free vision | ⚠️ Free tier limited | ⚠️ Trial quota | ⚠️ Trial quota | ❌ BYOK only | ❌ BYOK only | ❌ BYOK only |
+| **Free quota** | ✅ AMD Radeon free + DeepSeek signup bonus + Zhipu free vision + TokenRhythm free pilot quota | ⚠️ Free tier limited | ⚠️ Trial quota | ⚠️ Trial quota | ❌ BYOK only | ❌ BYOK only | ❌ BYOK only |
 
 ## Why Choose Living-Dream-DSH?
 
-1. **Zero cost**: The only "out-of-box and fully free" option. Claude Code costs $100–200/mo for heavy use; Copilot/Cursor start at $10–20/mo. This repo integrates multiple free model channels (AMD Radeon Cloud, DeepSeek signup bonus, Zhipu GLM-4V-Flash free vision), lowering the barrier to $0 while keeping BYOK for upgrades.
+1. **Zero cost**: The only "out-of-box and fully free" option. Claude Code costs $100–200/mo for heavy use; Copilot/Cursor start at $10–20/mo. This repo integrates multiple free model channels (AMD Radeon Cloud, DeepSeek signup bonus, Zhipu GLM-4V-Flash free vision, TokenRhythm free pilot quota), lowering the barrier to $0 while keeping BYOK for upgrades.
 
 2. **Full-stack capability**: 8+ MCP servers out of the box — desktop automation, browser control, screen OCR, doc conversion, semantic memory, code execution. Others either don't support these or require manual per-server setup. One install = full toolkit, every component battle-tested (pitfalls documented in the troubleshooting guide).
 

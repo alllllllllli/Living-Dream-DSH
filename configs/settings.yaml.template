@@ -47,6 +47,17 @@ llm-pi-ai:
           contextWindow: 1048576
           maxTokens: 128000
 
+    # TokenRhythm（基元律动）— 多模型聚合，注册得免费体验官额度
+    # 模型 ID 以 TokenRhythm 用户中心为准
+    token-rhythm:
+      apiKeyEnv: TOKEN_RHYTHM_API_KEY
+      api: openai-completions
+      baseURL: https://tokenrhythm.studio/v1
+      models:
+        - id: deepseek-v4-pro
+          name: DeepSeek-V4-Pro
+          contextWindow: 1048576
+
 # 权限配置
 # 公开模板默认 standard（安全）。自用且想让 os-copilot 任意执行代码时,
 # 再改成 danger-full-access — 注意那等于给模型开了一个可执行任意命令的后门。

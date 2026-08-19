@@ -260,6 +260,15 @@ pnpm install
 
 ---
 
+### TokenRhythm
+
+- Endpoint: `https://tokenrhythm.studio/v1`
+- Protocol: OpenAI / Claude compatible, multi-model aggregation (DeepSeek-V4 Pro, GPT 5.5, Claude Opus 4.7, GLM 5.2, etc.)
+- Free: join the "体验官计划" (pilot program) after signup for free token quota
+- Register: https://tokenrhythm.studio/i/rf_tr_ZNVLkmDci5hWbRquWa6KP_fW
+
+---
+
 ## 📱 Mobile Remote Access
 
 Access DSH from phone browser via Tailscale:
@@ -460,6 +469,7 @@ Living Dream DSH stands on the shoulders of these amazing open-source projects a
 | [Zhipu AI (GLM-4V-Flash)](https://open.bigmodel.cn/) | Free vision model for image understanding |
 | [Ollama](https://ollama.com/) | Local model inference (vision fallback + embedding) |
 | [AMD Radeon Cloud](https://developer.amd.com.cn/radeon) | Free DeepSeek model access (v4-flash / v4-pro) |
+| [TokenRhythm](https://tokenrhythm.studio) | Multi-model aggregation API, free pilot-program quota on signup |
 
 ### DSH Plugins
 
