@@ -1,10 +1,10 @@
-; Living Dream DSH v2.7.8 - Inno Setup Offline Installer
+; Living Dream DSH v2.9.0 - Inno Setup Offline Installer
 ; Bundles Node.js, Python, Git for offline installation
 ; Compile: iscc.exe installer-v2-offline.iss
 ; Requires deps/ directory with node-*.msi, python-*.exe, Git-*.exe
 
 #define MyAppName "Living Dream DSH"
-#define MyAppVersion "2.7.9"
+#define MyAppVersion "2.9.0"
 #define MyAppPublisher "alllllllllli"
 #define MyAppURL "https://github.com/alllllllllli/Living-Dream-DSH"
 

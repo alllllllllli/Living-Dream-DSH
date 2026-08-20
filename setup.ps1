@@ -1,4 +1,4 @@
-﻿# ============================================================
+# ============================================================
 # Living Dream DSH - Headless Setup Script (Inno Setup helper)
 # Called by Inno Setup installer during installation.
 # ============================================================
@@ -36,7 +36,7 @@ function Find-Dep($pattern) {
     }
 }
 
-Write-Log "=== Living Dream DSH Setup v2.7.8 ==="
+Write-Log "=== Living Dream DSH Setup v2.9.0 ==="
 Write-Log "InstallDir: $InstallDir"
 Write-Log "Mode: $(if ($Offline) { 'OFFLINE' } else { 'Online' })"
 Write-Log ""

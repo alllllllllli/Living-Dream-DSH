@@ -162,7 +162,7 @@ Living-Dream-DSH/
 
 > **No internet required during install.** Node.js, Python, Git are bundled in the package.
 
-1. Download [`Living-Dream-DSH-v2.7.9-Offline-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.7.9/Living-Dream-DSH-v2.7.9-Offline-Setup.exe) (~122 MB) from Releases
+1. Download [`Living-Dream-DSH-v2.9.0-Offline-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.9.0/Living-Dream-DSH-v2.9.0-Offline-Setup.exe) (~122 MB) from Releases
 2. Double-click to run — professional Inno Setup wizard launches
 3. Follow the wizard: Language → License → Choose Install Location → Install
 4. After extraction, the headless setup script runs automatically (in a visible PowerShell window):
@@ -173,7 +173,7 @@ Living-Dream-DSH/
    - Finish page: optional "Add DeepSeek Harness to desktop" checkbox
    - After install: fill in API Keys in DSH Settings
 
-> 💡 There is also an **online installer** [`Living-Dream-DSH-v2.7.9-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.7.9/Living-Dream-DSH-v2.7.9-Setup.exe) (~2 MB) that downloads dependencies via winget.
+> 💡 There is also an **online installer** [`Living-Dream-DSH-v2.9.0-Setup.exe`](https://github.com/alllllllllli/Living-Dream-DSH/releases/download/v2.9.0/Living-Dream-DSH-v2.9.0-Setup.exe) (~2 MB) that downloads dependencies via winget.
 
 ### Option 2: GUI Installer (Source Build)
 
