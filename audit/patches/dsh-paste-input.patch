@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\paste-input-index.js" "b/D:\\Tools\\dsh-plugins\\dsh-paste-input\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\paste-input-index.js" "b/<dsh-install>\\dsh-plugins\\dsh-paste-input\\lib\\index.js"
 index bc3f410..47e51c7 100644
---- "a/D:\\workspace\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\paste-input-index.js"	
-+++ "b/D:\\Tools\\dsh-plugins\\dsh-paste-input\\lib\\index.js"
+--- "a/<workspace>\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\paste-input-index.js"	
++++ "b/<dsh-install>\\dsh-plugins\\dsh-paste-input\\lib\\index.js"
 @@ -28,6 +28,8 @@ const DEFAULT_LIMITS = Object.freeze({
    maxConcurrentUploads: 4,
  });

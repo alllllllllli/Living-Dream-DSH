@@ -3,8 +3,8 @@
 审计报告见 `final-report.md`（1 高危 / 5 中危 / 19 低危 / 2 latent / 13+ 排除）。本台账记录**已实际应用到运行中 DSH 源码**的修复 + 明确 defer 的项。
 
 ## 环境与协议
-- 修复目标 = 运行中 DSH 的 stock 编译 JS（`D:\Tools\DeepSeekHarness-Desktop\resources\dsh-runtime\node_modules\@deepseek-ai\<包>\lib\index.js`）与用户自有插件（`D:\workspace\dsh-file-uploads\`、`D:\Tools\dsh-plugins\dsh-paste-input\`）。
-- 每文件改前备份原文件到 `D:\workspace\dsh-audit\fix-backups\<包>\index.js.orig`；改后 `node --check`；非平凡逻辑留 runnable check 在 `D:\workspace\dsh-audit\fix-checks\`。
+- 修复目标 = 运行中 DSH 的 stock 编译 JS（`<dsh-install>\DeepSeekHarness-Desktop\resources\dsh-runtime\node_modules\@deepseek-ai\<包>\lib\index.js`）与用户自有插件（`<workspace>\dsh-file-uploads\`、`<dsh-install>\dsh-plugins\dsh-paste-input\`）。
+- 每文件改前备份原文件到 `<workspace>\dsh-audit\fix-backups\<包>\index.js.orig`；改后 `node --check`；非平凡逻辑留 runnable check 在 `<workspace>\dsh-audit\fix-checks\`。
 - 改动对运行中进程（PID 27220）不生效，**需重启 DSH 才加载新代码**。
 - 执行者：AgentTeams `dsh-fix-pass`（security/llm/tools/plugins 4 成员）+ 队长（P3 存储/终端）。
 
@@ -38,11 +38,11 @@
 14. **[低] session-stats turns 少计 no-op turn** — `@deepseek-ai\dsh-session-stats\lib\index.js`：新增 `turn/start` 分支递增 `turns`，`step/end` 去掉 `turns`/`lastTurn` 计数（只计 steps），删 `lastTurn` init。验证 `node --check` OK。
 
 ### P2 自定义插件（plugins 成员，备份在 `dsh-local-patches-backup\fileuploads-pasteinput-20260820-131146\`）
-15. **[中] file-uploads clearInFlight 过早** — `D:\workspace\dsh-file-uploads\client.js:166-178`：`clearInFlight(key)` 从 `attach()` 开头移到 `insertReference` 成功之后，避免发送中新选文件时清掉 inFlight 追踪。
+15. **[中] file-uploads clearInFlight 过早** — `<workspace>\dsh-file-uploads\client.js:166-178`：`clearInFlight(key)` 从 `attach()` 开头移到 `insertReference` 成功之后，避免发送中新选文件时清掉 inFlight 追踪。
 16. **[低] file-uploads sanitizer 剥前导点** — `dsh-file-uploads\index.js`：保留前导点（`.env` 不再变 `env`），`.upload-` 临时前缀逻辑恢复。
 17. **[低] file-uploads Windows 保留名/尾随点空格** — `dsh-file-uploads\index.js`：镜像 paste-input `safeSegment`（CON/PRN/AUX/NUL/COM1-9/LPT1-9 + 尾随点/空格净化）。
 18. **[低] file-uploads hard-link 失败** — `dsh-file-uploads\index.js:213`：`link()` 失败（FAT32/exFAT/网络挂载 EPERM/ENOSYS）回退 `copyFile`。
-19. **[低] paste-input 错误映射** — `D:\Tools\dsh-plugins\dsh-paste-input\lib\index.js`：`ValidationError` 区分 400（校验）/500（内部，generic body 不回显 `cause.message`）。
+19. **[低] paste-input 错误映射** — `<dsh-install>\dsh-plugins\dsh-paste-input\lib\index.js`：`ValidationError` 区分 400（校验）/500（内部，generic body 不回显 `cause.message`）。
 20. **[低] paste-input 1MB cap** — `dsh-paste-input\lib\index.js`：`readJson` cap 按 `maxFiles` 调高（10000→10MB）。
 
 > 后续已修：`dsh-file-uploads\upload-manager.test.js` 既有缺陷（静态+动态 `import '../index.js'` 路径错、:19 断言与新行为冲突）已修复——import 改 `./index.js`（两处）、:19 断言改 `file-.upload-secret`、补 `.env` 前导点保留断言。`node --test` 7/7 pass。
@@ -61,3 +61,53 @@
 ## 生效须知
 - 所有改动对运行中进程（PID 27220）不生效，**需重启 DSH 才加载新代码**。
 - 回滚：`fix-backups\<包>\index.js.orig`（13 个 stock 文件）+ `dsh-local-patches-backup\fileuploads-pasteinput-20260820-131146\`（3 个插件文件）。
+
+---
+
+# 第三轮修复（团队 dsh-audit-v3，5 成员：security/core/plugins/llm-tools/reviewer）
+
+## 已应用修复（6 项）
+
+1. **[高] dsh-memory-inject 凭据脱敏** — `<workspace>\dsh-memory-inject\lib\memory.js`
+   - 根因：`renderItems` 只折行 + 200 字符截断，无 secret 脱敏，明文 GitHub PAT / 代理配置逐字注入系统提示并发给外部 LLM。
+   - 修复：新增 `SECRET_PATTERNS`（9 正则，GitHub/OpenAI/DeepSeek/AWS/Slack/私钥/连接串/Bearer/key=value）+ `redact()`；`renderItems` 改 `truncate(redact(it.text))`（先脱敏再截断，避免 token 被拦腰截断漏网）。
+   - 验证：`redact.test.js` node --test **4/4 PASS**。
+
+2. **[高] dsh-atomic-write 锁机制 ReferenceError（第一轮 fsync 修复引入的回归）** — `@deepseek-ai\dsh-atomic-write\lib\index.js`
+   - 根因：第一轮修 fsync 时把 import 的 `writeFile` 误删（换成 `open`），但 `withFileLock:82` 仍在用 `writeFile` → 每次拿锁即 ReferenceError，锁机制整体失效（孤儿锁问题因此从未真正暴露）。
+   - 修复：import 恢复 `writeFile` 并加 `readFile`。
+   - 验证：`atomic-lock-check.mjs` PASS（实测 withFileLock 不再 ReferenceError）。
+
+3. **[中] dsh-atomic-write 孤儿锁 reclaim（上轮 defer 项转正）** — 同上文件
+   - 根因：进程崩溃遗留 `.lock`，`withFileLock` 超时后永久失败（brick 凭据/设置，无自愈）。
+   - 修复：超时分支调 `reclaimOrphanLock()`——读锁内 PID，`isProcessAlive`（`kill(pid,0)`，EPERM 视为存活）确认死 PID 后用 `rename` 原子认领（唯一赢家，其余 ENOENT→false），再 rm stale。消除双写者抢收竞态。
+   - 验证：`atomic-lock-check.mjs` 实测死 PID 孤儿锁被回收 + operation 执行 + 锁释放。
+
+4. **[中] dsh-guard 漏检 4 项** — `<workspace>\dsh-guard\index.js`
+   - ENCRYPTED PRIVATE KEY（:36 加 `ENCRYPTED ` 分支）、.env 无引号 api_key（:37 引号改可选）、.env 无引号 password（:38 同）、`rm -rf /*` / `~/*` 变体（:49 加 `\*?`）。
+
+5. **[中] dsh-guard 连接串误报** — 同上文件 :39
+   - 根因：连接串正则在「file 协议 URL 的盘符 + @scope 包名」上误判为 user:pass@host，日常写含 @scope 路径的脚本被误拦。
+   - 修复：加 scheme 白名单（http/https/ftp/mongodb/mysql/postgres/redis/amqp），file 协议不再误判。
+   - 验证：`guard.test.js` **22/22 PASS**（+6 用例）。
+
+6. **[中] file-uploads clearInFlight 30s 竞态** — `<workspace>\dsh-file-uploads\client.js`
+   - 根因：`attach()` 里的 `clearInFlight(key)` 无条件丢弃 inFlight 中「等 30s 确认窗口」的文件，慢发送失败 + 追加选新文件 → 旧文件静默丢失（restoreFailed 找不到已丢弃条目）。
+   - 修复：删除 `attach()` 里的 `clearInFlight(key)`（inFlight 清理由 30s expiry 定时器 + `restoreFailed` 负责，无需 attach 干预）。
+   - 验证：node --check OK（浏览器端 `window.__ModuleLoader__` 代码，无 node 单测）。
+
+## 本轮 defer（评估后仍不修，附理由）
+
+| 项 | 理由 |
+|---|---|
+| ACP max-tokens 覆写为 end_turn | 5% 可能有意，需实现者确认 |
+| ACP aborted / turn-end 边界误报 | 不可达 / 仅灾难路径 |
+| continuable + run_in_background:false 降级 | 产品语义非 bug |
+| llm-retry mode:"always" | opt-in，有 delay 上限 + signal 兜底 |
+| cordis-host-runner 动态 invoke 无超时 | latent，改动需 AbortSignal + race |
+| typert-generator quote() 漏转义 \r/U+2028/U+2029 | UNCERTAIN，当前被 JSON.stringify 掩盖 |
+| dsh-guard iex 误伤 Elixir / authorized_keys 只读误拦 | 低误报，黑名单固有限制 |
+
+## 生效须知（第三轮）
+- 插件源码（memory-inject/guard/file-uploads）已 Copy-Item 同步到 profile node_modules 副本；改源码 HMR 不 watch，**需重启 DSH 生效**。
+- atomic-write 为 stock 编译 JS，同样需重启 DSH 加载。

@@ -1,6 +1,6 @@
 # DSH 全架构审计 — 最终分级报告
 
-**审计范围/方法**：第一轮 9 个子代理对 DSH 全架构（231 包 / 781 编译后 JS 文件，源码根 `D:\Tools\DeepSeekHarness-Desktop\resources\dsh-runtime\node_modules\@deepseek-ai\`，另含 3 个自定义插件）做系统性 bug 排查并写入台账；第二轮以 AgentTeams 对抗性复核（t1 安全 / t2 并发状态机 / t3 LLM 流式）对第一轮的高危发现与遗留 UNCERTAIN 项逐行重查源码、追调用链，并用 Node v24 实测探针佐证。凡二次结论与第一轮冲突，**以二次独立裁定为准并标注**。
+**审计范围/方法**：第一轮 9 个子代理对 DSH 全架构（231 包 / 781 编译后 JS 文件，源码根 `<dsh-install>\DeepSeekHarness-Desktop\resources\dsh-runtime\node_modules\@deepseek-ai\`，另含 3 个自定义插件）做系统性 bug 排查并写入台账；第二轮以 AgentTeams 对抗性复核（t1 安全 / t2 并发状态机 / t3 LLM 流式）对第一轮的高危发现与遗留 UNCERTAIN 项逐行重查源码、追调用链，并用 Node v24 实测探针佐证。凡二次结论与第一轮冲突，**以二次独立裁定为准并标注**。
 
 ---
 
@@ -47,7 +47,7 @@
 - **裁定**：第一轮 MEDIUM + 第二轮 t3 追完整调用链**确认**，无冲突。
 
 ### 5. [MEDIUM] file-uploads `attach()` 过早 clearInFlight → 孤儿化正在发送的文件
-`D:\workspace\dsh-file-uploads\client.js:168`
+`<workspace>\dsh-file-uploads\client.js:168`
 
 - **描述**：上批仍在发送时用户选新文件，会清掉 inFlight 追踪，`promptError` → `restoreFailed()` 找不到可恢复数据，正在发送的文件引用被孤儿化。
 - **Root cause**：`attach()` 在检查 composer phase **之前**就无条件 `clearInFlight(key)`。
@@ -176,7 +176,7 @@
 - **裁定**：第一轮 [低/uncertain]，第二轮未复核，维持 low/uncertain。
 
 ### 20. [LOW] paste-input 单 catch 把一切失败映射 400 且回显 `cause.message`
-`D:\Tools\dsh-plugins\dsh-paste-input\lib\index.js:508-511`
+`<dsh-install>\dsh-plugins\dsh-paste-input\lib\index.js:508-511`
 
 - **描述**：路径 / E* 码泄漏给调用方。
 - **Root cause**：错误分类缺失，400/500 不分且回显内部 cause。
@@ -184,28 +184,28 @@
 - **裁定**：第一轮 [低]，第二轮未复核，维持。
 
 ### 21. [LOW] paste-input `readJson` 1MB cap 与 `maxFiles:10000` 冲突
-`D:\Tools\dsh-plugins\dsh-paste-input\lib\index.js:92`（调用 :335）
+`<dsh-install>\dsh-plugins\dsh-paste-input\lib\index.js:92`（调用 :335）
 
 - **描述**：几千文件的选择报 `JSON body exceeds 1048576 bytes`。
 - **Fix**：按 `maxFiles` 调高 cap 或降低 `maxFiles`。
 - **裁定**：第一轮 [低]，维持。
 
 ### 22. [LOW] file-uploads sanitizer 剥掉所有前导点（`.env`→`env`）
-`D:\workspace\dsh-file-uploads\index.js:43`
+`<workspace>\dsh-file-uploads\index.js:43`
 
 - **描述**：`.env`→`env`、`.gitignore`→`gitignore`，`foo`/`.foo` 冲突；:48 的 `startsWith('.upload-')` guard 成死代码。
 - **Fix**：仅剥临时文件前缀，或先存临时名再 sanitize。
 - **裁定**：第一轮 [低] + 第二轮 t1 确认属实，维持。
 
 ### 23. [LOW] file-uploads 缺 Windows 保留设备名 + 尾随点/空格净化
-`D:\workspace\dsh-file-uploads\index.js:40-56`
+`<workspace>\dsh-file-uploads\index.js:40-56`
 
 - **描述**：CON/PRN/AUX/NUL/COM1-9/LPT1-9 及尾随点/空格未净化（contrast `paste-input safeSegment:134-143` 有做）。
 - **Fix**：镜像 paste-input 的 safeSegment。
 - **裁定**：第一轮 [低] + 第二轮 t1 确认属实，维持。
 
 ### 24. [LOW] file-uploads `publishUnique` 用 hard link 不支持 FAT32/exFAT/网络挂载
-`D:\workspace\dsh-file-uploads\index.js:213`
+`<workspace>\dsh-file-uploads\index.js:213`
 
 - **描述**：不支持 link 的文件系统 EPERM/ENOSYS → 上传 500。
 - **Fix**：link 失败回退 rename / copyFile。
@@ -258,13 +258,13 @@
 
 ---
 
-## 六、本地补丁问题专节（`D:\workspace\dsh-local-patches-backup\`，当前未应用）
+## 六、本地补丁问题专节（`<workspace>\dsh-local-patches-backup\`，当前未应用）
 
 > 说明：这 5 条来自第一轮台账，第二轮未针对此目录做二次复核，维持第一轮分级。
 
 1. **[中] xlsx 路径硬编码旧目录** —— `restore.ps1` 的 `$defWin` 会重写（自洽）；但绕过 restore 则 Excel 静默失败。Fix=路径参数化或运行时探测。
-2. **[中] readVisionConfig 硬编码 `G:\vision-files\dsh_vision_config.json`** —— 换机/换盘即失效。Fix=配置路径可配置/从设置读。
-3. **[低] describeWithZhipu/Ollama 吞错误** —— 兜底信息不区分失败原因，难排障。Fix=保留 cause/错误码。
+2. **[中] readVisionConfig 硬编码 `<vision-config-dir>\dsh_vision_config.json`** —— 换机/换盘即失效。Fix=配置路径可配置/从设置读。
+3. **[低] describeWith<vision-provider>/<local-llm> 吞错误** —— 兜底信息不区分失败原因，难排障。Fix=保留 cause/错误码。
 4. **[低] describeFilesLocally 用 `body.length`(UTF-16) + slice 截断 30000 字符** —— 可能切多字节字符。Fix=按 code point / 字节安全截断。
 5. **[低] bingRssSearch 不传 signal** —— 中止无法取消 Bing 请求。Fix=签名加 signal + fetch 加 `{signal}`。（与台账 :26「patched/dsh-web-search-deepseek/lib/index.js:90-96」同源）
 

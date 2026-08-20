@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-session-stats\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-session-stats\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-audit\\fix-backups\\dsh-session-stats\\index.js.orig" "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-session-stats\\lib\\index.js"
 index 313d0e3..2d32020 100644
---- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-session-stats\\index.js.orig"	
-+++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-session-stats\\lib\\index.js"
+--- "a/<workspace>\\dsh-audit\\fix-backups\\dsh-session-stats\\index.js.orig"	
++++ "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-session-stats\\lib\\index.js"
 @@ -59,12 +59,15 @@ const sessionStatsProjectionDefinition = {
  		ttftSteps: 0,
  		decodeMs: 0,

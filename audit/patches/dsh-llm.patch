@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-llm\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-audit\\fix-backups\\dsh-llm\\index.js.orig" "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm\\lib\\index.js"
 index 3cb45fd..0db0efa 100644
---- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-llm\\index.js.orig"	
-+++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm\\lib\\index.js"
+--- "a/<workspace>\\dsh-audit\\fix-backups\\dsh-llm\\index.js.orig"	
++++ "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm\\lib\\index.js"
 @@ -702,7 +702,7 @@ var BlockAssembler = class {
  			case "tool-call-delta": {
  				const partial = this.ensure(chunk.index, "tool-call");

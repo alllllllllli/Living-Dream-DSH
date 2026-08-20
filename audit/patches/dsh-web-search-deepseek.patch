@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-web-search-deepseek\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-web-search-deepseek\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-audit\\fix-backups\\dsh-web-search-deepseek\\index.js.orig" "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-web-search-deepseek\\lib\\index.js"
 index d9dc18d..b605544 100644
---- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-web-search-deepseek\\index.js.orig"	
-+++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-web-search-deepseek\\lib\\index.js"
+--- "a/<workspace>\\dsh-audit\\fix-backups\\dsh-web-search-deepseek\\index.js.orig"	
++++ "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-web-search-deepseek\\lib\\index.js"
 @@ -97,7 +97,7 @@ var DeepSeekSearchProvider = class {
  	}
  	available() {

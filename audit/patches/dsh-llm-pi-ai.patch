@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-llm-pi-ai\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm-pi-ai\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-audit\\fix-backups\\dsh-llm-pi-ai\\index.js.orig" "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm-pi-ai\\lib\\index.js"
 index 195d407..1a70de6 100644
---- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-llm-pi-ai\\index.js.orig"	
-+++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm-pi-ai\\lib\\index.js"
+--- "a/<workspace>\\dsh-audit\\fix-backups\\dsh-llm-pi-ai\\index.js.orig"	
++++ "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm-pi-ai\\lib\\index.js"
 @@ -859,7 +859,8 @@ var PiAiAdapter = class extends LlmAdapter {
  			} catch (error) {
  				if (timeoutOf(watchdog.signal, "LLM_STREAM_IDLE_TIMEOUT") !== void 0) throw new LlmError(`pi-ai stream idle timeout after ${streamIdleTimeoutMs}ms`, "TIMEOUT", { cause: error });

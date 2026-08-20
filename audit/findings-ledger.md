@@ -14,10 +14,10 @@ goal-9cf680b4-2f9d-4112-aa89-5ba4cee1fbeb (rev1)
   - 所以 `agent/error` 先于 `turn/end` 触发；`turn/end` 处理器(line 346-351) 在 `inflight.turn === event.data.turn` 且 `reason.kind==="error"` 时 reject。
   - `agent/error` 的 `inflight.turn === turn → return` 是**故意去重**: match 时交给后续 `turn/end` 拒绝；只有不 match (message 尚未 claim，`inflight.turn===void 0`，如 `turn/start` append 失败 line 523-525，此时无 turn/end) 才由 `agent/error` 兜底 reject。逻辑自洽，非 bug。
 
-## 本地补丁问题 (D:\workspace\dsh-local-patches-backup\，当前未应用)
+## 本地补丁问题 (<workspace>\dsh-local-patches-backup\，当前未应用)
 1. [中] xlsx 路径硬编码旧目录 (restore.ps1 $defWin 会重写，自洽；绕过 restore 则 Excel 静默失败)
-2. [中] readVisionConfig 硬编码 `G:\vision-files\dsh_vision_config.json`
-3. [低] describeWithZhipu/Ollama 吞错误，兜底信息不区分原因
+2. [中] readVisionConfig 硬编码 `<vision-config-dir>\dsh_vision_config.json`
+3. [低] describeWith<vision-provider>/<local-llm> 吞错误，兜底信息不区分原因
 4. [低] describeFilesLocally 用 body.length(UTF-16)+slice 截断 30000 字符，可能切多字节
 5. [低] bingRssSearch 不传 signal，中止无法取消
 
@@ -38,8 +38,8 @@ goal-9cf680b4-2f9d-4112-aa89-5ba4cee1fbeb (rev1)
 - UNCERTAIN: dsh-fs-sandbox `checkedTarget` 在工具层缺 sandboxPolicy 时回退部署默认 policy(错误 session root)；readHostSource/readWholeBytes 超限/abort 路径未显式 destroy createReadStream(fd 挂到 GC)；自定义 runnerCommand 恒包 bwrap 参数却声称 full enforcement。
 
 ## 子代理 #9 自定义插件报告 (9ce542c3，已完成)
-- [中] `D:\workspace\dsh-file-uploads\client.js:168` — `attach()` 在检查 composer phase 前就无条件 `clearInFlight(key)`，用户在上批仍在发送时选新文件会清掉 inFlight 追踪 → `promptError`→`restoreFailed()` 找不到可恢复数据，正在发送的文件引用被孤儿化。Fix=把 clearInFlight 移到 insertReference 成功之后。
-- [低] `D:\Tools\dsh-plugins\dsh-paste-input\lib\index.js:508-511` — 单 catch 把一切失败映射 400 且回显 `cause.message`(路径/E* 码泄漏给调用方)。Fix=区分 400(校验)/500(内部，generic body)。
+- [中] `<workspace>\dsh-file-uploads\client.js:168` — `attach()` 在检查 composer phase 前就无条件 `clearInFlight(key)`，用户在上批仍在发送时选新文件会清掉 inFlight 追踪 → `promptError`→`restoreFailed()` 找不到可恢复数据，正在发送的文件引用被孤儿化。Fix=把 clearInFlight 移到 insertReference 成功之后。
+- [低] `<dsh-install>\dsh-plugins\dsh-paste-input\lib\index.js:508-511` — 单 catch 把一切失败映射 400 且回显 `cause.message`(路径/E* 码泄漏给调用方)。Fix=区分 400(校验)/500(内部，generic body)。
 - [低] `dsh-paste-input\lib\index.js:92`(调用 :335) — `readJson` 默认 1MB cap 与 `maxFiles:10000`(:26) 冲突，几千文件的选择会 `JSON body exceeds 1048576 bytes`。
 - [低] `dsh-file-uploads\index.js:43` — sanitizer `.replace(/^\.+/,'')` 剥掉所有前导点(非仅临时文件前缀)：`.env`→`env`、`.gitignore`→`gitignore`、`foo`/`.foo` 冲突；:48 的 `startsWith('.upload-')` guard 成死代码。
 - [低] `dsh-file-uploads\index.js:40-56` — 缺 Windows 保留设备名(CON/PRN/AUX/NUL/COM1-9/LPT1-9)+尾随点/空格净化(contrast paste-input safeSegment :134-143 有做)。
@@ -89,7 +89,7 @@ goal-9cf680b4-2f9d-4112-aa89-5ba4cee1fbeb (rev1)
 - [低] NEW `dsh-subprocess-local\lib\index.js:318-331` — childEnv undefined 墓碑在 node-pty terminal 路径被 `_parseEnv` 强转字符串 "undefined"(Node spawn 会 drop, 实测 has:false)；仅 terminal 路径可达。Fix=显式删墓碑键。
 - 排除(非 bug): worker-thread:904-909 exit 恒失败=正确防御(settled 标志+实测 message 2000/2000 先于 exit)；readWholeBytes/readHostSource fd 经 signal 自动销毁+async iterator return() 释放(ABORT_ERR+close 双路径实测)。
 - latent(当前不可达, 非真实 bug): jobs-local:365 settle 未校验 outcome 终态(所有 producer 现均产终态)；fs-sandbox checkedTarget 回退(工具层恒传显式 policy)。
-- 探针脚本在 D:\workspace\dsh-audit\concurrency-probe\。
+- 探针脚本在 <workspace>\dsh-audit\concurrency-probe\。
 
 ### t3 LLM 复核 (llm)
 - [中] 确认 `dsh-llm\lib\index.js:705+:752`(TS lib/types/assembler.js:57+:101) tool-call id 兜底 `?? CallId(call-N)` 死代码(push 无条件赋值 + id 恒 string/空串 + ?? 不兜空串 → delta-only 流拼空 id)；证据 dsh-commands/lib/typert.host.js:418 声明 id:CallId、dsh-session:793-804 只校验 typeof string。

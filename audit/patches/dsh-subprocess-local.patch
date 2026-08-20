@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-subprocess-local\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-subprocess-local\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-audit\\fix-backups\\dsh-subprocess-local\\index.js.orig" "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-subprocess-local\\lib\\index.js"
 index 75fae74..a527bd8 100644
---- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-subprocess-local\\index.js.orig"	
-+++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-subprocess-local\\lib\\index.js"
+--- "a/<workspace>\\dsh-audit\\fix-backups\\dsh-subprocess-local\\index.js.orig"	
++++ "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-subprocess-local\\lib\\index.js"
 @@ -317,14 +317,19 @@ function createProcessInspector(platform = process.platform, arch = process.arch
  */
  function childEnv(extra) {

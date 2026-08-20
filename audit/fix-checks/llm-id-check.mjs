@@ -12,7 +12,7 @@
 import { pathToFileURL } from "node:url";
 
 const LLM_INDEX = pathToFileURL(
-  "D:/Tools/DeepSeekHarness-Desktop/resources/dsh-runtime/node_modules/@deepseek-ai/dsh-llm/lib/index.js"
+  "<dsh-install>/DeepSeekHarness-Desktop/resources/dsh-runtime/node_modules/@deepseek-ai/dsh-llm/lib/index.js"
 ).href;
 
 const { BlockAssembler } = await import(LLM_INDEX);

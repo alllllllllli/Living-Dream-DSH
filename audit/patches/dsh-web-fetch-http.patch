@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-web-fetch-http\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-web-fetch-http\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-audit\\fix-backups\\dsh-web-fetch-http\\index.js.orig" "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-web-fetch-http\\lib\\index.js"
 index 80502fe..07bc867 100644
---- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-web-fetch-http\\index.js.orig"	
-+++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-web-fetch-http\\lib\\index.js"
+--- "a/<workspace>\\dsh-audit\\fix-backups\\dsh-web-fetch-http\\index.js.orig"	
++++ "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-web-fetch-http\\lib\\index.js"
 @@ -1,6 +1,68 @@
  import z from "@deepseek-ai/schemastery";
  import { WebError } from "@deepseek-ai/dsh-web";

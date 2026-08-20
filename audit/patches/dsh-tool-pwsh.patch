@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-tool-pwsh\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-tool-pwsh\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-audit\\fix-backups\\dsh-tool-pwsh\\index.js.orig" "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-tool-pwsh\\lib\\index.js"
 index 95efaab..93719de 100644
---- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-tool-pwsh\\index.js.orig"	
-+++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-tool-pwsh\\lib\\index.js"
+--- "a/<workspace>\\dsh-audit\\fix-backups\\dsh-tool-pwsh\\index.js.orig"	
++++ "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-tool-pwsh\\lib\\index.js"
 @@ -2,7 +2,7 @@ import { isAbsolute, resolve } from "node:path";
  import z from "@deepseek-ai/schemastery";
  import { TOOL_ABORTED, defineTool } from "@deepseek-ai/dsh-tools";

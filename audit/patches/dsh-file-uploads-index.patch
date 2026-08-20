@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\file-uploads-index.js" "b/D:\\workspace\\dsh-file-uploads\\index.js"
+diff --git "a/<workspace>\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\file-uploads-index.js" "b/<workspace>\\dsh-file-uploads\\index.js"
 index 4c7c62b..315b8e5 100644
---- "a/D:\\workspace\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\file-uploads-index.js"	
-+++ "b/D:\\workspace\\dsh-file-uploads\\index.js"	
+--- "a/<workspace>\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\file-uploads-index.js"	
++++ "b/<workspace>\\dsh-file-uploads\\index.js"	
 @@ -1,5 +1,5 @@
 -import { createReadStream } from 'node:fs'
 -import { link, lstat, mkdir, open, readdir, stat, unlink } from 'node:fs/promises'

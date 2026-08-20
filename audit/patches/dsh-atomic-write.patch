@@ -1,11 +1,11 @@
-﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-atomic-write\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-atomic-write\\lib\\index.js"
-index 75f4553..5a9db19 100644
---- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-atomic-write\\index.js.orig"	
-+++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-atomic-write\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-audit\\fix-backups\\dsh-atomic-write\\index.js.orig" "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-atomic-write\\lib\\index.js"
+index 75f4553..62ea879 100644
+--- "a/<workspace>\\dsh-audit\\fix-backups\\dsh-atomic-write\\index.js.orig"	
++++ "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-atomic-write\\lib\\index.js"
 @@ -1,5 +1,5 @@
  import { randomBytes } from "node:crypto";
 -import { mkdir, rename, rm, writeFile } from "node:fs/promises";
-+import { mkdir, open, rename, rm } from "node:fs/promises";
++import { mkdir, open, readFile, rename, rm, writeFile } from "node:fs/promises";
  import { dirname } from "node:path";
  //#region lib/types/index.js
  /**
@@ -37,3 +37,56 @@ index 75f4553..5a9db19 100644
  		await rename(temp, filename);
  	} catch (error) {
  		await rm(temp, { force: true });
+@@ -49,6 +53,40 @@ function isEEXIST(error) {
+ 	return error?.code === "EEXIST";
+ }
+ /**
++* Orphan-lock reclaim: the lock file records its creator's PID. On timeout, if
++* that PID no longer exists (crashed owner), atomically `rename` the lock onto a
++* stale path and remove it — among concurrent reclaimers only the first rename
++* wins (the rest ENOENT → false), so two writers can never both steal the lock.
++* A still-alive owner (including EPERM probe) counts as live and is left alone.
++*/
++async function reclaimOrphanLock(lockPath) {
++	let pid;
++	try {
++		pid = Number.parseInt(await readFile(lockPath, "utf8"), 10);
++	} catch {
++		return false;
++	}
++	if (!Number.isInteger(pid) || pid <= 0) return false;
++	if (isProcessAlive(pid)) return false;
++	const stale = `${lockPath}.stale-${process.pid}`;
++	try {
++		await rename(lockPath, stale);
++	} catch {
++		return false;
++	}
++	await rm(stale, { force: true });
++	return true;
++}
++/** Whether a PID is still alive: kill(pid, 0) throws ESRCH when gone, EPERM when present but unprivileged. */
++function isProcessAlive(pid) {
++	try {
++		process.kill(pid, 0);
++		return true;
++	} catch (error) {
++		return error?.code === "EPERM";
++	}
++}
++/**
+ * Writer-lock protocol constants. These are robustness invariants of the
+ * cross-process write protocol, not deployment tunables: contention normally
+ * resolves within the retry deadline, while expiry fails the contender without
+@@ -83,7 +121,10 @@ async function withFileLock(filename, operation) {
+ 		} catch (error) {
+ 			if (!isEEXIST(error)) throw error;
+ 		}
+-		if (Date.now() >= deadline) throw new Error(`atomic-write: timed out waiting for the writer lock at ${lockPath}`);
++		if (Date.now() >= deadline) {
++			if (await reclaimOrphanLock(lockPath)) continue;
++			throw new Error(`atomic-write: timed out waiting for the writer lock at ${lockPath}`);
++		}
+ 		await new Promise((resolve) => setTimeout(resolve, delay));
+ 		delay = Math.min(delay * 2, LOCK_RETRY_MAX_MS);
+ 	}

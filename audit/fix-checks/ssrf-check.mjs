@@ -1,4 +1,4 @@
-import { HttpFetchProvider } from "file:///D:/Tools/DeepSeekHarness-Desktop/resources/dsh-runtime/node_modules/@deepseek-ai/dsh-web-fetch-http/lib/index.js";
+import { HttpFetchProvider } from "file:///<dsh-install>/DeepSeekHarness-Desktop/resources/dsh-runtime/node_modules/@deepseek-ai/dsh-web-fetch-http/lib/index.js";
 
 const p = new HttpFetchProvider({ maxUrlLength: 2048, maxResponseBytes: 1000, maxBodyChars: 1000, timeoutMs: 5000, maxRedirects: 0, userAgent: "t" });
 

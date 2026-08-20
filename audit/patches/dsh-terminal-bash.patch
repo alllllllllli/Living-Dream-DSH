@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-terminal-bash\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-terminal-bash\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-audit\\fix-backups\\dsh-terminal-bash\\index.js.orig" "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-terminal-bash\\lib\\index.js"
 index 44f4d81..f3f86b0 100644
---- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-terminal-bash\\index.js.orig"	
-+++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-terminal-bash\\lib\\index.js"
+--- "a/<workspace>\\dsh-audit\\fix-backups\\dsh-terminal-bash\\index.js.orig"	
++++ "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-terminal-bash\\lib\\index.js"
 @@ -239,8 +239,9 @@ var BoundedTextBuffer = class {
  		this.value += text;
  		if (this.maxLines !== void 0) {

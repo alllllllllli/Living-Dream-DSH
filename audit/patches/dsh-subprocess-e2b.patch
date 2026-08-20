@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-subprocess-e2b\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-subprocess-e2b\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-audit\\fix-backups\\dsh-subprocess-e2b\\index.js.orig" "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-subprocess-e2b\\lib\\index.js"
 index dafecf2..d4e7408 100644
---- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-subprocess-e2b\\index.js.orig"	
-+++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-subprocess-e2b\\lib\\index.js"
+--- "a/<workspace>\\dsh-audit\\fix-backups\\dsh-subprocess-e2b\\index.js.orig"	
++++ "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-subprocess-e2b\\lib\\index.js"
 @@ -54,7 +54,7 @@ async function readRemoteEnvironment(sandbox, signal) {
  function scrubRemoteEnvironment(raw) {
  	const environment = /* @__PURE__ */ new Map();

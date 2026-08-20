@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-cordis-host-runner\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-cordis-host-runner\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-audit\\fix-backups\\dsh-cordis-host-runner\\index.js.orig" "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-cordis-host-runner\\lib\\index.js"
 index d435325..daabce6 100644
---- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-cordis-host-runner\\index.js.orig"	
-+++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-cordis-host-runner\\lib\\index.js"
+--- "a/<workspace>\\dsh-audit\\fix-backups\\dsh-cordis-host-runner\\index.js.orig"	
++++ "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-cordis-host-runner\\lib\\index.js"
 @@ -1750,7 +1750,7 @@ let DynamicCordisRunnerService = (() => {
  				};
  				const latest = plan.plugin.latestRun;

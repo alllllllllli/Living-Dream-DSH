@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\client.js" "b/D:\\workspace\\dsh-file-uploads\\client.js"
+diff --git "a/<workspace>\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\client.js" "b/<workspace>\\dsh-file-uploads\\client.js"
 index 424284c..b182962 100644
---- "a/D:\\workspace\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\client.js"	
-+++ "b/D:\\workspace\\dsh-file-uploads\\client.js"	
+--- "a/<workspace>\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\client.js"	
++++ "b/<workspace>\\dsh-file-uploads\\client.js"	
 @@ -165,11 +165,11 @@ window.__ModuleLoader__.load({
  
        attach(sessionId, file) {

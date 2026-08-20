@@ -1,7 +1,7 @@
-﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-llm-retry\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm-retry\\lib\\index.js"
+diff --git "a/<workspace>\\dsh-audit\\fix-backups\\dsh-llm-retry\\index.js.orig" "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm-retry\\lib\\index.js"
 index 1bdf9f2..76660a1 100644
---- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-llm-retry\\index.js.orig"	
-+++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm-retry\\lib\\index.js"
+--- "a/<workspace>\\dsh-audit\\fix-backups\\dsh-llm-retry\\index.js.orig"	
++++ "b/<dsh-install>\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm-retry\\lib\\index.js"
 @@ -144,8 +144,7 @@ function apply(ctx, config = {}, internals = {}) {
  		const retryId = priorPolicyRetry?.data.retryId ?? RetryId(randomUUID());
  		let delayMs;
