@@ -1,0 +1,28 @@
+﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-subprocess-local\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-subprocess-local\\lib\\index.js"
+index 75fae74..a527bd8 100644
+--- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-subprocess-local\\index.js.orig"	
++++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-subprocess-local\\lib\\index.js"
+@@ -317,14 +317,19 @@ function createProcessInspector(platform = process.platform, arch = process.arch
+ */
+ function childEnv(extra) {
+ 	const env = scrubbedParentEnv();
+-	if (process.platform !== "win32") return {
+-		...env,
+-		...extra
+-	};
++	if (process.platform !== "win32") {
++		const merged = {
++			...env,
++			...extra
++		};
++		for (const [key, value] of Object.entries(extra ?? {})) if (value === void 0) delete merged[key];
++		return merged;
++	}
+ 	let entries = Object.entries(env);
+ 	for (const [key, value] of Object.entries(extra ?? {})) {
+ 		const normalized = key.toUpperCase();
+ 		entries = entries.filter(([inherited]) => inherited.toUpperCase() !== normalized);
++		if (value === void 0) continue;
+ 		entries.push([key, value]);
+ 	}
+ 	return Object.fromEntries(entries);

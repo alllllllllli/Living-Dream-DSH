@@ -1,0 +1,181 @@
+﻿diff --git "a/D:\\workspace\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\paste-input-index.js" "b/D:\\Tools\\dsh-plugins\\dsh-paste-input\\lib\\index.js"
+index bc3f410..47e51c7 100644
+--- "a/D:\\workspace\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\paste-input-index.js"	
++++ "b/D:\\Tools\\dsh-plugins\\dsh-paste-input\\lib\\index.js"
+@@ -28,6 +28,8 @@ const DEFAULT_LIMITS = Object.freeze({
+   maxConcurrentUploads: 4,
+ });
+ 
++class ValidationError extends Error {}
++
+ function json(res, status, value) {
+   const body = `${JSON.stringify(value)}\n`;
+   res.writeHead(status, {
+@@ -94,7 +96,7 @@ async function readJson(req, maxBytes = 1024 * 1024) {
+   let size = 0;
+   for await (const chunk of req) {
+     size += chunk.length;
+-    if (size > maxBytes) throw new Error(`JSON body exceeds ${maxBytes} bytes`);
++    if (size > maxBytes) throw new ValidationError(`JSON body exceeds ${maxBytes} bytes`);
+     parts.push(chunk);
+   }
+   const text = Buffer.concat(parts).toString('utf8');
+@@ -118,15 +120,15 @@ function sessionDirectoryName(sessionId) {
+ 
+ function rawSegments(path) {
+   if (typeof path !== 'string' || path === '' || path.includes('\0')) {
+-    throw new Error('attachment path must be a non-empty string');
++    throw new ValidationError('attachment path must be a non-empty string');
+   }
+   const normalized = path.replaceAll('\\', '/');
+   if (normalized.startsWith('/') || /^[A-Za-z]:\//.test(normalized)) {
+-    throw new Error(`attachment path must be relative: ${JSON.stringify(path)}`);
++    throw new ValidationError(`attachment path must be relative: ${JSON.stringify(path)}`);
+   }
+   const parts = normalized.split('/');
+   if (parts.some(part => part === '' || part === '.' || part === '..')) {
+-    throw new Error(`attachment path contains an unsafe segment: ${JSON.stringify(path)}`);
++    throw new ValidationError(`attachment path contains an unsafe segment: ${JSON.stringify(path)}`);
+   }
+   return parts;
+ }
+@@ -150,30 +152,30 @@ function appendCollisionSuffix(path, index) {
+ }
+ 
+ function mapFiles(files, limits) {
+-  if (!Array.isArray(files) || files.length === 0) throw new Error('at least one file is required');
+-  if (files.length > limits.maxFiles) throw new Error(`file count exceeds ${limits.maxFiles}`);
++  if (!Array.isArray(files) || files.length === 0) throw new ValidationError('at least one file is required');
++  if (files.length > limits.maxFiles) throw new ValidationError(`file count exceeds ${limits.maxFiles}`);
+   const rawPaths = new Set();
+   const allocatedFiles = new Set([process.platform === 'win32' ? OWNER_FILE.toLowerCase() : OWNER_FILE]);
+   const allocatedDirectories = new Set();
+   const rows = [];
+   let totalBytes = 0;
+   for (const [index, input] of files.entries()) {
+-    if (typeof input !== 'object' || input === null) throw new Error(`file ${index} is not an object`);
++    if (typeof input !== 'object' || input === null) throw new ValidationError(`file ${index} is not an object`);
+     const parts = rawSegments(input.path);
+-    if (parts.length > limits.maxDepth) throw new Error(`file ${index} exceeds depth ${limits.maxDepth}`);
++    if (parts.length > limits.maxDepth) throw new ValidationError(`file ${index} exceeds depth ${limits.maxDepth}`);
+     const rawPath = parts.join('/');
+-    if (rawPaths.has(rawPath)) throw new Error(`duplicate attachment path: ${rawPath}`);
++    if (rawPaths.has(rawPath)) throw new ValidationError(`duplicate attachment path: ${rawPath}`);
+     for (const existing of rawPaths) {
+       if (existing.startsWith(`${rawPath}/`) || rawPath.startsWith(`${existing}/`)) {
+-        throw new Error(`file/directory attachment path conflict: ${existing} and ${rawPath}`);
++        throw new ValidationError(`file/directory attachment path conflict: ${existing} and ${rawPath}`);
+       }
+     }
+     rawPaths.add(rawPath);
+     if (!Number.isSafeInteger(input.size) || input.size < 0 || input.size > limits.maxFileBytes) {
+-      throw new Error(`file ${rawPath} has invalid or excessive size`);
++      throw new ValidationError(`file ${rawPath} has invalid or excessive size`);
+     }
+     totalBytes += input.size;
+-    if (totalBytes > limits.maxBatchBytes) throw new Error(`batch exceeds ${limits.maxBatchBytes} bytes`);
++    if (totalBytes > limits.maxBatchBytes) throw new ValidationError(`batch exceeds ${limits.maxBatchBytes} bytes`);
+     let actualPath = parts.map(safeSegment).join('/');
+     let collision = 1;
+     const collisionKey = value => process.platform === 'win32' ? value.toLowerCase() : value;
+@@ -186,7 +188,7 @@ function mapFiles(files, limits) {
+     }
+     const parents = parentKeys(actualPath);
+     if (parents.some(parent => allocatedFiles.has(parent))) {
+-      throw new Error(`cross-platform filename mapping creates a file/directory conflict: ${rawPath}`);
++      throw new ValidationError(`cross-platform filename mapping creates a file/directory conflict: ${rawPath}`);
+     }
+     allocatedFiles.add(collisionKey(actualPath));
+     for (const parent of parents) allocatedDirectories.add(parent);
+@@ -209,11 +211,11 @@ function ensureInside(root, target) {
+ }
+ 
+ function currentSession(ctx, sessionId) {
+-  if (typeof sessionId !== 'string' || sessionId === '') throw new Error('sessionId is required');
++  if (typeof sessionId !== 'string' || sessionId === '') throw new ValidationError('sessionId is required');
+   const session = ctx.sessions.get(sessionId);
+-  if (session === undefined) throw new Error(`live session not found: ${sessionId}`);
++  if (session === undefined) throw new ValidationError(`live session not found: ${sessionId}`);
+   const cwd = session.header.cwd;
+-  if (typeof cwd !== 'string' || cwd === '') throw new Error(`session has no workspace cwd: ${sessionId}`);
++  if (typeof cwd !== 'string' || cwd === '') throw new ValidationError(`session has no workspace cwd: ${sessionId}`);
+   return { session, cwd: resolve(cwd) };
+ }
+ 
+@@ -224,11 +226,11 @@ async function writeRequest(req, target, expectedBytes) {
+   try {
+     for await (const chunk of req) {
+       received += chunk.length;
+-      if (received > expectedBytes) throw new Error('upload body exceeds declared file size');
++      if (received > expectedBytes) throw new ValidationError('upload body exceeds declared file size');
+       await handle.write(chunk);
+     }
+     if (received !== expectedBytes) {
+-      throw new Error(`upload body size mismatch: expected ${expectedBytes}, received ${received}`);
++      throw new ValidationError(`upload body size mismatch: expected ${expectedBytes}, received ${received}`);
+     }
+     await handle.sync();
+   } catch (cause) {
+@@ -332,7 +334,7 @@ export function apply(ctx, config = {}) {
+       }
+ 
+       if (req.method === 'POST' && suffix === '/batches') {
+-        const input = await readJson(req);
++        const input = await readJson(req, limits.maxFiles * 1024);
+         const { cwd } = currentSession(ctx, input.sessionId);
+         await access(cwd);
+         const mapped = mapFiles(input.files, limits);
+@@ -367,19 +369,19 @@ export function apply(ctx, config = {}) {
+       const fileMatch = /^\/batches\/([^/]+)\/files\/(\d+)$/.exec(suffix);
+       if (req.method === 'PUT' && fileMatch !== null) {
+         const batch = batches.get(fileMatch[1]);
+-        if (batch === undefined) throw new Error('unknown or expired upload batch');
++        if (batch === undefined) throw new ValidationError('unknown or expired upload batch');
+         currentSession(ctx, batch.sessionId);
+         const index = Number(fileMatch[2]);
+         const file = batch.files[index];
+-        if (file === undefined) throw new Error(`unknown file index ${index}`);
+-        if (batch.uploaded.has(index)) throw new Error(`file index ${index} was already uploaded`);
++        if (file === undefined) throw new ValidationError(`unknown file index ${index}`);
++        if (batch.uploaded.has(index)) throw new ValidationError(`file index ${index} was already uploaded`);
+         if (batch.activeUploads >= limits.maxConcurrentUploads) {
+           error(res, 429, 'too-many-uploads', 'too many concurrent attachment uploads');
+           return;
+         }
+         const declared = Number(header(req.headers, 'content-length'));
+         if (!Number.isSafeInteger(declared) || declared !== file.size) {
+-          throw new Error(`Content-Length must equal declared file size ${file.size}`);
++          throw new ValidationError(`Content-Length must equal declared file size ${file.size}`);
+         }
+         const target = resolve(batch.stagingRoot, file.actualPath);
+         ensureInside(batch.stagingRoot, target);
+@@ -397,11 +399,11 @@ export function apply(ctx, config = {}) {
+       const commitMatch = /^\/batches\/([^/]+)\/commit$/.exec(suffix);
+       if (req.method === 'POST' && commitMatch !== null) {
+         const batch = batches.get(commitMatch[1]);
+-        if (batch === undefined) throw new Error('unknown or expired upload batch');
++        if (batch === undefined) throw new ValidationError('unknown or expired upload batch');
+         currentSession(ctx, batch.sessionId);
+-        if (batch.activeUploads !== 0) throw new Error('uploads are still in progress');
++        if (batch.activeUploads !== 0) throw new ValidationError('uploads are still in progress');
+         if (batch.uploaded.size !== batch.files.length) {
+-          throw new Error(`batch is incomplete: ${batch.uploaded.size}/${batch.files.length} files uploaded`);
++          throw new ValidationError(`batch is incomplete: ${batch.uploaded.size}/${batch.files.length} files uploaded`);
+         }
+         const sendId = `${new Date().toISOString().replace(/[:.]/g, '-')}-${randomUUID().slice(0, 8)}`;
+         const sessionRoot = join(batch.attachmentsRoot, batch.sessionKey);
+@@ -506,8 +508,12 @@ export function apply(ctx, config = {}) {
+ 
+       error(res, 404, 'not-found', 'unknown attachment endpoint');
+     } catch (cause) {
+-      const message = cause instanceof Error ? cause.message : String(cause);
+-      error(res, 400, 'attachment-request-failed', message);
++      if (cause instanceof ValidationError) {
++        error(res, 400, 'attachment-request-failed', cause.message);
++        return;
++      }
++      ctx.logger.warn(cause instanceof Error ? cause : new Error(String(cause)));
++      error(res, 500, 'internal-error', 'internal server error');
+     }
+   };
+ 

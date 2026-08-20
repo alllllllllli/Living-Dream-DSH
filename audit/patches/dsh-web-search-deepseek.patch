@@ -1,0 +1,29 @@
+﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-web-search-deepseek\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-web-search-deepseek\\lib\\index.js"
+index d9dc18d..b605544 100644
+--- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-web-search-deepseek\\index.js.orig"	
++++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-web-search-deepseek\\lib\\index.js"
+@@ -97,7 +97,7 @@ var DeepSeekSearchProvider = class {
+ 	}
+ 	available() {
+ 		const options = this.resolveOptions();
+-		return ((options.apiKey?.length ?? 0) > 0 || options.resolveApiKey !== void 0) && URL.canParse(options.baseURL) && isPositiveInteger(options.maxTokens) && isPositiveInteger(options.maxUses);
++		return options.hasApiKey && URL.canParse(options.baseURL) && isPositiveInteger(options.maxTokens) && isPositiveInteger(options.maxUses);
+ 	}
+ 	async search(request, signal) {
+ 		const options = this.resolveOptions();
+@@ -265,6 +265,7 @@ const WEB_SEARCH_DEEPSEEK_SETTINGS_NAMESPACE = settingsNamespace("web-search-dee
+ function resolveOptions(ctx, config) {
+ 	const apiKeyEnv = credentialRef(config.apiKeyEnv ?? DEFAULT_API_KEY_ENV);
+ 	const literalApiKey = config.apiKey !== void 0 && config.apiKey.length > 0 ? config.apiKey : void 0;
++	const ambientApiKey = launchEnvironmentOf(ctx).get(apiKeyEnv)?.value;
+ 	return {
+ 		...literalApiKey === void 0 ? {} : { apiKey: literalApiKey },
+ 		resolveApiKey: async () => {
+@@ -273,6 +274,7 @@ function resolveOptions(ctx, config) {
+ 			const ambient = launchEnvironmentOf(ctx).get(apiKeyEnv);
+ 			return ambient !== void 0 && ambient.value.length > 0 ? ambient.value : void 0;
+ 		},
++		hasApiKey: literalApiKey !== void 0 || (ambientApiKey !== void 0 && ambientApiKey.length > 0),
+ 		apiKeyEnv,
+ 		baseURL: config.baseURL ?? launchEnvironmentOf(ctx).get(SEARCH_BASE_URL_ENV)?.value ?? "https://api.deepseek.com/anthropic/v1",
+ 		model: config.model ?? "deepseek-v4-flash",

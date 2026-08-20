@@ -1,0 +1,14 @@
+﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-llm-retry\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm-retry\\lib\\index.js"
+index 1bdf9f2..76660a1 100644
+--- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-llm-retry\\index.js.orig"	
++++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm-retry\\lib\\index.js"
+@@ -144,8 +144,7 @@ function apply(ctx, config = {}, internals = {}) {
+ 		const retryId = priorPolicyRetry?.data.retryId ?? RetryId(randomUUID());
+ 		let delayMs;
+ 		if (failure.providerRetryAfterMs !== void 0 && Number.isFinite(failure.providerRetryAfterMs) && failure.providerRetryAfterMs > 0) if (failure.providerRetryAfterMs > policy.maxDelayMs) {
+-			if (policy.mode === "normal") return next();
+-			delayMs = localDelay(policy, retry, random);
++			delayMs = policy.maxDelayMs;
+ 		} else delayMs = failure.providerRetryAfterMs;
+ 		else delayMs = localDelay(policy, retry, random);
+ 		return backoff(agent, turn, step, failure, provider, policy, policyKey, retry, retryId, delayMs, signal);

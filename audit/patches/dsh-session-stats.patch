@@ -1,0 +1,31 @@
+﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-session-stats\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-session-stats\\lib\\index.js"
+index 313d0e3..2d32020 100644
+--- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-session-stats\\index.js.orig"	
++++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-session-stats\\lib\\index.js"
+@@ -59,12 +59,15 @@ const sessionStatsProjectionDefinition = {
+ 		ttftSteps: 0,
+ 		decodeMs: 0,
+ 		decodeTokens: 0,
+-		lastTurn: null,
+ 		openStep: null,
+ 		pendingCalls: {}
+ 	}),
+ 	apply: (state, event) => {
+ 		switch (event.type) {
++			case "turn/start": return {
++				...state,
++				turns: state.turns + 1
++			};
+ 			case "step/start": return {
+ 				...state,
+ 				openStep: {
+@@ -125,9 +128,7 @@ const sessionStatsProjectionDefinition = {
+ 			}
+ 			case "step/end": return {
+ 				...state,
+-				turns: state.lastTurn === event.data.turn ? state.turns : state.turns + 1,
+ 				steps: state.steps + 1,
+-				lastTurn: event.data.turn,
+ 				openStep: null
+ 			};
+ 			case "turn/end": return Object.keys(state.pendingCalls).length === 0 ? state : {

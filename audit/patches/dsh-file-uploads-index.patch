@@ -1,0 +1,59 @@
+﻿diff --git "a/D:\\workspace\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\file-uploads-index.js" "b/D:\\workspace\\dsh-file-uploads\\index.js"
+index 4c7c62b..315b8e5 100644
+--- "a/D:\\workspace\\dsh-local-patches-backup\\fileuploads-pasteinput-20260820-131146\\file-uploads-index.js"	
++++ "b/D:\\workspace\\dsh-file-uploads\\index.js"	
+@@ -1,5 +1,5 @@
+-import { createReadStream } from 'node:fs'
+-import { link, lstat, mkdir, open, readdir, stat, unlink } from 'node:fs/promises'
++import { constants, createReadStream } from 'node:fs'
++import { copyFile, link, lstat, mkdir, open, readdir, stat, unlink } from 'node:fs/promises'
+ import { homedir } from 'node:os'
+ import { basename, extname, join, resolve } from 'node:path'
+ import { randomUUID } from 'node:crypto'
+@@ -37,13 +37,19 @@ export function resolveTotalMaxBytes(env = process.env) {
+   return positiveInteger(env.DSH_UPLOAD_TOTAL_MAX_BYTES, DEFAULT_TOTAL_MAX_BYTES)
+ }
+ 
++const WINDOWS_RESERVED = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$/i
++
+ export function sanitizeUploadName(value) {
+   const decoded = String(value || '').normalize('NFC')
+   let safe = basename(decoded)
+     .replace(/[\\/\u0000-\u001f\u007f]/g, '_')
+-    .replace(/^\.+/, '')
+     .trim()
+ 
++  if (process.platform === 'win32') {
++    safe = safe.replace(/[. ]+$/g, (match) => '_'.repeat(match.length))
++    if (WINDOWS_RESERVED.test(safe)) safe = `_${safe}`
++  }
++
+   if (!safe) safe = 'upload.bin'
+   if (safe.startsWith('.upload-')) safe = `file-${safe}`
+ 
+@@ -205,6 +211,8 @@ function numberedName(name, index) {
+   return `${stem.slice(0, maxStemLength)}${suffix}${extension}`
+ }
+ 
++const LINK_UNSUPPORTED = new Set(['EPERM', 'ENOSYS', 'ENOTSUP', 'EOPNOTSUPP', 'EXDEV'])
++
+ async function publishUnique(tempPath, root, requestedName) {
+   for (let index = 0; index < 10_000; index += 1) {
+     const name = numberedName(requestedName, index)
+@@ -215,7 +223,15 @@ async function publishUnique(tempPath, root, requestedName) {
+       return { name, path: target }
+     } catch (error) {
+       if (error?.code === 'EEXIST') continue
+-      throw error
++      if (!LINK_UNSUPPORTED.has(error?.code)) throw error
++      try {
++        await copyFile(tempPath, target, constants.COPYFILE_EXCL)
++        await unlink(tempPath)
++        return { name, path: target }
++      } catch (fallbackError) {
++        if (fallbackError?.code === 'EEXIST') continue
++        throw fallbackError
++      }
+     }
+   }
+   throw new HttpError(409, 'too many files share this name')

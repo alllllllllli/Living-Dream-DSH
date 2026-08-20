@@ -1,0 +1,22 @@
+﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-subprocess-e2b\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-subprocess-e2b\\lib\\index.js"
+index dafecf2..d4e7408 100644
+--- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-subprocess-e2b\\index.js.orig"	
++++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-subprocess-e2b\\lib\\index.js"
+@@ -54,7 +54,7 @@ async function readRemoteEnvironment(sandbox, signal) {
+ function scrubRemoteEnvironment(raw) {
+ 	const environment = /* @__PURE__ */ new Map();
+ 	for (const [name, value] of remoteEnvironmentEntries(raw)) {
+-		if (name.startsWith("DSH_") || SENSITIVE_ENV_PATTERN.test(name)) continue;
++		if (name.toUpperCase().startsWith("DSH_") || SENSITIVE_ENV_PATTERN.test(name)) continue;
+ 		environment.set(name, value);
+ 	}
+ 	return environment;
+@@ -66,7 +66,7 @@ function scrubRemoteEnvironment(raw) {
+ */
+ function bootstrapEnvironment(raw) {
+ 	const environment = { TERM: "dumb" };
+-	for (const [name] of remoteEnvironmentEntries(raw)) if (name.startsWith("DSH_") || SENSITIVE_ENV_PATTERN.test(name)) environment[name] = "";
++	for (const [name] of remoteEnvironmentEntries(raw)) if (name.toUpperCase().startsWith("DSH_") || SENSITIVE_ENV_PATTERN.test(name)) environment[name] = "";
+ 	return environment;
+ }
+ /**

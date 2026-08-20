@@ -1,0 +1,89 @@
+﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-web-fetch-http\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-web-fetch-http\\lib\\index.js"
+index 80502fe..07bc867 100644
+--- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-web-fetch-http\\index.js.orig"	
++++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-web-fetch-http\\lib\\index.js"
+@@ -1,6 +1,68 @@
+ import z from "@deepseek-ai/schemastery";
+ import { WebError } from "@deepseek-ai/dsh-web";
+ import { deadline, timeoutOf } from "@deepseek-ai/dsh-timeout";
++import { isIP } from "node:net";
++import { lookup } from "node:dns/promises";
++function bareHost(hostname) {
++	return hostname.startsWith("[") && hostname.endsWith("]") ? hostname.slice(1, -1) : hostname;
++}
++function isBlockedIpv4(ip) {
++	const parts = ip.split(".");
++	if (parts.length !== 4) return false;
++	const octets = parts.map(Number);
++	if (octets.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) return false;
++	const [a, b] = octets;
++	return a === 0 || a === 10 || a === 127
++		|| (a === 169 && b === 254)
++		|| (a === 172 && b >= 16 && b <= 31)
++		|| (a === 192 && b === 168)
++		|| (a === 100 && b >= 64 && b <= 127);
++}
++function isBlockedIpv6(ip) {
++	const lower = ip.toLowerCase();
++	if (lower === "::" || lower === "::1") return true;
++	if (lower.startsWith("::ffff:")) {
++		const tail = lower.slice(7);
++		if (tail.includes(".")) return isBlockedIpv4(tail);
++		const [hi, lo] = tail.split(":");
++		const n = (parseInt(hi, 16) << 16) | parseInt(lo, 16);
++		return isBlockedIpv4(`${n >>> 24}.${(n >>> 16) & 255}.${(n >>> 8) & 255}.${n & 255}`);
++	}
++	if (/^fe[89ab]/.test(lower)) return true;
++	if (/^f[cd]/.test(lower)) return true;
++	return false;
++}
++function isBlockedHostname(hostname) {
++	const h = bareHost(hostname).toLowerCase().replace(/\.$/, "");
++	return h === "localhost"
++		|| h.endsWith(".localhost")
++		|| h.endsWith(".local")
++		|| h.endsWith(".internal")
++		|| h === "metadata.google.internal"
++		|| h.endsWith(".metadata.google.internal");
++}
++function assertNotPrivateHost(hostname) {
++	const host = bareHost(hostname);
++	const kind = isIP(host);
++	if (kind === 4 && isBlockedIpv4(host)) throw new WebError(`blocked private/loopback address "${hostname}"`, "WEB_BLOCKED_URL");
++	if (kind === 6 && isBlockedIpv6(host)) throw new WebError(`blocked private/loopback address "${hostname}"`, "WEB_BLOCKED_URL");
++	if (kind === 0 && isBlockedHostname(hostname)) throw new WebError(`blocked private/loopback host "${hostname}"`, "WEB_BLOCKED_URL");
++}
++async function assertNotPrivateResolve(hostname, signal) {
++	const host = bareHost(hostname);
++	if (isIP(host) !== 0) return;
++	if (signal?.aborted) throw new WebError("web fetch aborted", "WEB_ABORTED");
++	let addresses;
++	try {
++		addresses = await lookup(host, { all: true, verbatim: true });
++	} catch {
++		return;
++	}
++	for (const { address } of addresses) {
++		if (isIP(address) === 4 && isBlockedIpv4(address)) throw new WebError(`blocked private/loopback address "${address}" for "${hostname}"`, "WEB_BLOCKED_URL");
++		if (isIP(address) === 6 && isBlockedIpv6(address)) throw new WebError(`blocked private/loopback address "${address}" for "${hostname}"`, "WEB_BLOCKED_URL");
++	}
++}
+ //#region lib/types/policy.js
+ /**
+ * URL validation and content-type classification for the local HTTP(S) fetch
+@@ -29,6 +91,7 @@ function validateFetchUrl(input, maxUrlLength) {
+ 	}
+ 	if (url.protocol !== "http:" && url.protocol !== "https:") throw new WebError(`unsupported URL scheme "${url.protocol}" (only http and https are allowed)`, "WEB_INVALID_URL");
+ 	if (url.username.length > 0 || url.password.length > 0) throw new WebError("credentials in URLs are not allowed", "WEB_BLOCKED_URL");
++	assertNotPrivateHost(url.hostname);
+ 	return url;
+ }
+ /**
+@@ -193,6 +256,7 @@ var HttpFetchProvider = class {
+ 		let currentUrl = validateFetchUrl(initialUrl, this.limits.maxUrlLength);
+ 		let redirectsFollowed = 0;
+ 		for (;;) {
++			await assertNotPrivateResolve(currentUrl.hostname, signal);
+ 			const response = await this.requestOnce(currentUrl, signal);
+ 			if (isRedirectStatus(response.status)) {
+ 				if (redirectsFollowed >= this.limits.maxRedirects) {

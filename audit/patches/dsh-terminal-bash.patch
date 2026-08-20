@@ -1,0 +1,25 @@
+﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-terminal-bash\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-terminal-bash\\lib\\index.js"
+index 44f4d81..f3f86b0 100644
+--- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-terminal-bash\\index.js.orig"	
++++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-terminal-bash\\lib\\index.js"
+@@ -239,8 +239,9 @@ var BoundedTextBuffer = class {
+ 		this.value += text;
+ 		if (this.maxLines !== void 0) {
+ 			const lines = this.value.split("\n");
+-			if (lines.length > this.maxLines) {
+-				this.value = lines.slice(lines.length - this.maxLines).join("\n");
++			const count = lines[lines.length - 1] === "" ? lines.length - 1 : lines.length;
++			if (count > this.maxLines) {
++				this.value = lines.slice(count - this.maxLines).join("\n");
+ 				this.dropped = true;
+ 			}
+ 		}
+@@ -461,7 +462,7 @@ var LocalPtySession = class {
+ 	read(request) {
+ 		const snapshot = this.scrollback.snapshot();
+ 		const lines = snapshot.text.split("\n");
+-		const totalLines = snapshot.text.length === 0 ? 0 : lines.length;
++		const totalLines = snapshot.text.length === 0 ? 0 : (lines[lines.length - 1] === "" ? lines.length - 1 : lines.length);
+ 		const offset = request.offset ?? 0;
+ 		const count = request.count ?? 500;
+ 		if (!Number.isSafeInteger(offset) || offset < 0) throw new Error("PTY read offset must be a non-negative safe integer");

@@ -1,0 +1,13 @@
+﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-cordis-host-runner\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-cordis-host-runner\\lib\\index.js"
+index d435325..daabce6 100644
+--- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-cordis-host-runner\\index.js.orig"	
++++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-cordis-host-runner\\lib\\index.js"
+@@ -1750,7 +1750,7 @@ let DynamicCordisRunnerService = (() => {
+ 				};
+ 				const latest = plan.plugin.latestRun;
+ 				const expectedStatus = pending.requiresApproval ? "awaiting-approval" : "starting-host";
+-				if (latest === void 0 || latest.pluginRunId !== pending.pluginRunId || latest.status !== expectedStatus && !pending.requiresApproval && latest.status !== "client-pending") return {
++				if (latest === void 0 || latest.pluginRunId !== pending.pluginRunId || latest.status !== expectedStatus && (pending.requiresApproval || latest.status !== "client-pending")) return {
+ 					ok: false,
+ 					message: `run request "${requestId}" no longer identifies the latest run of ${pluginId}`
+ 				};

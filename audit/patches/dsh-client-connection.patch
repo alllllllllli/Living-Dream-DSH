@@ -1,0 +1,13 @@
+﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-client-connection\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-client-connection\\lib\\index.js"
+index acf1cde..518fb18 100644
+--- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-client-connection\\index.js.orig"	
++++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-client-connection\\lib\\index.js"
+@@ -508,6 +508,8 @@ const PRIVILEGED_METHODS = new Set([
+ 	"agentPreset.remove",
+ 	"host.pickDirectory",
+ 	"host.openPath",
++	"host.listDirectory",
++	"host.createDirectory",
+ 	"settings.describe",
+ 	"settings.openDocument",
+ 	"settings.update",

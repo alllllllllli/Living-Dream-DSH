@@ -1,0 +1,39 @@
+﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-atomic-write\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-atomic-write\\lib\\index.js"
+index 75f4553..5a9db19 100644
+--- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-atomic-write\\index.js.orig"	
++++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-atomic-write\\lib\\index.js"
+@@ -1,5 +1,5 @@
+ import { randomBytes } from "node:crypto";
+-import { mkdir, rename, rm, writeFile } from "node:fs/promises";
++import { mkdir, open, rename, rm } from "node:fs/promises";
+ import { dirname } from "node:path";
+ //#region lib/types/index.js
+ /**
+@@ -22,7 +22,8 @@ import { dirname } from "node:path";
+ * race. The rename also replaces a symlinked target itself instead of writing
+ * through to its referent, and the same-directory sibling keeps the rename on
+ * one filesystem. On any failure the temp file is removed and the failure
+-* rethrown. Crash durability (fsync) is out of scope.
++* rethrown. The temp file is fsynced before the rename so a crash cannot
++* expose truncated content.
+ * @param filename - final path receiving the content.
+ * @param content - complete next file content.
+ * @param options - permission bits for the replacement inode.
+@@ -34,10 +35,13 @@ async function writeFileAtomic(filename, content, options) {
+ 	});
+ 	const temp = `${filename}.${randomBytes(6).toString("hex")}.tmp`;
+ 	try {
+-		await writeFile(temp, content, {
+-			mode: options.mode,
+-			flag: "wx"
+-		});
++		const handle = await open(temp, "wx", options.mode);
++		try {
++			await handle.writeFile(content);
++			await handle.sync();
++		} finally {
++			await handle.close();
++		}
+ 		await rename(temp, filename);
+ 	} catch (error) {
+ 		await rm(temp, { force: true });

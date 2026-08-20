@@ -1,0 +1,42 @@
+﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-tool-pwsh\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-tool-pwsh\\lib\\index.js"
+index 95efaab..93719de 100644
+--- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-tool-pwsh\\index.js.orig"	
++++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-tool-pwsh\\lib\\index.js"
+@@ -2,7 +2,7 @@ import { isAbsolute, resolve } from "node:path";
+ import z from "@deepseek-ai/schemastery";
+ import { TOOL_ABORTED, defineTool } from "@deepseek-ai/dsh-tools";
+ import { HarnessError } from "@deepseek-ai/dsh-llm";
+-import { ESCALATION_TARGETS, approveEscalation, escalationHintMarker, sandboxDenialMarker, validateEscalationArgs } from "@deepseek-ai/dsh-sandbox";
++import { ESCALATION_TARGETS, approveEscalation, canonicalPath, escalationHintMarker, sandboxDenialMarker, validateEscalationArgs } from "@deepseek-ai/dsh-sandbox";
+ import { parseExitStatus } from "@deepseek-ai/dsh-shell";
+ //#region lib/types/background.js
+ /**
+@@ -145,12 +145,15 @@ function pwshDescription(backgroundEnabled, escalationModes) {
+ }
+ /**
+ * Resolve an explicit workdir first, making a relative one session-workspace-relative;
+-* otherwise use the session header cwd and leave executor defaulting as the fallback.
++* otherwise use the filesystem identity of the session cwd and leave executor
++* defaulting as the fallback. A resolved sandbox-policy root wins so workdir
++* and confinement use the exact same per-call identity.
+ */
+-function resolveWorkdir(modelWorkdir, exec) {
++function resolveWorkdir(modelWorkdir, exec, policyWorkspaceRoot) {
+ 	const headerCwd = exec.agent?.session.header.cwd;
+-	if (modelWorkdir === void 0) return headerCwd;
+-	if (headerCwd !== void 0 && !isAbsolute(modelWorkdir)) return resolve(headerCwd, modelWorkdir);
++	const sessionCwd = policyWorkspaceRoot ?? (headerCwd === void 0 ? void 0 : canonicalPath(headerCwd));
++	if (modelWorkdir === void 0) return sessionCwd;
++	if (sessionCwd !== void 0 && !isAbsolute(modelWorkdir)) return resolve(sessionCwd, modelWorkdir);
+ 	return modelWorkdir;
+ }
+ /** Detach the executor DTO from readonly Service Definition types into plain JSON data. */
+@@ -365,7 +368,7 @@ function apply(ctx, config = {}) {
+ 				...standingPolicy,
+ 				mode: approvedMode
+ 			};
+-			const workdir = resolveWorkdir(args.workdir, exec);
++			const workdir = resolveWorkdir(args.workdir, exec, standingPolicy?.workspaceRoot);
+ 			const request = {
+ 				command: args.command,
+ 				...workdir !== void 0 ? { workdir } : {},

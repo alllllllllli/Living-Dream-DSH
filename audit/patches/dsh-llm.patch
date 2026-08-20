@@ -1,0 +1,22 @@
+﻿diff --git "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-llm\\index.js.orig" "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm\\lib\\index.js"
+index 3cb45fd..0db0efa 100644
+--- "a/D:\\workspace\\dsh-audit\\fix-backups\\dsh-llm\\index.js.orig"	
++++ "b/D:\\Tools\\DeepSeekHarness-Desktop\\resources\\dsh-runtime\\node_modules\\@deepseek-ai\\dsh-llm\\lib\\index.js"
+@@ -702,7 +702,7 @@ var BlockAssembler = class {
+ 			case "tool-call-delta": {
+ 				const partial = this.ensure(chunk.index, "tool-call");
+ 				if (partial.block) return;
+-				partial.toolCallId = chunk.id;
++				if (chunk.id) partial.toolCallId = chunk.id;
+ 				if (chunk.name) partial.toolCallName = chunk.name;
+ 				partial.toolCallArguments += chunk.argumentsDelta;
+ 				return;
+@@ -770,7 +770,7 @@ var BlockAssembler = class {
+ 	*/
+ 	blocks() {
+ 		const blocks = this.order.map((index) => this.assemble(this.mustGet(index), index));
+-		return this.finish.kind === "max-tokens" ? blocks.filter((block) => block.type !== "tool-call") : blocks;
++		return this.finish.kind === "max-tokens" ? blocks.filter((block, i) => block.type !== "tool-call" || this.mustGet(this.order[i]).block !== undefined) : blocks;
+ 	}
+ 	/** Usage from the `usage` chunk; undefined until one arrives. */
+ 	get usage() {
